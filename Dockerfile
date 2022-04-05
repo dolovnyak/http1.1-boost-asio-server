@@ -32,6 +32,7 @@ RUN apt-get update \
       rsync \
       tar \
       python \
+      apache2-utils \
   && apt-get clean
 
 RUN ( \

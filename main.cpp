@@ -8,10 +8,10 @@
 #include <unistd.h>
 #include <thread>
 
-#define BUF_SIZE 1024
+#define BUF_SIZE 256
 #define PORT 8080
-#define MAX_CONNECTIONS_NUMBER 2048
-#define EVENTS_NUM 128
+#define MAX_CONNECTIONS_NUMBER 4096
+#define EVENTS_NUM 256
 #define WORKER_THREAD_NUM 8
 
 const char* hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
@@ -54,6 +54,7 @@ void event_loop(int listening_socket_fd, struct sockaddr_in address, int current
 
     for (;;) {
         int events_number = epoll_wait(epoll_fd, events, EVENTS_NUM, -1);
+        //std::cout << "thread " << current_thread << " woke up" << std::endl;
         if (events_number == -1) {
             std::cerr << "epoll_wait failed" << strerror(errno) << std::endl;
             exit(EXIT_FAILURE);
@@ -77,6 +78,7 @@ void event_loop(int listening_socket_fd, struct sockaddr_in address, int current
 //                        inet_ntop(AF_INET, (char*)&(address.sin_addr), buf, sizeof(address));
 //                        std::cout << "[+] connected with " << buf << ":" << ntohs(address.sin_port) << std::endl;
 
+                        //std::cout << "accept connection " << connection_socket << " in thread " << current_thread << std::endl;
                         /// add edge-triggered epoll listener
                         if (!epoll_ctl_add(epoll_fd, connection_socket,
                                            EPOLLIN | EPOLLET | EPOLLRDHUP | EPOLLHUP)) {
@@ -86,12 +88,14 @@ void event_loop(int listening_socket_fd, struct sockaddr_in address, int current
                     }
                 }
             } else if (events[i].events & EPOLLIN) {
+//                std::cout << "read fd " << events[i].data.fd << " in thread " << current_thread << std::endl;
                 /// handle read event
                 for (;;) {
                     ssize_t bytes_num = read(events[i].data.fd, buf, sizeof(buf));
                     if (bytes_num == -1) {
                         if (errno == EAGAIN || errno == EWOULDBLOCK) {
 //                            std::cout << "finished reading data from client" << std::endl;
+                        write(events[i].data.fd, hello, strlen(hello));
                             close(events[i].data.fd);
                             break;
                         } else {
@@ -106,17 +110,16 @@ void event_loop(int listening_socket_fd, struct sockaddr_in address, int current
 //                        std::cout << "AAA" << std::endl;
 //                        fwrite(buf, sizeof(char), bytes_num, stdout);
 //                        std::cout << "BBB" << std::endl;
-//                        write(events[i].data.fd, hello, strlen(hello));
                     }
                 }
             } else {
                 /// check if the connection is closing
                 if (events[i].events & (EPOLLRDHUP | EPOLLHUP)) {
-                    std::cout << "[+] connection closed" << std::endl;
+                    std::cout << "connection closed" << std::endl;
                     close(events[i].data.fd);
                     continue;
                 } else {
-                    std::cout << "[+] connection error" << std::endl;
+                    std::cout << "connection error" << std::endl;
                     close(events[i].data.fd);
                     continue;
                 }
