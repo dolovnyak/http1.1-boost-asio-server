@@ -8,11 +8,11 @@
 #include <unistd.h>
 #include <thread>
 
-#define BUF_SIZE 256
+#define BUF_SIZE 128
 #define PORT 8080
-#define MAX_CONNECTIONS_NUMBER 4096
+#define MAX_CONNECTIONS_NUMBER 10000
 #define EVENTS_NUM 256
-#define WORKER_THREAD_NUM 8
+#define WORKER_THREAD_NUM 16
 
 const char* hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
 
@@ -26,8 +26,7 @@ bool epoll_ctl_add(int epoll_fd, int fd, uint32_t events) {
     return true;
 }
 
-bool epoll_ctl_mod(int epoll_fd, int fd, int events)
-{
+bool epoll_ctl_mod(int epoll_fd, int fd, int events) {
     struct epoll_event event{};
     event.events = events;
     event.data.fd = fd;
@@ -35,22 +34,12 @@ bool epoll_ctl_mod(int epoll_fd, int fd, int events)
     return ret;
 }
 
-void event_loop(int listening_socket_fd, struct sockaddr_in address, int current_thread) {
+void event_loop(int epoll_fd, int listening_socket_fd, struct sockaddr_in address, int current_thread) {
     /// add edge-triggered epoll listener
-    int epoll_fd = epoll_create1(EPOLL_CLOEXEC);
-    if (epoll_fd < 0) {
-        std::cerr << "epoll_fd creation failed" << strerror(errno) << std::endl;
-        exit(EXIT_FAILURE);
-    }
-
-    if (!epoll_ctl_add(epoll_fd, listening_socket_fd, EPOLLIN | EPOLLOUT | EPOLLET)) {
-        std::cerr << "epoll_ctl_add failed" << strerror(errno) << std::endl;
-        exit(EXIT_FAILURE);
-    }
-
     socklen_t address_len = sizeof(address);
     char buf[BUF_SIZE];
     struct epoll_event events[EVENTS_NUM];
+
 
     for (;;) {
         int events_number = epoll_wait(epoll_fd, events, EVENTS_NUM, -1);
@@ -78,10 +67,10 @@ void event_loop(int listening_socket_fd, struct sockaddr_in address, int current
 //                        inet_ntop(AF_INET, (char*)&(address.sin_addr), buf, sizeof(address));
 //                        std::cout << "[+] connected with " << buf << ":" << ntohs(address.sin_port) << std::endl;
 
-                        //std::cout << "accept connection " << connection_socket << " in thread " << current_thread << std::endl;
+//                        std::cout << "accept connection " << connection_socket << " in thread " << current_thread << std::endl;
                         /// add edge-triggered epoll listener
                         if (!epoll_ctl_add(epoll_fd, connection_socket,
-                                           EPOLLIN | EPOLLET | EPOLLRDHUP | EPOLLHUP)) {
+                                           EPOLLIN | EPOLLET | EPOLLRDHUP | EPOLLHUP | EPOLLONESHOT)) {
                             std::cerr << "epoll_ctl_add failed" << strerror(errno) << std::endl;
                             exit(EXIT_FAILURE);
                         }
@@ -94,19 +83,22 @@ void event_loop(int listening_socket_fd, struct sockaddr_in address, int current
                     ssize_t bytes_num = read(events[i].data.fd, buf, sizeof(buf));
                     if (bytes_num == -1) {
                         if (errno == EAGAIN || errno == EWOULDBLOCK) {
-//                            std::cout << "finished reading data from client" << std::endl;
-                        write(events[i].data.fd, hello, strlen(hello));
+//                            epoll_ctl_mod(epoll_fd, events[i].data.fd, EPOLLIN | EPOLLET | EPOLLRDHUP | EPOLLHUP | EPOLLONESHOT);
+//                            std::cout << "finished reading data from connection " << events[i].data.fd << " in thread " << current_thread << std::endl;
+                            bytes_num = write(events[i].data.fd, hello, strlen(hello));
+                            (void)bytes_num;
                             close(events[i].data.fd);
                             break;
                         } else {
-//                            std::cerr << "read failed" << strerror(errno) << std::endl;
+                            std::cerr << "read failed" << strerror(errno) << std::endl;
                             exit(EXIT_FAILURE);
                         }
                     } else if (bytes_num == 0) {
-//                        std::cout << "finished with " << events[i].data.fd << std::endl;
+//                        std::cout << "bytes_num == 0 " << events[i].data.fd << std::endl;
                         close(events[i].data.fd);
                         break;
                     } else {
+                        epoll_ctl_mod(epoll_fd, events[i].data.fd, EPOLLIN | EPOLLET | EPOLLONESHOT);
 //                        std::cout << "AAA" << std::endl;
 //                        fwrite(buf, sizeof(char), bytes_num, stdout);
 //                        std::cout << "BBB" << std::endl;
@@ -152,9 +144,20 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
+    int epoll_fd = epoll_create1(EPOLL_CLOEXEC);
+    if (epoll_fd < 0) {
+        std::cerr << "epoll_fd creation failed" << strerror(errno) << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    if (!epoll_ctl_add(epoll_fd, listening_socket_fd, EPOLLIN | EPOLLHUP | EPOLLET)) {
+        std::cerr << "epoll_ctl_add failed" << strerror(errno) << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
     std::thread workers[WORKER_THREAD_NUM];
     for (int i = 0; i < WORKER_THREAD_NUM; ++i) {
-        workers[i] = std::thread(event_loop, listening_socket_fd, address, i);
+        workers[i] = std::thread(event_loop, epoll_fd, listening_socket_fd, address, i);
     }
     for (auto& worker : workers) {
         worker.join();

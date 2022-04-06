@@ -34,3 +34,4 @@
 *.idea
 cmake-build-debug-docker/
 cmake-build-debug/
+cmake-build-release-docker/
