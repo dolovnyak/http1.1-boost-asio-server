@@ -12,8 +12,6 @@ struct ServerConfig {
 
 class Config {
 public:
-    Config& operator=(const Config& config);
-
     void Load(const char* path);
 
     uint32_t GetMaxConnectionNumber() const;
