@@ -1,4 +1,6 @@
-#include "Config.h"
+#include "web-server/WebServer.h"
+
+#include <iostream>
 
 int main(int argc, char** argv) {
     if (argc != 2) {
@@ -6,8 +8,15 @@ int main(int argc, char** argv) {
         exit(EXIT_FAILURE);
     }
 
-    CommonConfig config;
-    config.Load(argv[1]);
+    try {
+        Config config;
+        config.Load(argv[1]);
+    }
+    catch (const std::exception& e) {
+        /// TODO make logger
+        std::cout << e.what() << std::endl;
+        exit(EXIT_FAILURE);
+    }
 
     return 0;
 }
