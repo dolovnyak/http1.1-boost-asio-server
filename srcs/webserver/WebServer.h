@@ -18,6 +18,10 @@ public:
 
 private:
     Config _config;
-    int _poll_fd_number;
     std::vector<ServerInstance> _web_server_instances;
+
+    int _poll_fds_number;
+    struct pollfd* _poll_fds;
+
+    void PollProcessing(int timeout);
 };

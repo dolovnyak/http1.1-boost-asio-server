@@ -1,9 +1,9 @@
-#include "web_server/WebServer.h"
+#include "webserver/WebServer.h"
 #include "utilities/log.h"
 
 int main(int argc, char** argv) {
     if (argc != 2) {
-        LOG_ERROR("Usage: ./web_server <config_file_path>");
+        LOG_ERROR("Usage: ./webserver <config_file_path>");
         exit(EXIT_FAILURE);
     }
 
@@ -18,6 +18,8 @@ int main(int argc, char** argv) {
         LOG_ERROR("Failed to setup web server");
         exit(EXIT_FAILURE);
     }
+
+    web_server.Run();
 
     return 0;
 }

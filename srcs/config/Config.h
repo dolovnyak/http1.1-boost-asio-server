@@ -22,10 +22,13 @@ public:
 
     uint32_t GetMaxEventsNumber() const;
 
+    int32_t GetTimeout() const;
+
     const std::vector<ServerConfig>& GetServersConfigs() const;
 
 private:
     uint32_t _threads_number; /// minimum 3
     uint32_t _max_events_number; /// max events from epoll_wait or poll
+    int32_t _timeout;
     std::vector<ServerConfig> _servers_configs;
 };
