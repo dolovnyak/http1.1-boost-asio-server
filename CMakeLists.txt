@@ -1,14 +1,15 @@
 cmake_minimum_required(VERSION 3.16)
-project(dtl_test_webserver)
+project(web-server)
 
 set(CMAKE_CXX_STANDARD 11)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra -pthread -O2")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 
+
 add_executable(${PROJECT_NAME}
         srcs/main.cpp
-        srcs/web_server/WebServer.cpp
+        srcs/webserver/WebServer.cpp
         srcs/config/Config.cpp
         srcs/cgi/SingleCgiHandler.cpp
         srcs/utilities/log.h)
@@ -16,6 +17,12 @@ add_executable(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME} PUBLIC
         srcs
         srcs/config
-        srcs/web_server
+        srcs/webserver
         srcs/cgi
         )
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}
+        )
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE -D_DEBUG)

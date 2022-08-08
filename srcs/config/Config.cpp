@@ -33,12 +33,14 @@ bool Config::Load(const char* path) {
     if (std::string(path) == "1") {
         _threads_number = 8;
         _max_events_number = 256;
+        _timeout = 1000;
         _servers_configs = mock_1_server_config();
         return true;
     }
     else if (std::string(path) == "2") {
         _threads_number = 8;
         _max_events_number = 128;
+        _timeout = 1000;
         _servers_configs = mock_2_server_configs();
         return true;
     }
@@ -58,6 +60,10 @@ uint32_t Config::GetMaxEventsNumber() const {
 
 const std::vector<ServerConfig>& Config::GetServersConfigs() const {
     return _servers_configs;
+}
+
+int32_t Config::GetTimeout() const {
+    return _timeout;
 }
 
 ServerConfig::ServerConfig(std::string name, uint16_t port, std::string root_path,
