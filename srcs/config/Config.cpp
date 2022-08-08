@@ -1,15 +1,13 @@
 #include "Config.h"
 
+#include <utility>
+
 namespace {
 /// TODO delete when parse will finish
     std::vector<ServerConfig> mock_1_server_config() {
         std::vector<ServerConfig> configs;
 
-        ServerConfig config;
-        config.name = "Kabun";
-        config.port = 2222;
-        config.root_path = "examples/TODO/";
-        config.cgi_directory_paths = std::vector<std::string>();
+        ServerConfig config("Kabun", 2222, "examples/TODO", {}, 10000);
         configs.push_back(config);
         return configs;
     }
@@ -18,47 +16,36 @@ namespace {
     std::vector<ServerConfig> mock_2_server_configs() {
         std::vector<ServerConfig> configs;
 
-        ServerConfig config1;
-        config1.name = "HelloWorld";
-        config1.port = 1337;
-        config1.root_path = "examples/hello_world/";
-        config1.cgi_directory_paths = std::vector<std::string>();
+        ServerConfig config1("HelloWorld", 1337, "examples/hello_world/", {}, 1000);
         configs.push_back(config1);
 
-        ServerConfig config2;
-        config2.name = "CgiChecker";
-        config2.port = 1488;
-        config2.root_path = "examples/cgi_checker/";
-        config2.cgi_directory_paths = std::vector<std::string>();
-        config2.cgi_directory_paths.push_back("examples/cgi_checker/cgi1/");
-        config2.cgi_directory_paths.push_back("examples/cgi_checker/cgi2/"); /// NOTE: hate C++ 98
+        ServerConfig config2("CgiChecker", 1488, "examples/cgi_checker/",
+                             {"examples/cgi_checker/cgi1/", "examples/cgi_checker/cgi2"}, 1000);
+
         configs.push_back(config2);
         return configs;
     }
 }
 
 
-void Config::Load(const char* path) {
+bool Config::Load(const char* path) {
     /// TODO delete
     if (std::string(path) == "1") {
-        _max_connection_number = 10000;
         _threads_number = 8;
         _max_events_number = 256;
         _servers_configs = mock_1_server_config();
+        return true;
     }
     else if (std::string(path) == "2") {
-        _max_connection_number = 10000;
         _threads_number = 8;
         _max_events_number = 128;
         _servers_configs = mock_2_server_configs();
+        return true;
     }
     else {
         /// TODO(Jeka) fill _servers_configs from json
     }
-}
-
-uint32_t Config::GetMaxConnectionNumber() const {
-    return _max_connection_number;
+    return false;
 }
 
 uint32_t Config::GetThreadsNumber() const {
@@ -72,3 +59,10 @@ uint32_t Config::GetMaxEventsNumber() const {
 const std::vector<ServerConfig>& Config::GetServersConfigs() const {
     return _servers_configs;
 }
+
+ServerConfig::ServerConfig(std::string name, uint16_t port, std::string root_path,
+                           std::vector<std::string> cgi_directory_paths,
+                           int32_t max_connection_number)
+        : name(std::move(name)), port(port), root_path(std::move(root_path)),
+          cgi_directory_paths(std::move(cgi_directory_paths)),
+          max_connection_number(max_connection_number) {}

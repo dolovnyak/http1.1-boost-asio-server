@@ -6,6 +6,6 @@
 #include "Config.h"
 
 class SingleCgiHandler {
-    void SetConfig(const ServerConfig& config);
-    std::string Handle();
+//    void SetConfig(const ServerConfig& config);
+//    std::string Handle();
 };
