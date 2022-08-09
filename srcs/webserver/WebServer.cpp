@@ -69,7 +69,7 @@ bool WebServer::Setup(const Config& config) {
 
 void WebServer::PollProcessing(int timeout) {
     LOG_INFO("Before Poll ", _poll_fds_number);
-    if (poll(_poll_fds, _poll_fds_number + 1, timeout) < 0) {
+    if (poll(_poll_fds, _poll_fds_number, timeout) < 0) {
         LOG_PERROR("Failed to poll");
         return; /// TODO maybe we should exit?
     }
@@ -78,6 +78,7 @@ void WebServer::PollProcessing(int timeout) {
     bool compress_fds = false;
 
     for (int i = 0; i < current_size; i++) {
+        LOG_INFO("Poll fd: ", _poll_fds[i].fd, "; Poll events: ", _poll_fds[i].events, "; Poll revents ", _poll_fds[i].revents);
         if (_poll_fds[i].revents == 0)
             continue;
         if (_poll_fds[i].fd == -1) {
@@ -105,10 +106,6 @@ void WebServer::PollProcessing(int timeout) {
                             break; /// TODO maybe we should exit?
                         }
                     }
-                    /*****************************************************/
-                    /* Add the new incoming connection to the            */
-                    /* pollfd structure                                  */
-                    /*****************************************************/
                     LOG_INFO("New connection: ", new_connection);
                     _poll_fds[_poll_fds_number].fd = new_connection;
                     _poll_fds[_poll_fds_number].events = POLLIN;
@@ -120,23 +117,25 @@ void WebServer::PollProcessing(int timeout) {
         }
 
         if (is_listening_socket) {
-
+            break;
         }
-        else if (_poll_fds[i].revents == POLLIN) {
+        if (_poll_fds[i].revents & POLLIN) {
             LOG_INFO("Read socket");
             char buffer[1024];
 
             for (;;) {
                 LOG_INFO("Reading...");
                 ssize_t bytes_read = recv(_poll_fds[i].fd, buffer, sizeof(buffer), 0);
-                LOG_INFO("Read finish: ", bytes_read);
+                LOG_INFO("Bytes read: ", bytes_read);
 
                 if (bytes_read < 0) {
                     if (errno == EWOULDBLOCK || errno == EAGAIN) {
-                        LOG_INFO("Connection closed: ", _poll_fds[i].fd);
-                        close(_poll_fds[i].fd);
-                        _poll_fds[i].fd = -1;
-                        compress_fds = true;
+                        LOG_INFO("Finish reading");
+                        _poll_fds[i].events = POLLOUT;
+//                        LOG_INFO("Connection closed: ", _poll_fds[i].fd);
+//                        close(_poll_fds[i].fd);
+//                        _poll_fds[i].fd = -1;
+//                        compress_fds = true;
                         break;
                     }
                     else {
@@ -147,31 +146,29 @@ void WebServer::PollProcessing(int timeout) {
                         break;
                     }
                 }
-
-                if (bytes_read == 0) {
+                else if (bytes_read == 0) {
                     LOG_INFO("Connection closed by client: ", _poll_fds[i].fd);
                     close(_poll_fds[i].fd);
                     _poll_fds[i].fd = -1;
                     compress_fds = true;
                     break;
                 }
-
-                LOG_INFO("Bytes read: ", bytes_read);
-
-//                const char* hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
-//                ssize_t bytes_send = send(_poll_fds[i].fd, hello, strlen(hello), 0);
-                ssize_t bytes_send = send(_poll_fds[i].fd, buffer, bytes_read, 0);
-
-                if (bytes_send < 0) {
-                    LOG_PERROR("Failed to send data");
-                    close(_poll_fds[i].fd);
-                    _poll_fds[i].fd = -1;
-                    compress_fds = true;
-                    break;
-                }
-
-                LOG_INFO("Bytes send: ", bytes_send);
             }
+        }
+        else if (_poll_fds[i].revents & POLLOUT) {
+            LOG_INFO("Write socket");
+            const char* hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!  ";
+            ssize_t bytes_send = send(_poll_fds[i].fd, hello, strlen(hello), 0);
+
+            if (bytes_send < 0) {
+                LOG_PERROR("Failed to send data");
+            }
+
+            close(_poll_fds[i].fd);
+            _poll_fds[i].fd = -1;
+            compress_fds = true;
+
+            LOG_INFO("Bytes send: ", bytes_send);
         }
         else {
             if (_poll_fds[i].revents & (POLLHUP | POLLNVAL)) {
@@ -206,7 +203,7 @@ void WebServer::PollProcessing(int timeout) {
 void WebServer::Run() {
     while (true) {
         /// timeout is set to infinity when we don't have event in process and to 0 if we have
-        PollProcessing(0);
+        PollProcessing(-1);
     }
 }
 
