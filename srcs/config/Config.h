@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+#define READ_BUFFER_SIZE 1024  // TODO maybe set it in cmake file or set in config and make buffer dynamic
+
 struct ServerConfig {
     ServerConfig(std::string name, uint16_t port, std::string root_path, std::vector<std::string> cgi_directory_paths,
                  int32_t max_connections_number);
@@ -28,7 +30,7 @@ public:
 
 private:
     uint32_t _threads_number; /// minimum 3
-    uint32_t _max_events_number; /// max events from epoll_wait or poll
+    uint32_t _max_sockets_number; /// socket array size for epoll_wait or poll
     int32_t _timeout;
     std::vector<ServerConfig> _servers_configs;
 };

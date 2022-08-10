@@ -32,14 +32,14 @@ bool Config::Load(const char* path) {
     /// TODO delete
     if (std::string(path) == "1") {
         _threads_number = 8;
-        _max_events_number = 256;
+        _max_sockets_number = 256;
         _timeout = 1000;
         _servers_configs = mock_1_server_config();
         return true;
     }
     else if (std::string(path) == "2") {
         _threads_number = 8;
-        _max_events_number = 128;
+        _max_sockets_number = 128;
         _timeout = 1000;
         _servers_configs = mock_2_server_configs();
         return true;
@@ -55,7 +55,7 @@ uint32_t Config::GetThreadsNumber() const {
 }
 
 uint32_t Config::GetMaxEventsNumber() const {
-    return _max_events_number;
+    return _max_sockets_number;
 }
 
 const std::vector<ServerConfig>& Config::GetServersConfigs() const {
