@@ -77,14 +77,14 @@ void event_loop(int epoll_fd, int listening_socket_fd, struct sockaddr_in addres
                     }
                 }
             } else if (events[i].events & EPOLLIN) {
-//                std::cout << "read fd " << events[i].data.fd << " in thread " << current_thread << std::endl;
+//                std::cout << "read fd " << event_system[i].data.fd << " in thread " << current_thread << std::endl;
                 /// handle read event
                 for (;;) {
                     ssize_t bytes_num = read(events[i].data.fd, buf, sizeof(buf));
                     if (bytes_num == -1) {
                         if (errno == EAGAIN || errno == EWOULDBLOCK) {
-//                            epoll_ctl_mod(epoll_fd, events[i].data.fd, EPOLLIN | EPOLLET | EPOLLRDHUP | EPOLLHUP | EPOLLONESHOT);
-//                            std::cout << "finished reading data from connection " << events[i].data.fd << " in thread " << current_thread << std::endl;
+//                            epoll_ctl_mod(epoll_fd, event_system[i].data.fd, EPOLLIN | EPOLLET | EPOLLRDHUP | EPOLLHUP | EPOLLONESHOT);
+//                            std::cout << "finished reading data from connection " << event_system[i].data.fd << " in thread " << current_thread << std::endl;
                             bytes_num = write(events[i].data.fd, hello, strlen(hello));
                             (void)bytes_num;
                             close(events[i].data.fd);
@@ -94,7 +94,7 @@ void event_loop(int epoll_fd, int listening_socket_fd, struct sockaddr_in addres
                             exit(EXIT_FAILURE);
                         }
                     } else if (bytes_num == 0) {
-//                        std::cout << "bytes_num == 0 " << events[i].data.fd << std::endl;
+//                        std::cout << "bytes_num == 0 " << event_system[i].data.fd << std::endl;
                         close(events[i].data.fd);
                         break;
                     } else {

@@ -1,9 +1,17 @@
-#include "webserver/WebServer.h"
-#include "utilities/log.h"
+#include "WebServer.h"
+#include "utilities/logging.h"
+
+#ifdef EPOLL
+#include "Epoll.h"
+using Server = WebServer<Epoll>;
+#elif POLL
+#include "Poll.h"
+using Server = WebServer<Poll>;
+#endif
 
 int main(int argc, char** argv) {
     if (argc != 2) {
-        LOG_ERROR("Usage: ./webserver <config_file_path>");
+        LOG_IMPORTANT("Usage: ./webserver <config_file_path>");
         exit(EXIT_FAILURE);
     }
 
@@ -13,13 +21,12 @@ int main(int argc, char** argv) {
         exit(EXIT_FAILURE);
     }
 
-    WebServer web_server;
+    Server web_server;
     if (!web_server.Setup(config)) {
         LOG_ERROR("Failed to setup web server");
         exit(EXIT_FAILURE);
     }
 
     web_server.Run();
-
     return 0;
 }
