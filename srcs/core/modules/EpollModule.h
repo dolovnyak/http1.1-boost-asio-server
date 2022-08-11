@@ -2,7 +2,7 @@
 
 #include "Config.h"
 
-class Epoll {
+class EpollModule {
 public:
     bool Setup(const Config& config);
 

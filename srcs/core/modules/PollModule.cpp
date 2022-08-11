@@ -1,4 +1,5 @@
-#include "Poll.h"
+#include "PollModule.h"
+#include "EventPresets.h"
 #include "logging.h"
 
 #include <sys/ioctl.h>
@@ -7,14 +8,16 @@
 #include <netinet/in.h>
 #include <unistd.h>
 
-std::vector<ServerInstance> Poll::Setup(const Config& config) {
+bool PollModule::Setup(const Config& config, std::queue<Event>* event_queue) {
+    _event_queue = event_queue;
+
     _poll_fds_number = 0;
     int option_value = 1;
 
     _poll_fds = (pollfd*)calloc(config.GetMaxEventsNumber(), sizeof(struct pollfd));
     if (_poll_fds == nullptr) {
         LOG_ERROR("Failed to allocate memory for poll_fds");
-        return {};
+        return false;
     }
 
     for (const auto& server_config: config.GetServersConfigs()) {
@@ -22,19 +25,19 @@ std::vector<ServerInstance> Poll::Setup(const Config& config) {
         int listening_socket_fd = socket(AF_INET, SOCK_STREAM, 0); /// TODO maybe also support AF_INET6 from config?
         if (listening_socket_fd == -1) {
             LOG_ERROR("Failed to create listening socket");
-            return {};
+            return false;
         }
 
         if (setsockopt(listening_socket_fd, SOL_SOCKET, SO_REUSEADDR, (char*)&option_value, sizeof(option_value)) < 0) {
             Log::Perror("Failed to set socket options");
             close(listening_socket_fd);
-            return {};
+            return false;
         }
 
         if (ioctl(listening_socket_fd, FIONBIO, (char*)&option_value) < 0) {
             LOG_PERROR("Failed to set socket non blocking");
             close(listening_socket_fd);
-            return {};
+            return false;
         }
 
         struct sockaddr_in address{};
@@ -46,63 +49,55 @@ std::vector<ServerInstance> Poll::Setup(const Config& config) {
         if (bind(listening_socket_fd, (struct sockaddr*)&address, sizeof(address)) < 0) {
             LOG_PERROR("Failed to bind socket");
             close(listening_socket_fd);
-            return {};
+            return false;
         }
 
         if (listen(listening_socket_fd, server_config.max_connection_number) < 0) {
             LOG_PERROR("Failed to set listen backlog");
             close(listening_socket_fd);
-            return {};
+            return false;
         }
 
         _poll_fds[_poll_fds_number].fd = listening_socket_fd;
         _poll_fds[_poll_fds_number].events = POLLIN;
         ++_poll_fds_number;
 
-        _server_instances.emplace_back(listening_socket_fd);
+        _server_instances.emplace(listening_socket_fd, ServerInstance(listening_socket_fd, server_config.name));
     }
 
     if (_server_instances.empty()) {
         LOG_ERROR("No server instances created");
+        return false;
     }
-    return _server_instances;
+
+    return true;
 }
 
-void Poll::ProcessEvents(int timeout) {
+void PollModule::ProcessEvents(int timeout) {
 
-    LOG_DEBUG("Before Poll, available sockets num: ", _poll_fds_number);
+    LOG_DEBUG("Before PollModule, available sockets num: ", _poll_fds_number);
     if (poll(_poll_fds, _poll_fds_number, timeout) < 0) {
         LOG_PERROR("Failed to poll");
         return;
     }
-    LOG_DEBUG("After Poll");
+    LOG_DEBUG("After PollModule");
 
     int current_size = _poll_fds_number;
     for (int i = 0; i < current_size; i++) {
-        LOG_DEBUG("Poll fd: ", _poll_fds[i].fd, "; Poll event_system: ", _poll_fds[i].events, "; Poll revents ",
+
+        LOG_DEBUG("PollModule fd: ", _poll_fds[i].fd, "; PollModule event_system: ", _poll_fds[i].events, "; PollModule revents ",
                   _poll_fds[i].revents);
 
         if (_poll_fds[i].revents == 0)
             continue;
         if (_poll_fds[i].fd == -1) {
-            LOG_WARNING("Poll fd is -1");
+            LOG_WARNING("PollModule fd is -1");
         }
 
-        /// TODO remake it on hash map or something like this, for now it's shit
-        bool is_listening_socket = false;
-        for (auto& server_instance: _server_instances) {
-            if (server_instance.listening_socket_fd == _poll_fds[i].fd) {
-                is_listening_socket = true;
-                ProcessNewConnection(i);
-            }
-            break;
+        if (_server_instances.find(_poll_fds[i].fd) != _server_instances.end()) {
+            ProcessNewConnection(i);
         }
-
-        if (is_listening_socket) {
-            break;
-        }
-
-        if (_poll_fds[i].revents & POLLIN) {
+        else if (_poll_fds[i].revents & POLLIN) {
             ProcessRead(i);
         }
         else if (_poll_fds[i].revents & POLLOUT) {
@@ -118,15 +113,17 @@ void Poll::ProcessEvents(int timeout) {
                 return;
             }
         }
-
     }
 
     ProcessCompress();
 }
 
-void Poll::ProcessRead(int index) {
+void PollModule::ProcessRead(int index) {
     LOG_INFO("Read processing");
     char buffer[READ_BUFFER_SIZE];
+
+    /// TODO i think it works pretty slow, maybe upgrade to more fast solution later
+    std::shared_ptr<std::string> raw_request = std::make_shared<std::string>();
 
     for (;;) {
         LOG_DEBUG("Reading...");
@@ -135,8 +132,10 @@ void Poll::ProcessRead(int index) {
 
         if (bytes_read < 0) {
             if (errno == EWOULDBLOCK || errno == EAGAIN) {
-                /// TODO parse event here
-                LOG_INFO("Finish reading");
+
+                auto tmpTODOdelete = ConnectionInstance();
+                _event_queue->push(
+                        EventPresets::HttpParseRequestEvent(_server_instances[_poll_fds[index].fd], tmpTODOdelete, raw_request));
                 _poll_fds[index].events = POLLOUT;
                 break;
             }
@@ -151,10 +150,12 @@ void Poll::ProcessRead(int index) {
             CloseSocket(index);
             break;
         }
+
+        *raw_request += std::string(buffer, bytes_read);
     }
 }
 
-void Poll::ProcessWrite(int index) {
+void PollModule::ProcessWrite(int index) {
     LOG_INFO("Write processing");
     const char* hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!  ";
     ssize_t bytes_send = send(_poll_fds[index].fd, hello, strlen(hello), 0);
@@ -167,7 +168,7 @@ void Poll::ProcessWrite(int index) {
     LOG_INFO("Bytes send: ", bytes_send);
 }
 
-void Poll::ProcessNewConnection(int index) {
+void PollModule::ProcessNewConnection(int index) {
     LOG_INFO("New connections processing");
     for (;;) {
         int new_connection = accept(_poll_fds[index].fd, nullptr, nullptr); // TODO maybe fill address from this
@@ -188,13 +189,13 @@ void Poll::ProcessNewConnection(int index) {
     }
 }
 
-void Poll::CloseSocket(int index) {
+void PollModule::CloseSocket(int index) {
     close(_poll_fds[index].fd);
     _poll_fds[index].fd = -1;
     _should_compress = true;
 }
 
-void Poll::ProcessCompress() {
+void PollModule::ProcessCompress() {
     if (_should_compress) {
         LOG_INFO("Compress fds processing");
         for (int i = 0; i < _poll_fds_number; ++i) {

@@ -9,12 +9,14 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 
 add_executable(${PROJECT_NAME}
         srcs/main.cpp
-        srcs/WebServer.h
         srcs/config/Config.cpp
         srcs/cgi/SingleCgiHandler.cpp
-        srcs/core/Poll.cpp
-        srcs/core/Epoll.cpp
-        srcs/core/Event.h srcs/core/ServerInstance.h)
+        srcs/core/modules/PollModule.cpp
+        srcs/core/modules/EpollModule.cpp
+        srcs/core/events/Event.cpp
+        srcs/http/HttpModule.cpp
+        srcs/core/events/EventPresets.cpp
+        )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
         srcs
@@ -23,6 +25,9 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         srcs/cgi
         srcs/webserver
         srcs/core
+        srcs/core/events
+        srcs/core/modules
+        srcs/http
         )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES

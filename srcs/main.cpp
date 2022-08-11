@@ -2,11 +2,11 @@
 #include "utilities/logging.h"
 
 #ifdef EPOLL
-#include "Epoll.h"
-using Server = WebServer<Epoll>;
+#include "EpollModule.h"
+using Server = WebServer<EpollModule>;
 #elif POLL
-#include "Poll.h"
-using Server = WebServer<Poll>;
+#include "core/modules/PollModule.h"
+using Server = WebServer<PollModule>;
 #endif
 
 int main(int argc, char** argv) {
