@@ -24,14 +24,14 @@ private:
 
     void ProcessCompress();
 
-    void CloseSocket(int index);
+    void CloseConnection(int index);
 
 private:
     int _poll_fds_number;
     struct pollfd* _poll_fds;
     bool _should_compress;
 
-    std::unordered_map<int32_t, std::shared_ptr<ServerInstance>> _server_instances;
-    std::unordered_map<int32_t, std::shared_ptr<ConnectionInstance>> _connection_instances;
+    std::unordered_map<int32_t, std::shared_ptr<ServerInstance>> _servers;
+    std::unordered_map<int32_t, std::shared_ptr<Connection>> _connections;
     std::queue<Event>* _event_queue;
 };

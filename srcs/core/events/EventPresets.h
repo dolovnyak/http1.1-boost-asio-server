@@ -1,10 +1,16 @@
 #pragma once
 
 #include "Event.h"
+#include "Request.h"
+
+#include <queue>
 
 class EventPresets {
 public:
-    static Event HttpParseRequestEvent(const ServerInstance& server_instance,
-                                       const ConnectionInstance& connection_instance,
-                                       const std::shared_ptr<std::string>& raw_request);
+    static Event ParseHttpRequest(const std::shared_ptr<Connection>& connection,
+                                  const std::shared_ptr<std::string>& raw_request,
+                                  std::queue<Event>* event_queue);
+
+    static Event MakeHttpResponse(const std::shared_ptr<Connection>& connection,
+                                  Request request);
 };

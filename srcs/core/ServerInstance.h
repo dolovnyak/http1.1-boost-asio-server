@@ -10,7 +10,7 @@ public:
     : listening_socket_fd(listen_socket_fd),
       name(std::move(name)) {}
 
-      ServerInstance(const ServerInstance&) = delete;
+//      ServerInstance(const ServerInstance&) = delete;
 
     int32_t listening_socket_fd;
     std::string name;
