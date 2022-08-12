@@ -1,11 +1,12 @@
 #pragma once
 
 #include "ServerInstance.h"
-#include "ConnectionInstance.h"
+#include "Connection.h"
 #include "logging.h"
 
 enum class EventType {
-    ParseHttpRequest = 0
+    ParseHttpRequest = 0,
+    MakeHttpResponse = 1,
 };
 
 class Event {

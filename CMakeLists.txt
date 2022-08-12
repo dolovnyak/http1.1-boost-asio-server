@@ -3,7 +3,7 @@ project(web-server)
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra -pthread -O2 -D POLL")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra -pthread -D POLL")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 
 
@@ -16,7 +16,7 @@ add_executable(${PROJECT_NAME}
         srcs/core/events/Event.cpp
         srcs/http/HttpModule.cpp
         srcs/core/events/EventPresets.cpp
-        )
+        srcs/http/Request.cpp srcs/http/Request.h srcs/http/Response.cpp srcs/http/Response.h)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
         srcs

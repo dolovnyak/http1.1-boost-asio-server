@@ -3,9 +3,9 @@
 
 #ifdef EPOLL
 #include "EpollModule.h"
-using Server = WebServer<EpollModule>;
+using ServerInstance = WebServer<EpollModule>;
 #elif POLL
-#include "core/modules/PollModule.h"
+#include "PollModule.h"
 using Server = WebServer<PollModule>;
 #endif
 

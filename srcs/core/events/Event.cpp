@@ -14,7 +14,8 @@ void Event::Process() {
 
 const std::string& EventTypeToString(EventType event_type) {
     static std::string kEventsNames[] = {
-            "ParseHttpRequest"
+            "ParseHttpRequest",
+            "MakeHttpResponse"
     };
 
     return kEventsNames[static_cast<int>(event_type)];
