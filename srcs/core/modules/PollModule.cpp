@@ -147,7 +147,7 @@ void PollModule::ProcessNewConnection(int index) {
 
 void PollModule::ProcessRead(int index) {
     LOG_INFO("Read processing");
-    char buffer[READ_BUFFER_SIZE];
+    char buffer[8];
 
     std::shared_ptr<std::string> raw_request = std::make_shared<std::string>();
     for (;;) {
@@ -157,6 +157,7 @@ void PollModule::ProcessRead(int index) {
 
         if (bytes_read < 0) {
             if (errno == EWOULDBLOCK || errno == EAGAIN) {
+//                pool.run_connecion_pipeline(connection);
                 _event_queue->push(EventPresets::ParseHttpRequest(_connections[_poll_fds[index].fd], raw_request, _event_queue));
                 break;
             }

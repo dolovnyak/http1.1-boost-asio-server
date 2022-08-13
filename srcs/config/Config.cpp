@@ -54,6 +54,7 @@ uint32_t Config::GetThreadsNumber() const {
     return _threads_number;
 }
 
+/// TODO make max events number and max sockets number
 uint32_t Config::GetMaxEventsNumber() const {
     return _max_sockets_number;
 }
