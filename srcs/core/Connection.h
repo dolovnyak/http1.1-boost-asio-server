@@ -6,9 +6,11 @@
 
 class Connection {
 public:
-    Connection(std::shared_ptr<ServerInstance> server_instance,
+    Connection(int32_t socket_fd,
+               std::shared_ptr<ServerInstance> server_instance,
                std::function<void()> set_write_event_to_core_module)
             :
+            _socket_fd(socket_fd),
             _server_instance(std::move(server_instance)),
             _set_write_event_to_core_module(std::move(set_write_event_to_core_module)),
             _still_available(true) {}
@@ -17,6 +19,10 @@ public:
         if (_still_available) {
             _set_write_event_to_core_module();
         }
+    }
+
+    bool IsAvailable() {
+        return _still_available;
     }
 
     void SetUnavailable() {
@@ -31,7 +37,13 @@ public:
         return _response_body;
     }
 
+    int32_t GetSocketFd() {
+        return _socket_fd;
+    }
+
 private:
+    int32_t _socket_fd;
+
     /// connection should contain info about server which owns this connection
     std::shared_ptr<ServerInstance> _server_instance;
 
