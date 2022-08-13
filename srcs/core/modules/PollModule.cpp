@@ -140,7 +140,7 @@ void PollModule::ProcessNewConnection(int index) {
             new_connection_pollfd_ptr->events |= POLLOUT;
         };
 
-        auto connection = Connection(_servers[_poll_fds[index].fd], write_event_setter);
+        auto connection = Connection(new_connection_fd, _servers[_poll_fds[index].fd], write_event_setter);
         _connections.emplace(new_connection_fd, std::make_shared<Connection>(connection));
     }
 }
@@ -149,32 +149,28 @@ void PollModule::ProcessRead(int index) {
     LOG_INFO("Read processing");
     char buffer[8];
 
-    std::shared_ptr<std::string> raw_request = std::make_shared<std::string>();
-    for (;;) {
         LOG_DEBUG("Reading...");
         ssize_t bytes_read = recv(_poll_fds[index].fd, buffer, sizeof(buffer), 0);
+        std::shared_ptr<std::string> raw_request = std::make_shared<std::string>(buffer, bytes_read);
         LOG_DEBUG("Bytes read: ", bytes_read);
 
         if (bytes_read < 0) {
             if (errno == EWOULDBLOCK || errno == EAGAIN) {
-//                pool.run_connecion_pipeline(connection);
+                LOG_WARNING("Something strange in ProcessRead");
                 _event_queue->push(EventPresets::ParseHttpRequest(_connections[_poll_fds[index].fd], raw_request, _event_queue));
-                break;
             }
             else {
                 LOG_PERROR("Failed to read from socket");
                 CloseConnection(index);
-                break;
             }
         }
         else if (bytes_read == 0) {
             LOG_INFO("Connection closed by client: ", _poll_fds[index].fd);
             CloseConnection(index);
-            break;
         }
-
-        *raw_request += std::string(buffer, bytes_read);
-    }
+        else {
+            _event_queue->push(EventPresets::ParseHttpRequest(_connections[_poll_fds[index].fd], raw_request, _event_queue));
+        }
 }
 
 void PollModule::ProcessWrite(int index) {
