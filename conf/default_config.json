@@ -1,0 +1,25 @@
+{
+  "ThreadsNumber": 1,
+  "MaxSocketsNumber": 1024,
+  "Timeout": 1000,
+  "ServerInstances": [
+    {
+      "Name": "kabun",
+      "Port": 80,
+      "Root": "./",
+      "CgiDirectories": [
+        "./cgi-bin",
+        "./cgi-bin2/"
+      ]
+    },
+    {
+      "Name": "kabun2",
+      "Port": 1337,
+      "Root": "./",
+      "CgiDirectories": [
+        "./cgi-bin",
+        "./cgi-bin2/"
+      ]
+    }
+  ]
+}
