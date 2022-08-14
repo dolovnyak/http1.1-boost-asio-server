@@ -8,6 +8,7 @@
 struct ServerConfig {
     ServerConfig(std::string name, uint16_t port, std::string root_path, std::vector<std::string> cgi_directory_paths,
                  int32_t max_connections_number);
+    ServerConfig() = default;
 
     std::string name;
     uint16_t port;
@@ -20,17 +21,11 @@ class Config {
 public:
     bool Load(const char* path);
 
-    uint32_t GetThreadsNumber() const;
+    uint32_t threads_number; /// minimum 3
+    uint32_t max_sockets_number; /// socket array size for epoll_wait or poll
+    int32_t timeout;
+    std::vector<ServerConfig> servers_configs;
 
-    uint32_t GetMaxEventsNumber() const;
-
-    int32_t GetTimeout() const;
-
-    const std::vector<ServerConfig>& GetServersConfigs() const;
-
-private:
-    uint32_t _threads_number; /// minimum 3
-    uint32_t _max_sockets_number; /// socket array size for epoll_wait or poll
-    int32_t _timeout;
-    std::vector<ServerConfig> _servers_configs;
 };
+
+

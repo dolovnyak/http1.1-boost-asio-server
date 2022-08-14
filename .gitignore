@@ -37,3 +37,9 @@ cmake-build-debug/
 cmake-build-release-docker/
 
 web-server
+
+.vscode
+*.DS_Store
+
+CmakeFiles
+cmake_install.cmake
