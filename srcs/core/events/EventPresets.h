@@ -11,6 +11,6 @@ public:
                                   const std::shared_ptr<std::string>& raw_request,
                                   std::queue<Event>* event_queue);
 
-    static Event MakeHttpResponse(const std::shared_ptr<Connection>& connection,
-                                  Request request);
+    static Event ProcessHttpRequest(const std::shared_ptr<Connection>& connection,
+                                    std::queue<Event>* event_queue);
 };

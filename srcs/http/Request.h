@@ -22,6 +22,8 @@ public:
 
     std::string body;
 
+    RequestStatus status;
+
 private:
     bool _is_body;
 };
