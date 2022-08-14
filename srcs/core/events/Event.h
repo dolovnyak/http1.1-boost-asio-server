@@ -6,7 +6,7 @@
 
 enum class EventType {
     ParseHttpRequest = 0,
-    MakeHttpResponse = 1,
+    ProcessRequest = 1,
 };
 
 class Event {

@@ -175,7 +175,7 @@ void PollModule::ProcessRead(int index) {
 
 void PollModule::ProcessWrite(int index) {
     LOG_INFO("Write processing");
-    std::string response = _connections[_poll_fds[index].fd]->GetResponse();
+    std::string response = _connections[_poll_fds[index].fd]->response.body;
     ssize_t bytes_send = send(_poll_fds[index].fd, response.c_str(), response.size(), 0);
 
     if (bytes_send < 0) {
@@ -187,7 +187,7 @@ void PollModule::ProcessWrite(int index) {
 }
 
 void PollModule::CloseConnection(int index) {
-    _connections[_poll_fds[index].fd]->SetUnavailable(); /// Needed because events check is connection still available before change it
+    _connections[_poll_fds[index].fd]->still_available = false; /// Needed for events check is connection still available before change it
     _connections.erase(_poll_fds[index].fd);
 
     close(_poll_fds[index].fd);
