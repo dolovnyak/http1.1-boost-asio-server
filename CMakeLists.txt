@@ -19,7 +19,7 @@ add_executable(${PROJECT_NAME}
         srcs/core/events/EventPresets.cpp
         srcs/http/Request.cpp
         srcs/http/Response.cpp
-        srcs/http/HttpErrorCodePages.h)
+        srcs/http/HttpErrorCodePages.h srcs/http/HeaderValue.cpp srcs/http/HeaderValue.h)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
         srcs
