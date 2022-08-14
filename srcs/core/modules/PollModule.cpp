@@ -14,13 +14,13 @@ bool PollModule::Setup(const Config& config, std::queue<Event>* event_queue) {
     _poll_fds_number = 0;
     int option_value = 1;
 
-    _poll_fds = (pollfd*)calloc(config.GetMaxEventsNumber(), sizeof(struct pollfd));
+    _poll_fds = (pollfd*)calloc(config.max_sockets_number, sizeof(struct pollfd));
     if (_poll_fds == nullptr) {
         LOG_ERROR("Failed to allocate memory for poll_fds");
         return false;
     }
 
-    for (const auto& server_config: config.GetServersConfigs()) {
+    for (const auto& server_config: config.servers_configs) {
 
         int listening_socket_fd = socket(AF_INET, SOCK_STREAM, 0); /// TODO maybe also support AF_INET6 from config?
         if (listening_socket_fd == -1) {

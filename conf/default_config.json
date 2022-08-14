@@ -10,7 +10,8 @@
       "CgiDirectories": [
         "./cgi-bin",
         "./cgi-bin2/"
-      ]
+      ],
+      "MaxCoonnectionNumber": 1000
     },
     {
       "Name": "kabun2",
@@ -19,7 +20,8 @@
       "CgiDirectories": [
         "./cgi-bin",
         "./cgi-bin2/"
-      ]
+      ],
+      "MaxCoonnectionNumber": 1000
     }
   ]
 }
