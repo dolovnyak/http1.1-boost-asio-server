@@ -24,14 +24,14 @@ int ws_jtoc_get_servers_config(std::vector<std::string>& str,
         str.push_back(jtoc_get_string(tmp));
 		tmp = tmp->right;
 	}
-	(FUNCTION_SUCCESS);
+	return(FUNCTION_SUCCESS);
 }
 
-int ws_jtoc_get_servers_config(ServerConfig& config, 
+int ws_jtoc_get_config(ServerConfig& config, 
                                 t_jnode	*n)
 {
     t_jnode	*tmp;
-    std::vector<std::string> cgi_directory_paths;
+    //std::vector<std::string> cgi_directory_paths;
 
     //  get Name
     if (!(tmp = jtoc_node_get_by_path(n, "Name"))
@@ -39,9 +39,7 @@ int ws_jtoc_get_servers_config(ServerConfig& config,
         LOG_ERROR("Failed to read json ServerInstances Name");
         return (FUNCTION_FAILURE);
     }
-    LOG_INFO("check: ", jtoc_get_string(tmp));
     config.name = jtoc_get_string(tmp);
-    LOG_INFO("check name: ", config.name);
 
     // get port
     if (!(tmp = jtoc_node_get_by_path(n, "Port"))
@@ -73,7 +71,7 @@ int ws_jtoc_get_servers_config(ServerConfig& config,
         LOG_ERROR("Failed to read json ServerInstances CgiDirectories");
         return (FUNCTION_FAILURE);
     }
-    if (ws_jtoc_get_servers_config(cgi_directory_paths, tmp) == FUNCTION_FAILURE) {
+    if (ws_jtoc_get_servers_config(config.cgi_directory_paths, tmp) == FUNCTION_FAILURE) {
         
         return (FUNCTION_FAILURE); 
     }
@@ -84,8 +82,7 @@ int ws_jtoc_get_servers_configs(std::vector<ServerConfig>& server_configs,
                                 t_jnode	*n)
 {
     t_jnode         *tmp;
-    ServerConfig config; //???
-    unsigned int	g;
+    ServerConfig config;
 
     tmp = n->down;
     while(tmp) {
@@ -93,10 +90,9 @@ int ws_jtoc_get_servers_configs(std::vector<ServerConfig>& server_configs,
             LOG_ERROR("Failed to read json array ServerInstances");
             return (FUNCTION_FAILURE);
         }
-        if (ws_jtoc_get_servers_config(config, tmp) == FUNCTION_FAILURE) {
+        if (ws_jtoc_get_config(config, tmp) == FUNCTION_FAILURE) {
             return (FUNCTION_FAILURE);
         }
-
         server_configs.push_back(config);
         tmp = tmp->right;
     }
@@ -143,7 +139,6 @@ int				ws_jtoc_setup(Config& config,
         LOG_ERROR("Failed to read json ServerInstances");
         return (FUNCTION_FAILURE);
     }
-    LOG_INFO("Check");
     return(ws_jtoc_get_servers_configs(config.servers_configs, tmp));
 }
 
@@ -193,22 +188,24 @@ bool Config::Load(const char* path) {
         /// Olga updateeeed =0
         Config config;
 
-        ws_jtoc_setup(config, "conf/default_config.json");
-        std::cout << config.threads_number << std::endl;
-        std::cout << config.max_sockets_number << std::endl;
-        std::cout << config.timeout << std::endl;
-        LOG_INFO("name: ", config.servers_configs[0].name);
-        std::cout << config.servers_configs[0].port << std::endl;
-        LOG_INFO("root_path: ", config.servers_configs[0].root_path);
-        std::cout << config.servers_configs[0].cgi_directory_paths[0] << std::endl;
-        std::cout << config.servers_configs[0].cgi_directory_paths[1] << std::endl;
-        std::cout << config.servers_configs[0].max_connection_number<< std::endl;
-        std::cout << config.servers_configs[1].name << std::endl;
-        std::cout << config.servers_configs[1].port << std::endl;
-        std::cout << config.servers_configs[1].root_path << std::endl;
-        std::cout << config.servers_configs[1].cgi_directory_paths[0] << std::endl;
-        std::cout << config.servers_configs[1].cgi_directory_paths[1] << std::endl;
-        std::cout << config.servers_configs[1].max_connection_number<< std::endl;
+        if(ws_jtoc_setup(config, "conf/default_config.json") == FUNCTION_SUCCESS) { // change 2 arg to path
+            LOG_INFO("threads_number: ", config.threads_number);
+            LOG_INFO("max sockets_number: ", config.max_sockets_number);
+            LOG_INFO("timeout: ", config.timeout);
+            LOG_INFO("servers_configs_0 name: ", config.servers_configs[0].name);
+            LOG_INFO("servers_configs_0 port: ", config.servers_configs[0].port);
+            LOG_INFO("servers_configs_0 root_path: ", config.servers_configs[0].root_path);
+            LOG_INFO("servers_configs_0 cgi_directory_paths_0: ", config.servers_configs[0].cgi_directory_paths[0]);
+            LOG_INFO("servers_configs_0 cgi_directory_paths_1: ", config.servers_configs[0].cgi_directory_paths[1]);
+            LOG_INFO("servers_configs_0 cgi_directory_paths_2: ", config.servers_configs[0].cgi_directory_paths[2]);
+            LOG_INFO("servers_configs_0 max_connection_number: ", config.servers_configs[0].max_connection_number);
+            LOG_INFO("servers_configs_1 name: ", config.servers_configs[1].name);
+            LOG_INFO("servers_configs_1 port: ", config.servers_configs[1].port);
+            LOG_INFO("servers_configs_1 root_path: ", config.servers_configs[1].root_path);
+            LOG_INFO("servers_configs_1 cgi_directory_paths_0: ", config.servers_configs[1].cgi_directory_paths[0]);
+            LOG_INFO("servers_configs_1 cgi_directory_paths_1: ", config.servers_configs[1].cgi_directory_paths[1]);
+            LOG_INFO("servers_configs_1 max_connection_number: ", config.servers_configs[1].max_connection_number);
+        }  
     }
     return false;
 }
