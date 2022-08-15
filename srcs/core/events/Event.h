@@ -4,20 +4,16 @@
 #include "Connection.h"
 #include "logging.h"
 
-enum class EventType {
-    ParseHttpRequest = 0,
-    ProcessRequest = 1,
-};
+//enum EventType {
+//    ParseHttpRequest = 0,
+//    ProcessRequest = 1,
+//};
 
 class Event {
 public:
-    Event(EventType type, std::function<void()> process_function);
+    virtual ~Event() {}
 
-    void Process();
+    virtual void Process() = 0;
 
-    const std::string& GetName() const;
-
-private:
-    EventType _type;
-    std::function<void()> _process_function;
+    virtual const std::string& GetName() const = 0;
 };

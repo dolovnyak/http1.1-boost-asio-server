@@ -44,3 +44,12 @@ HandlerEmptyFile:
 
 HandlerError:
 Вернет html с error в зависмости от ошибки
+
+
+
+
+
+Переделать все на кастомный SharedPtr (реализовав все методы для удобства)
+Заменить ивенты через лямбды на ивенты через ООП
+Всеми методами emplace придется пожертвовать
+Вместо std::move из connection в ParseRequest, сделать реквест SharedPtr и передавать его как SharedPtr.

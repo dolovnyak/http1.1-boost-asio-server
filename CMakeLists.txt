@@ -1,12 +1,18 @@
 cmake_minimum_required(VERSION 3.16)
 project(web-server)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 98)
+
+#if(STANDART98)
+#    set(CMAKE_CXX_STANDARD 98)
+#else()
+#    set(CMAKE_CXX_STANDARD 11)
+#endif()
+
 
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra -pthread -D POLL")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pthread -D POLL")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
-
 
 add_executable(${PROJECT_NAME}
         srcs/main.cpp
@@ -19,7 +25,8 @@ add_executable(${PROJECT_NAME}
         srcs/core/events/EventPresets.cpp
         srcs/http/Request.cpp
         srcs/http/Response.cpp
-        srcs/http/HttpErrorCodePages.h srcs/http/HeaderValue.cpp srcs/http/HeaderValue.h)
+        srcs/http/HeaderValue.cpp
+        srcs/utilities/SharedPtr.h srcs/core/events/ParseHttpRequestEvent.cpp srcs/core/events/ParseHttpRequestEvent.h)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
         srcs
@@ -37,4 +44,4 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}
         )
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE -D_DEBUG)
+target_compile_definitions(${PROJECT_NAME} PRIVATE -D_DEBUG -D_STANDART98)
