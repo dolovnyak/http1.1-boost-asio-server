@@ -9,9 +9,10 @@
       "Root": "./",
       "CgiDirectories": [
         "./cgi-bin",
-        "./cgi-bin2/"
+        "./cgi-bin2/",
+        "./cgi-bin3/"
       ],
-      "MaxCoonnectionNumber": 1000
+      "MaxCoonnectionNumber": 10001
     },
     {
       "Name": "kabun2",
