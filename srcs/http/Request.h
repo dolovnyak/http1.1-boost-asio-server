@@ -1,29 +1,53 @@
 #pragma once
 
-#include <string>
-#include <optional>
+#include "SharedPtr.h"
+#include "common.h"
 
-enum class RequestStatus {
-    Success = 0,
-    BadRequest, // 400
-    NotFound, // 404
-    NotAllowed // 405
+#include <string>
+#include <unordered_map>
+
+
+enum RequestParseStatus {
+    FinishWithSuccess = 0,
+    FinishWithError,
+    WaitMoreData,
 };
 
-class Headers {
-public:
-    std::optional<int32_t> content_length;
-    int32_t dick_length = 25;
+enum RequestParseState {
+    ParseFirstLine = 0,
+    ParseHeaders,
+    FinishParseHeaders,
+    ParseBodyByChunk,
+    ParseBodyByContentLength,
+    Finish,
+    Error
 };
 
 class Request {
 public:
-    Headers headers;
-
-    std::string body;
-
-    RequestStatus status;
+    RequestParseStatus Parse(SharedPtr<std::string> raw_request_part);
 
 private:
-    bool _is_body;
+    std::string _body;
+
+    std::string _raw;
+
+    size_t _raw_parsed_size;
+
+    std::unordered_map<std::string, std::string> _headers;
+
+    RequestParseState _parse_state;
+
+private:
+    void AddHeader(const std::string& key, const std::string& value);
+
+    RequestParseState ParseFirstLineHandler();
+
+    RequestParseState ParseHeaderHandler();
+
+    RequestParseState ParseBodyByChunkHandler();
+
+    RequestParseState ParseBodyByContentLengthHandler();
+
+    RequestParseState AnalyzeBodyHeadersHandler();
 };

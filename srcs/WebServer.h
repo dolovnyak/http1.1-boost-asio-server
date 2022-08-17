@@ -5,14 +5,14 @@
 #include "Config.h"
 #include "core/events/Event.h"
 #include "ServerInstance.h"
-#include "logging.h"
+#include "Logging.h"
 
 template <class CoreModule>
 class WebServer {
 public:
     bool Setup(const Config& config);
 
-    [[noreturn]] void Run();
+    void Run();
 
 private:
     void ProcessCoreEvents();
@@ -21,7 +21,7 @@ private:
 private:
     Config _config;
     CoreModule _core_module;
-    std::queue<Event> _event_queue;
+    std::queue<SharedPtr<Event> > _event_queue;
 };
 
 template <class EventHandler>
@@ -37,7 +37,7 @@ bool WebServer<EventHandler>::Setup(const Config& config) {
 }
 
 template <class CoreModule>
-[[noreturn]] void WebServer<CoreModule>::Run() {
+void WebServer<CoreModule>::Run() {
     while (true) {
         ProcessCoreEvents();
         ProcessEvents();
@@ -52,7 +52,7 @@ void WebServer<CoreModule>::ProcessCoreEvents() {
 template <class CoreModule>
 void WebServer<CoreModule>::ProcessEvents() {
     while (!_event_queue.empty()) {
-        _event_queue.front().Process();
+        _event_queue.front()->Process();
         _event_queue.pop();
     }
 }

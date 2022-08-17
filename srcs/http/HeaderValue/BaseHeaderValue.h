@@ -3,10 +3,10 @@
 #include <string>
 #include <optional>
 
-class HeaderValue {
+class BaseHeaderValue {
 
 public:
-    HeaderValue(const std::string& value);
+    BaseHeaderValue(const std::string& value);
 
     int AsInt() const;
 

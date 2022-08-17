@@ -1,17 +1,17 @@
 cmake_minimum_required(VERSION 3.16)
 project(web-server)
 
-set(CMAKE_CXX_STANDARD 98)
+set(STANDART98 1)
 
-#if(STANDART98)
-#    set(CMAKE_CXX_STANDARD 98)
-#else()
-#    set(CMAKE_CXX_STANDARD 11)
-#endif()
+if (STANDART98)
+    set(CMAKE_CXX_STANDARD 98)
+else ()
+    set(CMAKE_CXX_STANDARD 11)
+endif ()
 
 
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra -pthread -D POLL")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pthread -D POLL")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra -pthread")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pthread")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 
 add_executable(${PROJECT_NAME}
@@ -19,14 +19,13 @@ add_executable(${PROJECT_NAME}
         srcs/config/Config.cpp
         srcs/cgi/SingleCgiHandler.cpp
         srcs/core/modules/PollModule.cpp
-        srcs/core/modules/EpollModule.cpp
-        srcs/core/events/Event.cpp
-        srcs/http/HttpModule.cpp
-        srcs/core/events/EventPresets.cpp
+        srcs/core/events/ParseHttpRequestEvent.cpp
+        srcs/http/HttpErrorCodePages.cpp
         srcs/http/Request.cpp
         srcs/http/Response.cpp
-        srcs/http/HeaderValue.cpp
-        srcs/utilities/SharedPtr.h srcs/core/events/ParseHttpRequestEvent.cpp srcs/core/events/ParseHttpRequestEvent.h)
+        srcs/http/HeaderValue/BaseHeaderValue.cpp
+        srcs/utilities/utilities.cpp
+        )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
         srcs
@@ -45,3 +44,20 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE -D_DEBUG -D_STANDART98)
+
+################################################################################
+# tests
+################################################################################
+if (!STANDART98)
+    message(aaaa)
+    set(WS_TESTS ${PROJECT_NAME}-tests)
+    add_subdirectory(googletest)
+
+    add_executable(${WS_TESTS}
+            tests/test_utilities.cpp
+            )
+
+    target_include_directories(${WS_TESTS} PUBLIC
+            googletest/googletest/include
+            )
+endif ()

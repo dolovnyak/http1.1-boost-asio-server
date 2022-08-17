@@ -1,6 +1,5 @@
 #include "PollModule.h"
-#include "EventPresets.h"
-#include "logging.h"
+#include "Logging.h"
 
 #include <sys/ioctl.h>
 #include <sys/poll.h>
@@ -8,7 +7,7 @@
 #include <netinet/in.h>
 #include <unistd.h>
 
-bool PollModule::Setup(const Config& config, std::queue<Event>* event_queue) {
+bool PollModule::Setup(const Config& config, std::queue<SharedPtr<Event> >* event_queue) {
     _event_queue = event_queue;
 
     _poll_fds_number = 0;
@@ -40,7 +39,7 @@ bool PollModule::Setup(const Config& config, std::queue<Event>* event_queue) {
             return false;
         }
 
-        struct sockaddr_in address{};
+        struct sockaddr_in address = {};
         bzero(&address, sizeof(address));
         address.sin_family = AF_INET;
         address.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -62,7 +61,9 @@ bool PollModule::Setup(const Config& config, std::queue<Event>* event_queue) {
         _poll_fds[_poll_fds_number].events = POLLIN;
         ++_poll_fds_number;
 
-        _servers.emplace(listening_socket_fd, std::make_shared<ServerInstance>(ServerInstance(listening_socket_fd, server_config.name)));
+        SharedPtr<ServerInstance> server_instance = SharedPtr<ServerInstance>::MakeShared(
+                ServerInstance(listening_socket_fd, server_config.name));
+        _servers.insert(std::pair<int, SharedPtr<ServerInstance> >(listening_socket_fd, server_instance));
     }
 
     if (_servers.empty()) {
@@ -122,7 +123,7 @@ void PollModule::ProcessNewConnection(int index) {
         int new_connection_fd = accept(_poll_fds[index].fd, nullptr, nullptr); // TODO maybe fill address from this
         if (new_connection_fd == -1) {
             if (errno == EAGAIN || errno == EWOULDBLOCK) {
-                LOG_INFO("Finish processing new connections");
+                LOG_INFO("FinishWithSuccess processing new connections");
                 break;
             }
             else {
@@ -136,12 +137,9 @@ void PollModule::ProcessNewConnection(int index) {
         struct pollfd* new_connection_pollfd_ptr = &_poll_fds[_poll_fds_number];
         ++_poll_fds_number;
 
-        auto write_event_setter = [new_connection_pollfd_ptr]() {
-            new_connection_pollfd_ptr->events |= POLLOUT;
-        };
-
-        auto connection = Connection(new_connection_fd, _servers[_poll_fds[index].fd], write_event_setter);
-        _connections.emplace(new_connection_fd, std::make_shared<Connection>(connection));
+        SharedPtr<Connection> connection = SharedPtr<Connection>::MakeShared(
+                Connection(new_connection_fd, _servers.at(_poll_fds[index].fd)));
+        _connections.insert(std::pair<int, SharedPtr<Connection> >(new_connection_fd, connection));
     }
 }
 
@@ -149,33 +147,33 @@ void PollModule::ProcessRead(int index) {
     LOG_INFO("Read processing");
     char buffer[8];
 
-        LOG_DEBUG("Reading...");
-        ssize_t bytes_read = recv(_poll_fds[index].fd, buffer, sizeof(buffer), 0);
-        std::shared_ptr<std::string> raw_request = std::make_shared<std::string>(buffer, bytes_read);
-        LOG_DEBUG("Bytes read: ", bytes_read);
+    LOG_DEBUG("Reading...");
+    ssize_t bytes_read = recv(_poll_fds[index].fd, buffer, sizeof(buffer), 0);
+    std::shared_ptr<std::string> raw_request = std::make_shared<std::string>(buffer, bytes_read);
+    LOG_DEBUG("Bytes read: ", bytes_read);
 
-        if (bytes_read < 0) {
-            if (errno == EWOULDBLOCK || errno == EAGAIN) {
-                LOG_WARNING("Something strange in ProcessRead");
-                _event_queue->push(EventPresets::ParseHttpRequest(_connections[_poll_fds[index].fd], raw_request, _event_queue));
-            }
-            else {
-                LOG_PERROR("Failed to read from socket");
-                CloseConnection(index);
-            }
-        }
-        else if (bytes_read == 0) {
-            LOG_INFO("Connection closed by client: ", _poll_fds[index].fd);
-            CloseConnection(index);
+    if (bytes_read < 0) {
+        if (errno == EWOULDBLOCK || errno == EAGAIN) {
+            LOG_WARNING("Something strange in ProcessRead");
+            /// TODO make parse event and push it to queue
         }
         else {
-            _event_queue->push(EventPresets::ParseHttpRequest(_connections[_poll_fds[index].fd], raw_request, _event_queue));
+            LOG_PERROR("Failed to read from socket");
+            CloseConnection(index);
         }
+    }
+    else if (bytes_read == 0) {
+        LOG_INFO("Connection closed by client: ", _poll_fds[index].fd);
+        CloseConnection(index);
+    }
+    else {
+        /// TODO make parse event and push it to queue
+    }
 }
 
 void PollModule::ProcessWrite(int index) {
     LOG_INFO("Write processing");
-    std::string response = _connections[_poll_fds[index].fd]->response.body;
+    std::string response = _connections.at(_poll_fds[index].fd)->response.body;
     ssize_t bytes_send = send(_poll_fds[index].fd, response.c_str(), response.size(), 0);
 
     if (bytes_send < 0) {
@@ -187,7 +185,7 @@ void PollModule::ProcessWrite(int index) {
 }
 
 void PollModule::CloseConnection(int index) {
-    _connections[_poll_fds[index].fd]->still_available = false; /// Needed for events check is connection still available before change it
+    _connections.at(_poll_fds[index].fd)->still_available = false; /// Needed for events check is connection still available before change it
     _connections.erase(_poll_fds[index].fd);
 
     close(_poll_fds[index].fd);
