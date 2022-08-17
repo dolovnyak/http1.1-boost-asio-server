@@ -7,7 +7,7 @@ namespace {
     std::vector<ServerConfig> mock_1_server_config() {
         std::vector<ServerConfig> configs;
 
-        ServerConfig config("Kabun", 2222, "examples/TODO", {}, 10000);
+        ServerConfig config("Kabun", 2222, "examples/TODO", std::vector<std::string>(), 10000);
         configs.push_back(config);
         return configs;
     }
@@ -16,11 +16,13 @@ namespace {
     std::vector<ServerConfig> mock_2_server_configs() {
         std::vector<ServerConfig> configs;
 
-        ServerConfig config1("HelloWorld", 1337, "examples/hello_world/", {}, 1000);
+        ServerConfig config1("HelloWorld", 1337, "examples/hello_world/", std::vector<std::string>(), 1000);
         configs.push_back(config1);
 
-        ServerConfig config2("CgiChecker", 1488, "examples/cgi_checker/",
-                             {"examples/cgi_checker/cgi1/", "examples/cgi_checker/cgi2"}, 1000);
+        std::vector<std::string> cgi_paths;
+        cgi_paths.push_back("examples/cgi_checker/cgi1/");
+        cgi_paths.push_back("examples/cgi_checker/cgi2/");
+        ServerConfig config2("CgiChecker", 1488, "examples/cgi_checker/", cgi_paths, 1000);
 
         configs.push_back(config2);
         return configs;

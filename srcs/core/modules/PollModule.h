@@ -2,8 +2,8 @@
 
 #include "Config.h"
 #include "ServerInstance.h"
-#include "core/events/Event.h"
-#include "HttpModule.h"
+#include "Event.h"
+#include "SharedPtr.h"
 
 #include <unordered_map>
 #include <queue>
@@ -11,7 +11,7 @@
 
 class PollModule {
 public:
-    bool Setup(const Config& config, std::queue<Event>* event_queue);
+    bool Setup(const Config& config, std::queue<SharedPtr<Event> >* event_queue);
 
     void ProcessEvents(int timeout);
 
@@ -31,7 +31,7 @@ private:
     struct pollfd* _poll_fds;
     bool _should_compress;
 
-    std::unordered_map<int32_t, std::shared_ptr<ServerInstance>> _servers;
-    std::unordered_map<int32_t, std::shared_ptr<Connection>> _connections;
-    std::queue<Event>* _event_queue;
+    std::unordered_map<int, SharedPtr<ServerInstance> > _servers;
+    std::unordered_map<int, SharedPtr<Connection> > _connections;
+    std::queue<SharedPtr<Event> >* _event_queue;
 };

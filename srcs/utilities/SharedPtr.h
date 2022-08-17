@@ -1,3 +1,5 @@
+#pragma once
+
 template<class T>
 class SharedPtr {
 public:
@@ -15,6 +17,21 @@ public:
         _ref_count = other._ref_count;
         ++(*_ref_count);
     }
+
+//    SharedPtr& operator=(const SharedPtr& other) {
+//        if (this != &other) {
+//            --(*_ref_count);
+//            if (*_ref_count == 0) {
+//                delete _ptr;
+//                delete _ref_count;
+//            }
+//
+//            _ptr = other._ptr;
+//            _ref_count = other._ref_count;
+//            ++(*_ref_count);
+//        }
+//        return *this;
+//    }
 
     ~SharedPtr() {
         if (*_ref_count == 1) {
