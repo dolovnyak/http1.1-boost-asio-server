@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.16)
 project(web-server)
 
-set(STANDART98 1)
+#set(STANDARD98 1)
 
-if (STANDART98)
+if (STANDARD98)
     set(CMAKE_CXX_STANDARD 98)
 else ()
     set(CMAKE_CXX_STANDARD 11)
@@ -14,8 +14,12 @@ endif ()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pthread")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 
-add_executable(${PROJECT_NAME}
-        srcs/main.cpp
+################################################################################
+# web-server-lib target
+################################################################################
+set(WS_LIB ${PROJECT_NAME}-lib)
+
+add_library(${WS_LIB}
         srcs/config/Config.cpp
         srcs/cgi/SingleCgiHandler.cpp
         srcs/core/modules/PollModule.cpp
@@ -27,7 +31,7 @@ add_executable(${PROJECT_NAME}
         srcs/utilities/utilities.cpp
         )
 
-target_include_directories(${PROJECT_NAME} PUBLIC
+target_include_directories(${WS_LIB} PUBLIC
         srcs
         srcs/config
         srcs/utilities
@@ -37,25 +41,39 @@ target_include_directories(${PROJECT_NAME} PUBLIC
         srcs/core/events
         srcs/core/modules
         srcs/http
+        srcs/http/parse
         )
+
+target_compile_definitions(${WS_LIB} PRIVATE -D_DEBUG -D_STANDARD98)
+
+################################################################################
+# web-server target
+################################################################################
+add_executable(${PROJECT_NAME}
+        srcs/main.cpp
+        srcs/http/parse/parse.h srcs/http/parse/parse.cpp)
+target_link_libraries(${PROJECT_NAME} PUBLIC ${WS_LIB})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}
         )
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE -D_DEBUG -D_STANDART98)
 
 ################################################################################
 # tests
 ################################################################################
-if (!STANDART98)
-    message(aaaa)
+if (NOT STANDARD98)
     set(WS_TESTS ${PROJECT_NAME}-tests)
     add_subdirectory(googletest)
 
     add_executable(${WS_TESTS}
             tests/test_utilities.cpp
             )
+
+    target_link_libraries(${WS_TESTS}
+            gtest
+            gtest_main
+            ${WS_LIB})
 
     target_include_directories(${WS_TESTS} PUBLIC
             googletest/googletest/include
