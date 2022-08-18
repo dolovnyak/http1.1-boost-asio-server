@@ -216,7 +216,7 @@ public:
     };
 };
 
-#ifdef _STANDART98
+#ifdef _STANDARD98
 #define LOG_SUCCESS(...)
 #define LOG_SUCCESS_BG(...)
 #define LOG_IMPORTANT(...)

@@ -6,28 +6,39 @@
 #include <string>
 #include <unordered_map>
 
-
-enum RequestParseStatus {
+enum RequestHandleStatus {
     FinishWithSuccess = 0,
     FinishWithError,
     WaitMoreData,
 };
 
-enum RequestParseState {
-    ParseFirstLine = 0,
-    ParseHeaders,
-    FinishParseHeaders,
-    ParseBodyByChunk,
-    ParseBodyByContentLength,
-    Finish,
-    Error
+enum RequestHandleState {
+    HandleFirstLine = 0,
+    HandleFirstLineWaitData,
+    HandleHeader,
+    HandleHeaderWaitData,
+    HandleBody,
+    HandleBodyByChunk,
+    HandleBodyByContentLength,
+    FinishHandle,
+    ErrorHandle
 };
 
 class Request {
 public:
-    RequestParseStatus Parse(SharedPtr<std::string> raw_request_part);
+    Request() : _raw_parsed_size(0) {}
+
+    RequestHandleStatus Handle(SharedPtr<std::string> raw_request_part);
 
 private:
+    std::string _method;
+
+    std::string _resource_target;
+
+    int _http_major_version;
+
+    int _http_minor_version;
+
     std::string _body;
 
     std::string _raw;
@@ -36,18 +47,18 @@ private:
 
     std::unordered_map<std::string, std::string> _headers;
 
-    RequestParseState _parse_state;
+    RequestHandleState _process_state;
 
 private:
     void AddHeader(const std::string& key, const std::string& value);
 
-    RequestParseState ParseFirstLineHandler();
+    RequestHandleState ParseFirstLineHandler();
 
-    RequestParseState ParseHeaderHandler();
+    RequestHandleState ParseHeaderHandler();
 
-    RequestParseState ParseBodyByChunkHandler();
+    RequestHandleState ParseBodyByChunkHandler();
 
-    RequestParseState ParseBodyByContentLengthHandler();
+    RequestHandleState ParseBodyByContentLengthHandler();
 
-    RequestParseState AnalyzeBodyHeadersHandler();
+    RequestHandleState AnalyzeBodyHeadersHandler();
 };

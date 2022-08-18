@@ -12,15 +12,15 @@ void ParseHttpRequestEvent::Process() {
         return;
     }
 
-    RequestParseStatus status = _connection->request->Parse(_raw_request_part);
+    RequestHandleStatus status = _connection->request->Handle(_raw_request_part);
 
     switch (status) {
-//        case RequestParseStatus::FinishWithSuccess:
+//        case RequestHandleStatus::FinishWithSuccess:
 //            _event_queue->push(EventPresets::MakeHttpResponse(_connection, *_connection->request));
 //            break;
-//        case RequestParseStatus::FinishWithError:
+//        case RequestHandleStatus::FinishWithError:
 //            HttpModule::MakeErrorResponse();
-        case RequestParseStatus::WaitMoreData:
+        case RequestHandleStatus::WaitMoreData:
             break;
     }
 }

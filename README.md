@@ -47,4 +47,3 @@ HandlerError:
 * запуск cgi скриптов
 * загрузку файлов через Post + cgi-скрипт загрузчик файла
 * ставить timeout на connection
-
