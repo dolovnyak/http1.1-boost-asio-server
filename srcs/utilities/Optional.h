@@ -3,6 +3,8 @@
 template<class T>
 class Optional {
 public:
+    Optional() : _has_value(false) {}
+
     Optional(const T& value) : _has_value(true), _value(value) {}
 
     Optional(const Optional& other) : _has_value(other._has_value), _value(other._value) {}

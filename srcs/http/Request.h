@@ -6,38 +6,56 @@
 #include <string>
 #include <unordered_map>
 
-enum RequestHandleStatus {
-    FinishWithSuccess = 0,
-    FinishWithError,
-    WaitMoreData,
-};
+namespace RequestHandleStatus {
+    enum Status {
+        FinishWithSuccess = 0,
+        WaitMoreData,
+    };
+}
 
-enum RequestHandleState {
-    HandleFirstLine = 0,
-    HandleFirstLineWaitData,
-    HandleHeader,
-    HandleHeaderWaitData,
-    HandleBody,
-    HandleBodyByChunk,
-    HandleBodyByContentLength,
-    FinishHandle,
-    ErrorHandle
+namespace RequestHandleState {
+    enum State {
+        HandleFirstLine = 0,
+        HandleFirstLineWaitData,
+        HandleHeader,
+        HandleHeaderWaitData,
+        HandleBody,
+        HandleBodyByChunk,
+        HandleBodyByContentLength,
+        FinishHandle,
+    };
+}
+
+struct HttpVersion {
+    int major;
+    int minor;
 };
 
 class Request {
 public:
     Request() : _raw_parsed_size(0) {}
 
-    RequestHandleStatus Handle(SharedPtr<std::string> raw_request_part);
+    RequestHandleStatus::Status Handle(SharedPtr<std::string> raw_request_part);
+
+private:
+    void AddHeader(const std::string& key, const std::string& value);
+
+    RequestHandleState::State ParseFirstLineHandler();
+
+    RequestHandleState::State ParseHeaderHandler();
+
+    RequestHandleState::State ParseBodyByChunkHandler();
+
+    RequestHandleState::State ParseBodyByContentLengthHandler();
+
+    RequestHandleState::State AnalyzeBodyHeadersHandler();
 
 private:
     std::string _method;
 
     std::string _resource_target;
 
-    int _http_major_version;
-
-    int _http_minor_version;
+    HttpVersion _http_version;
 
     std::string _body;
 
@@ -47,18 +65,7 @@ private:
 
     std::unordered_map<std::string, std::string> _headers;
 
-    RequestHandleState _process_state;
+    RequestHandleState::State _process_state;
 
-private:
-    void AddHeader(const std::string& key, const std::string& value);
-
-    RequestHandleState ParseFirstLineHandler();
-
-    RequestHandleState ParseHeaderHandler();
-
-    RequestHandleState ParseBodyByChunkHandler();
-
-    RequestHandleState ParseBodyByContentLengthHandler();
-
-    RequestHandleState AnalyzeBodyHeadersHandler();
+    int _content_length;
 };

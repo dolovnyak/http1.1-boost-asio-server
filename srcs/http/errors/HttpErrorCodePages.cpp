@@ -312,15 +312,13 @@ namespace {
             "</html>" CRLF;
 }
 
-const char* HttpErrorCodePages::GetByStatus(RequestErrorStatus status) {
-    switch (status) {
-        case BadRequest:
+const char* HttpErrorCodePages::GetByErrorCode(HttpError::Code code) {
+    switch (code) {
+        case HttpError::BadRequest:
             return k400;
-        case NotFound:
+        case HttpError::NotFound:
             return k404;
-        case MethodNotAllowed:
+        case HttpError::MethodNotAllowed:
             return k405;
-        case None:
-            throw std::logic_error("HttpErrorCodePages::GetByStatus: status is None");
     }
 }
