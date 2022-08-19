@@ -23,11 +23,11 @@ add_library(${WS_LIB}
         srcs/config/Config.cpp
         srcs/cgi/SingleCgiHandler.cpp
         srcs/core/modules/PollModule.cpp
-        srcs/core/events/ParseHttpRequestEvent.cpp
-        srcs/http/HttpErrorCodePages.cpp
+        srcs/core/events/HandleHttpRequestEvent.cpp
         srcs/http/Request.cpp
         srcs/http/Response.cpp
-        srcs/http/HeaderValue/BaseHeaderValue.cpp
+        srcs/http/errors/HttpErrorCodePages.cpp
+        srcs/http/errors/HttpException.cpp
         srcs/utilities/utilities.cpp
         )
 
@@ -42,6 +42,7 @@ target_include_directories(${WS_LIB} PUBLIC
         srcs/core/modules
         srcs/http
         srcs/http/parse
+        srcs/http/errors
         )
 
 target_compile_definitions(${WS_LIB} PRIVATE -D_DEBUG -D_STANDARD98)
@@ -51,7 +52,7 @@ target_compile_definitions(${WS_LIB} PRIVATE -D_DEBUG -D_STANDARD98)
 ################################################################################
 add_executable(${PROJECT_NAME}
         srcs/main.cpp
-        srcs/http/parse/parse.h srcs/http/parse/parse.cpp)
+        )
 target_link_libraries(${PROJECT_NAME} PUBLIC ${WS_LIB})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES

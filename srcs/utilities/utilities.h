@@ -5,4 +5,6 @@
 
 std::string StripString(const std::string& str);
 
-std::vector<std::string> SplitString(const std::string& str, char delimiter);
+std::vector<std::string> SplitString(const std::string& str, const std::string& delimiters);
+
+std::string ToLower(const std::string& str);
