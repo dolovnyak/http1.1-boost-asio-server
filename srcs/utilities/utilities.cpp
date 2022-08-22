@@ -39,8 +39,16 @@ std::vector<std::string> SplitString(const std::string& str, const std::string& 
     }
 }
 
+size_t FindInRange(const std::string& str, const std::string& substr, size_t start, size_t end) {
+    size_t pos = str.find(substr, start);
+    if (pos == std::string::npos || pos >= end) {
+        return std::string::npos;
+    }
+    return pos;
+}
+
 std::string ToLower(const std::string& str) {
     std::string result;
-    std::transform(str.begin(), str.end(), result.begin(), std::tolower);
+    std::transform(str.begin(), str.end(), std::back_inserter(result), std::tolower);
     return result;
 }

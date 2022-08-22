@@ -18,10 +18,10 @@ namespace {
         }
 
         try {
-            HttpVersion http_version = {
+            HttpVersion http_version = HttpVersion(
                     ParsePositiveInt(version_tokens[0]),
                     ParsePositiveInt(version_tokens[1])
-            };
+            );
             return http_version;
         }
         catch (const std::exception& e) {
@@ -30,18 +30,25 @@ namespace {
     }
 }
 
+Request::Request()
+        : _handle_state(RequestHandleState::HandleFirstLine),
+          _handled_size(0),
+          _content_length(0),
+          _chunk_body_size(0) {}
+
 RequestHandleState::State Request::ParseFirstLineHandler() {
-    size_t first_line_end = _raw.find(CRLF);
+    size_t first_line_end = _raw.find(kCRLF, _handled_size);
 
     if (first_line_end == std::string::npos) {
         return RequestHandleState::WaitData;
     }
     else if (first_line_end == _handled_size) {
-        ++_handled_size;  /// skip empty lines
+        _handled_size += kCRLF.size();  /// skip empty lines
         return RequestHandleState::HandleFirstLine;
     }
 
-    std::vector<std::string> tokens = SplitString(_raw.substr(_handled_size, first_line_end), DELIMITERS);
+    std::vector<std::string> tokens = SplitString(_raw.substr(_handled_size, first_line_end - _handled_size),
+                                                  DELIMITERS);
     if (tokens.size() != 3) {
         throw HttpException("ParseFirstLineHandler", HttpError::BadRequest);
     }
@@ -54,34 +61,34 @@ RequestHandleState::State Request::ParseFirstLineHandler() {
 
     _http_version = ParseHttpVersion(tokens[2]);
 
-    _handled_size += first_line_end + 1;
+    _handled_size = first_line_end + kCRLF.size();
 
     return RequestHandleState::HandleHeader;
 }
 
 RequestHandleState::State Request::ParseHeaderHandler() {
-    size_t header_end = _raw.find(CRLF, _handled_size);
+    size_t header_end = _raw.find(kCRLF, _handled_size);
 
     if (header_end == std::string::npos) {
         return RequestHandleState::WaitData;
     }
     else if (header_end == _handled_size) {
-        ++_handled_size;
+        _handled_size += kCRLF.size(); /// two empty lines in a raw, switch to body handle
         return RequestHandleState::AnalyzeBodyHeaders;
     }
 
-    size_t key_end = _raw.find(":", _handled_size, header_end - _handled_size);
+    size_t key_end = FindInRange(_raw, ":", _handled_size, header_end);
     if (key_end == std::string::npos) {
         throw HttpException("ParseHeaderHandler", HttpError::BadRequest);
     }
-    std::string key = _raw.substr(_handled_size, key_end);
+    std::string key = _raw.substr(_handled_size, key_end - _handled_size);
     if (key.empty() || key.find_first_of(DELIMITERS) != std::string::npos) {
         throw HttpException("ParseHeaderHandler", HttpError::BadRequest);
     }
     std::string value = _raw.substr(key_end + 1, header_end - key_end - 1);
     AddHeader(key, value);
 
-    _handled_size += header_end + 1;
+    _handled_size = header_end + kCRLF.size();
 
     return RequestHandleState::HandleHeader;
 }
@@ -154,12 +161,12 @@ RequestHandleState::State Request::ParseChunkSizeHandler() {
 }
 
 RequestHandleState::State Request::ParseChunkBodyHandler() {
-    size_t raw_size_without_CRLF = _raw.size() - 2;
+    size_t raw_size_without_CRLF = _raw.size() - kCRLF.size();
     if (raw_size_without_CRLF - _handled_size < _chunk_body_size) {
         return RequestHandleState::WaitData;
     }
 
-    if (_raw.substr(_handled_size + _chunk_body_size, 2) != CRLF) {
+    if (_raw.substr(_handled_size + _chunk_body_size, kCRLF.size()) != CRLF) {
         throw HttpException("ParseChunkBodyHandler", "Incorrect chunk body.", HttpError::BadRequest);
     }
 
@@ -185,7 +192,7 @@ RequestHandleState::State Request::ParseBodyByContentLengthHandler() {
     }
     else {
         _body += _raw.substr(_handled_size, _content_length);
-        _handled_size += _content_length;
+        _handled_size = _raw.size();
         return RequestHandleState::FinishHandle;
     }
 }
@@ -195,10 +202,6 @@ RequestHandleStatus::Status Request::Handle(SharedPtr<std::string> raw_request_p
     RequestHandleState::State prev_state = _handle_state;
 
     while (true) {
-        if (_handled_size == _raw.size()) {
-            return RequestHandleStatus::WaitMoreData;
-        }
-
         switch (_handle_state) {
             case RequestHandleState::HandleFirstLine:
                 prev_state = _handle_state;
@@ -240,7 +243,7 @@ RequestHandleStatus::Status Request::Handle(SharedPtr<std::string> raw_request_p
                 return RequestHandleStatus::WaitMoreData;
 
             case RequestHandleState::FinishHandle:
-                return RequestHandleStatus::FinishWithSuccess;
+                return RequestHandleStatus::Finish;
         }
     }
 }

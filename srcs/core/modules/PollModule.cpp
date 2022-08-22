@@ -61,7 +61,7 @@ bool PollModule::Setup(const Config& config, std::queue<SharedPtr<Event> >* even
         _poll_fds[_poll_fds_number].events = POLLIN;
         ++_poll_fds_number;
 
-        SharedPtr<ServerInstance> server_instance = SharedPtr<ServerInstance>::MakeShared(
+        SharedPtr<ServerInstance> server_instance = MakeShared(
                 ServerInstance(listening_socket_fd, server_config.name));
         _servers.insert(std::pair<int, SharedPtr<ServerInstance> >(listening_socket_fd, server_instance));
     }
@@ -123,7 +123,7 @@ void PollModule::ProcessNewConnection(int index) {
         int new_connection_fd = accept(_poll_fds[index].fd, nullptr, nullptr); // TODO maybe fill address from this
         if (new_connection_fd == -1) {
             if (errno == EAGAIN || errno == EWOULDBLOCK) {
-                LOG_INFO("FinishWithSuccess processing new connections");
+                LOG_INFO("Finish processing new connections");
                 break;
             }
             else {
@@ -137,7 +137,7 @@ void PollModule::ProcessNewConnection(int index) {
         struct pollfd* new_connection_pollfd_ptr = &_poll_fds[_poll_fds_number];
         ++_poll_fds_number;
 
-        SharedPtr<Connection> connection = SharedPtr<Connection>::MakeShared(
+        SharedPtr<Connection> connection = MakeShared(
                 Connection(new_connection_fd, _servers.at(_poll_fds[index].fd)));
         _connections.insert(std::pair<int, SharedPtr<Connection> >(new_connection_fd, connection));
     }

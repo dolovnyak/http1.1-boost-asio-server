@@ -8,7 +8,7 @@
 
 namespace RequestHandleStatus {
     enum Status {
-        FinishWithSuccess = 0,
+        Finish = 0,
         WaitMoreData,
     };
 }
@@ -28,13 +28,16 @@ namespace RequestHandleState {
 }
 
 struct HttpVersion {
+    HttpVersion() : major(0), minor(0) {}
+    HttpVersion(int major, int minor) : major(major), minor(minor) {}
+
     int major;
     int minor;
 };
 
 class Request {
 public:
-    Request() : _handle_state(RequestHandleState::HandleFirstLine), _handled_size(0) {}
+    Request();
 
     RequestHandleStatus::Status Handle(SharedPtr<std::string> raw_request_part);
 

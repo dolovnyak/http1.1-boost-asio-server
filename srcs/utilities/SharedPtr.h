@@ -56,3 +56,13 @@ private:
     T* _ptr;
     int* _ref_count;
 };
+
+template<class T>
+SharedPtr<T> MakeShared(const T& value) {
+    return SharedPtr<T>::MakeShared(value);
+}
+
+template<class T>
+SharedPtr<T> MakeShared(T* value) {
+    return SharedPtr<T>::MakeShared(value);
+}
