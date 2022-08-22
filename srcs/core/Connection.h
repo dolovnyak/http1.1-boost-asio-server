@@ -13,7 +13,7 @@ public:
             :
             fd(fd),
             server_instance(server_instance),
-            request(SharedPtr<Request>::MakeShared(Request())),
+            request(MakeShared(Request())),
             still_available(true) {}
 
 

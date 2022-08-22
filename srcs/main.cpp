@@ -2,8 +2,16 @@
 #include "utilities/Logging.h"
 #include "PollModule.h"
 
-
 int main(int argc, char** argv) {
+
+//    const auto p1 = std::chrono::system_clock::now();
+//
+//    const auto p2 = std::chrono::system_clock::now();
+//    auto p3 = p2 - p1;
+//
+//    std::cout << "duration " << std::chrono::duration_cast<std::chrono::microseconds>(p3).count() << std::endl;
+
+
     if (argc != 2) {
         LOG_IMPORTANT("Usage: ./webserver <config_file_path>");
         exit(EXIT_FAILURE);

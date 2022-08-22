@@ -14,7 +14,7 @@ void HandleHttpRequestEvent::Process() {
     }
 
     try {
-        if (_connection->request->Handle(_raw_request_part) == RequestHandleStatus::FinishWithSuccess) {
+        if (_connection->request->Handle(_raw_request_part) == RequestHandleStatus::Finish) {
 //            _event_queue->push(ResponseEvent(_connection, _connection->response));
         }
     }

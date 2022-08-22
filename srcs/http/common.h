@@ -6,7 +6,7 @@
 #define CR                  (char) '\r'
 #define LF                  (char) '\n'
 #define CRLF                "\r\n"
-#define DELIMITERS    " \t\v\r"
+#define DELIMITERS          " \f\n\r\t\v" /// from std::isspace
 
 #define CONTENT_LENGTH "content-length"
 #define TRANSFER_ENCODING "transfer-encoding"
@@ -14,6 +14,8 @@
 #define CHUNKED "chunked"
 
 #define BAD_CONTENT_LENGTH_TITLE "400 Bad Content-Length"
+
+const std::string kCRLF = "\r\n";
 
 //static std::unordered_set<std::string> allowed_methods = {
 //    "GET",
