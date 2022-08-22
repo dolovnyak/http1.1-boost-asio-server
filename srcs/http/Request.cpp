@@ -1,6 +1,5 @@
 #include "Request.h"
 #include "utilities.h"
-#include "Logging.h"
 #include "parse.h"
 #include "HttpException.h"
 
@@ -20,8 +19,8 @@ namespace {
 
         try {
             HttpVersion http_version = {
-                    std::stoi(version_tokens[0]),
-                    std::stoi(version_tokens[1])
+                    ParsePositiveInt(version_tokens[0]),
+                    ParsePositiveInt(version_tokens[1])
             };
             return http_version;
         }
@@ -32,21 +31,17 @@ namespace {
 }
 
 RequestHandleState::State Request::ParseFirstLineHandler() {
-    size_t first_line_end = _raw.find(LF);
+    size_t first_line_end = _raw.find(CRLF);
 
     if (first_line_end == std::string::npos) {
-        return RequestHandleState::HandleFirstLineWaitData; /// first line is not complete
+        return RequestHandleState::WaitData;
     }
-    else if (first_line_end == _raw_parsed_size) {
-        ++_raw_parsed_size;
-        return RequestHandleState::HandleFirstLine;
-    }
-    else if (first_line_end == _raw_parsed_size + 1 && _raw[_raw_parsed_size] == CR) {
-        _raw_parsed_size += 2;
+    else if (first_line_end == _handled_size) {
+        ++_handled_size;  /// skip empty lines
         return RequestHandleState::HandleFirstLine;
     }
 
-    std::vector<std::string> tokens = SplitString(_raw.substr(_raw_parsed_size, first_line_end), SPACE_DELIMITERS);
+    std::vector<std::string> tokens = SplitString(_raw.substr(_handled_size, first_line_end), DELIMITERS);
     if (tokens.size() != 3) {
         throw HttpException("ParseFirstLineHandler", HttpError::BadRequest);
     }
@@ -59,38 +54,34 @@ RequestHandleState::State Request::ParseFirstLineHandler() {
 
     _http_version = ParseHttpVersion(tokens[2]);
 
-    _raw_parsed_size += first_line_end + 1;
+    _handled_size += first_line_end + 1;
 
     return RequestHandleState::HandleHeader;
 }
 
 RequestHandleState::State Request::ParseHeaderHandler() {
-    size_t header_end = _raw.find(LF, _raw_parsed_size);
+    size_t header_end = _raw.find(CRLF, _handled_size);
 
     if (header_end == std::string::npos) {
-        return RequestHandleState::HandleHeaderWaitData;
+        return RequestHandleState::WaitData;
     }
-    else if (header_end == _raw_parsed_size) {
-        ++_raw_parsed_size;
-        return RequestHandleState::HandleBody;
-    }
-    else if (header_end == _raw_parsed_size + 1 && _raw[_raw_parsed_size] == CR) {
-        _raw_parsed_size += 2;
-        return RequestHandleState::HandleBody;
+    else if (header_end == _handled_size) {
+        ++_handled_size;
+        return RequestHandleState::AnalyzeBodyHeaders;
     }
 
-    size_t key_end = _raw.find(":", _raw_parsed_size, header_end - _raw_parsed_size);
+    size_t key_end = _raw.find(":", _handled_size, header_end - _handled_size);
     if (key_end == std::string::npos) {
         throw HttpException("ParseHeaderHandler", HttpError::BadRequest);
     }
-    std::string key = _raw.substr(_raw_parsed_size, key_end);
-    if (key.empty() || key.find_first_of("\t\r ") != std::string::npos) {
+    std::string key = _raw.substr(_handled_size, key_end);
+    if (key.empty() || key.find_first_of(DELIMITERS) != std::string::npos) {
         throw HttpException("ParseHeaderHandler", HttpError::BadRequest);
     }
     std::string value = _raw.substr(key_end + 1, header_end - key_end - 1);
     AddHeader(key, value);
 
-    _raw_parsed_size += header_end + 1;
+    _handled_size += header_end + 1;
 
     return RequestHandleState::HandleHeader;
 }
@@ -100,17 +91,17 @@ RequestHandleState::State Request::AnalyzeBodyHeadersHandler() {
     /// transfer encoding
     HeaderIterator it = _headers.find(TRANSFER_ENCODING);
     if (it != _headers.end()) {
-        std::vector<std::string> tokens = SplitString(it->second, SPACE_DELIMITERS);
+        std::vector<std::string> tokens = SplitString(it->second, DELIMITERS);
         if (tokens.size() != 1 || ToLower(StripString(tokens[0])) != CHUNKED) {
             throw HttpException("transfer-encoding: " + it->second, HttpError::NotImplemented);
         }
-        return RequestHandleState::HandleBodyByChunk;
+        return RequestHandleState::HandleChunkSize;
     }
 
     /// content length
     it = _headers.find(CONTENT_LENGTH);
     if (it != _headers.end()) {
-        std::vector<std::string> tokens = SplitString(it->second, SPACE_DELIMITERS);
+        std::vector<std::string> tokens = SplitString(it->second, DELIMITERS);
 
         if (tokens.size() != 1) {
             throw HttpException("content-length: " + it->second,
@@ -119,7 +110,7 @@ RequestHandleState::State Request::AnalyzeBodyHeadersHandler() {
         }
 
         try {
-            _content_length = ParseInt(it->second);
+            _content_length = ParsePositiveInt(it->second);
             return RequestHandleState::HandleBodyByContentLength;
         }
         catch (const std::exception& e) {
@@ -129,50 +120,124 @@ RequestHandleState::State Request::AnalyzeBodyHeadersHandler() {
         }
     }
 
+
     /// if there are no transfer-encoding chunked and content-length headers, then we finish parse and consider body as empty
     return RequestHandleState::FinishHandle;
 }
 
-RequestHandleState::State Request::ParseBodyByChunkHandler() {
-//    return ErrorHandle;
+RequestHandleState::State Request::ParseChunkSizeHandler() {
+    size_t chunk_size_end = _raw.find(CRLF, _handled_size);
+
+    if (chunk_size_end == std::string::npos) {
+        return RequestHandleState::WaitData;
+    }
+
+    std::vector<std::string> tokens = SplitString(_raw.substr(_handled_size, chunk_size_end), DELIMITERS);
+    if (tokens.empty()) {
+        throw HttpException("ParseChunkSizeHandler", "Incorrect chunk size.", HttpError::BadRequest);
+    }
+
+    try {
+        _chunk_body_size = ParsePositiveInt(tokens[0], 16);
+        /// for now just ignore chunk extensions
+        _handled_size += chunk_size_end + 1;
+    }
+    catch (const std::exception& e) {
+        throw HttpException("ParseChunkSizeHandler: " + std::string(e.what()), HttpError::BadRequest);
+    }
+
+    if (_chunk_body_size == 0) {
+        return RequestHandleState::HandleChunkTrailerPart;
+    }
+
+    return RequestHandleState::HandleChunkBody;
+}
+
+RequestHandleState::State Request::ParseChunkBodyHandler() {
+    size_t raw_size_without_CRLF = _raw.size() - 2;
+    if (raw_size_without_CRLF - _handled_size < _chunk_body_size) {
+        return RequestHandleState::WaitData;
+    }
+
+    if (_raw.substr(_handled_size + _chunk_body_size, 2) != CRLF) {
+        throw HttpException("ParseChunkBodyHandler", "Incorrect chunk body.", HttpError::BadRequest);
+    }
+
+    _body += _raw.substr(_handled_size, _chunk_body_size);
+    _handled_size += _chunk_body_size + 2;
+    return RequestHandleState::HandleChunkSize;
+}
+
+RequestHandleState::State Request::ParseChunkTrailerPartHandler() {
+    size_t trailer_end = _raw.find(CRLF, _handled_size);
+    if (trailer_end == std::string::npos) {
+        return RequestHandleState::WaitData;
+    }
+    /// for now ignore chunked trailer part data
+    _content_length = _body.size();
+    return RequestHandleState::FinishHandle;
 }
 
 RequestHandleState::State Request::ParseBodyByContentLengthHandler() {
-//    return ErrorHandle;
+    /// need raw size without CRLF
+    if (_raw.size() - _handled_size < _content_length) {
+        return RequestHandleState::WaitData;
+    }
+    else {
+        _body += _raw.substr(_handled_size, _content_length);
+        _handled_size += _content_length;
+        return RequestHandleState::FinishHandle;
+    }
 }
 
 RequestHandleStatus::Status Request::Handle(SharedPtr<std::string> raw_request_part) {
     _raw += *raw_request_part;
+    RequestHandleState::State prev_state = _handle_state;
 
     while (true) {
-        if (_raw_parsed_size == _raw.size()) {
+        if (_handled_size == _raw.size()) {
             return RequestHandleStatus::WaitMoreData;
         }
 
-        switch (_process_state) {
+        switch (_handle_state) {
             case RequestHandleState::HandleFirstLine:
-                _process_state = ParseFirstLineHandler();
+                prev_state = _handle_state;
+                _handle_state = ParseFirstLineHandler();
                 break;
-            case RequestHandleState::HandleFirstLineWaitData:
-                _process_state = RequestHandleState::HandleFirstLine;
-                return RequestHandleStatus::WaitMoreData;
 
             case RequestHandleState::HandleHeader:
-                _process_state = ParseHeaderHandler();
+                prev_state = _handle_state;
+                _handle_state = ParseHeaderHandler();
                 break;
-            case RequestHandleState::HandleHeaderWaitData:
-                _process_state = RequestHandleState::HandleHeader;
-                return RequestHandleStatus::WaitMoreData;
 
-            case RequestHandleState::HandleBody:
-                _process_state = AnalyzeBodyHeadersHandler();
+            case RequestHandleState::AnalyzeBodyHeaders:
+                prev_state = _handle_state;
+                _handle_state = AnalyzeBodyHeadersHandler();
                 break;
-            case RequestHandleState::HandleBodyByChunk:
-                _process_state = ParseBodyByChunkHandler();
+
+            case RequestHandleState::HandleChunkSize:
+                prev_state = _handle_state;
+                _handle_state = ParseChunkSizeHandler();
                 break;
+
+            case RequestHandleState::HandleChunkBody:
+                prev_state = _handle_state;
+                _handle_state = ParseChunkBodyHandler();
+                break;
+
+            case RequestHandleState::HandleChunkTrailerPart:
+                prev_state = _handle_state;
+                _handle_state = ParseChunkTrailerPartHandler();
+                break;
+
             case RequestHandleState::HandleBodyByContentLength:
-                _process_state = ParseBodyByContentLengthHandler();
+                prev_state = _handle_state;
+                _handle_state = ParseBodyByContentLengthHandler();
                 break;
+
+            case RequestHandleState::WaitData:
+                _handle_state = prev_state;
+                return RequestHandleStatus::WaitMoreData;
 
             case RequestHandleState::FinishHandle:
                 return RequestHandleStatus::FinishWithSuccess;

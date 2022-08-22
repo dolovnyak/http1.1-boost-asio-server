@@ -6,7 +6,7 @@
 #define CR                  (char) '\r'
 #define LF                  (char) '\n'
 #define CRLF                "\r\n"
-#define SPACE_DELIMITERS    " \t\v"
+#define DELIMITERS    " \t\v\r"
 
 #define CONTENT_LENGTH "content-length"
 #define TRANSFER_ENCODING "transfer-encoding"

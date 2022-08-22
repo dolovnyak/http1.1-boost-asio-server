@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(web-server)
 
-#set(STANDARD98 1)
+set(STANDARD98 1)
 
 if (STANDARD98)
     set(CMAKE_CXX_STANDARD 98)
@@ -26,6 +26,7 @@ add_library(${WS_LIB}
         srcs/core/events/HandleHttpRequestEvent.cpp
         srcs/http/Request.cpp
         srcs/http/Response.cpp
+        srcs/http/parse/parse.cpp
         srcs/http/errors/HttpErrorCodePages.cpp
         srcs/http/errors/HttpException.cpp
         srcs/utilities/utilities.cpp
