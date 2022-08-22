@@ -16,12 +16,13 @@ namespace RequestHandleStatus {
 namespace RequestHandleState {
     enum State {
         HandleFirstLine = 0,
-        HandleFirstLineWaitData,
         HandleHeader,
-        HandleHeaderWaitData,
-        HandleBody,
-        HandleBodyByChunk,
+        AnalyzeBodyHeaders,
+        HandleChunkSize,
+        HandleChunkBody,
+        HandleChunkTrailerPart,
         HandleBodyByContentLength,
+        WaitData,
         FinishHandle,
     };
 }
@@ -33,7 +34,7 @@ struct HttpVersion {
 
 class Request {
 public:
-    Request() : _raw_parsed_size(0) {}
+    Request() : _handle_state(RequestHandleState::HandleFirstLine), _handled_size(0) {}
 
     RequestHandleStatus::Status Handle(SharedPtr<std::string> raw_request_part);
 
@@ -44,7 +45,11 @@ private:
 
     RequestHandleState::State ParseHeaderHandler();
 
-    RequestHandleState::State ParseBodyByChunkHandler();
+    RequestHandleState::State ParseChunkSizeHandler();
+
+    RequestHandleState::State ParseChunkBodyHandler();
+
+    RequestHandleState::State ParseChunkTrailerPartHandler();
 
     RequestHandleState::State ParseBodyByContentLengthHandler();
 
@@ -59,13 +64,17 @@ private:
 
     std::string _body;
 
+    /// TODO limit size on this and on headers and on body
     std::string _raw;
-
-    size_t _raw_parsed_size;
 
     std::unordered_map<std::string, std::string> _headers;
 
-    RequestHandleState::State _process_state;
+private: /// handle helpers
+    RequestHandleState::State _handle_state;
 
-    int _content_length;
+    size_t _handled_size;
+
+    size_t _content_length;
+
+    size_t _chunk_body_size;
 };

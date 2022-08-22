@@ -4,21 +4,25 @@
 #include "common.h"
 
 TEST(Utilities, Split_String_Basic) {
-    std::vector<std::string> tokens = SplitString("   \tAA \v Hello    World\t!   \t a ", SPACE_DELIMITERS);
+    std::vector<std::string> tokens = SplitString("   \tAA \v Hello    World\t!   \t a ", DELIMITERS);
     ASSERT_EQ(5, tokens.size());
     ASSERT_EQ("AA", tokens[0]);
     ASSERT_EQ("Hello", tokens[1]);
     ASSERT_EQ("World", tokens[2]);
     ASSERT_EQ("!", tokens[3]);
     ASSERT_EQ("a", tokens[4]);
+
+    tokens = SplitString("   World\t\t  ", DELIMITERS);
+    ASSERT_EQ(1, tokens.size());
+    ASSERT_EQ("World", tokens[0]);
 }
 
 TEST(Utilities, Split_String_Empty) {
-    std::vector<std::string> tokens = SplitString("    \t\v  ", SPACE_DELIMITERS);
+    std::vector<std::string> tokens = SplitString("    \t\v  ", DELIMITERS);
     ASSERT_EQ(0, tokens.size());
 
 
-    tokens = SplitString("", SPACE_DELIMITERS);
+    tokens = SplitString("", DELIMITERS);
     ASSERT_EQ(0, tokens.size());
 }
 
