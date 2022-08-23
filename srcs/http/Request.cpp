@@ -139,7 +139,7 @@ RequestHandleState::State Request::ParseChunkSizeHandler() {
         return RequestHandleState::WaitData;
     }
 
-    std::vector<std::string> tokens = SplitString(_raw.substr(_handled_size, chunk_size_end), DELIMITERS);
+    std::vector<std::string> tokens = SplitString(_raw.substr(_handled_size, chunk_size_end - _handled_size), DELIMITERS);
     if (tokens.empty()) {
         throw HttpException("ParseChunkSizeHandler", "Incorrect chunk size.", HttpError::BadRequest);
     }
@@ -147,7 +147,7 @@ RequestHandleState::State Request::ParseChunkSizeHandler() {
     try {
         _chunk_body_size = ParsePositiveInt(tokens[0], 16);
         /// for now just ignore chunk extensions
-        _handled_size += chunk_size_end + 1;
+        _handled_size = chunk_size_end + kCRLF.size();
     }
     catch (const std::exception& e) {
         throw HttpException("ParseChunkSizeHandler: " + std::string(e.what()), HttpError::BadRequest);
@@ -162,7 +162,7 @@ RequestHandleState::State Request::ParseChunkSizeHandler() {
 
 RequestHandleState::State Request::ParseChunkBodyHandler() {
     size_t raw_size_without_CRLF = _raw.size() - kCRLF.size();
-    if (raw_size_without_CRLF - _handled_size < _chunk_body_size) {
+    if (raw_size_without_CRLF < _handled_size + _chunk_body_size) {
         return RequestHandleState::WaitData;
     }
 
@@ -171,7 +171,7 @@ RequestHandleState::State Request::ParseChunkBodyHandler() {
     }
 
     _body += _raw.substr(_handled_size, _chunk_body_size);
-    _handled_size += _chunk_body_size + 2;
+    _handled_size += _chunk_body_size + kCRLF.size();
     return RequestHandleState::HandleChunkSize;
 }
 
@@ -182,6 +182,9 @@ RequestHandleState::State Request::ParseChunkTrailerPartHandler() {
     }
     /// for now ignore chunked trailer part data
     _content_length = _body.size();
+    _handled_size = trailer_end + kCRLF.size();
+    /// for now _handled_size could be lower than raw size if there are some spam after chunked trailer part
+    /// and for now I don't do anything with it, same as with content_length handling.
     return RequestHandleState::FinishHandle;
 }
 
@@ -192,13 +195,17 @@ RequestHandleState::State Request::ParseBodyByContentLengthHandler() {
     }
     else {
         _body += _raw.substr(_handled_size, _content_length);
-        _handled_size = _raw.size();
+        _handled_size += _content_length;
+        /// for now _handled_size could be lower than raw size if there are some spam after content_length
         return RequestHandleState::FinishHandle;
     }
 }
 
 RequestHandleStatus::Status Request::Handle(SharedPtr<std::string> raw_request_part) {
     _raw += *raw_request_part;
+    if (_raw.size() >= 1337) { /// TODO get value from config
+        throw HttpException("Request::Handle", "Request size is too big.", HttpError::BadRequest);
+    }
     RequestHandleState::State prev_state = _handle_state;
 
     while (true) {

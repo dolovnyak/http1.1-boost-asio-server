@@ -155,10 +155,9 @@ TEST(Request, Handle_FSM_Body_By_Content_Length) {
     EXPECT_NO_THROW(res = request.Handle(MakeShared(content_length_header)));
     ASSERT_EQ(request._headers[CONTENT_LENGTH], "10");
 
-    const std::string crln = "\r\n";
-    total_size += crln.size();
-    full_raw_request += crln;
-    EXPECT_NO_THROW(res = request.Handle(MakeShared(crln)));
+    total_size += kCRLF.size();
+    full_raw_request += kCRLF;
+    EXPECT_NO_THROW(res = request.Handle(MakeShared(kCRLF)));
     ASSERT_EQ(res, RequestHandleStatus::WaitMoreData);
     ASSERT_EQ(request._handle_state, RequestHandleState::HandleBodyByContentLength);
     ASSERT_EQ(request._handled_size, total_size);
@@ -171,8 +170,8 @@ TEST(Request, Handle_FSM_Body_By_Content_Length) {
     EXPECT_NO_THROW(res = request.Handle(MakeShared(body + "a")));
     ASSERT_EQ(res, RequestHandleStatus::Finish);
     ASSERT_EQ(request._handle_state, RequestHandleState::FinishHandle);
-    ASSERT_EQ(request._handled_size, total_size + 1);
-    ASSERT_EQ(request._raw, full_raw_request + "a");
+    ASSERT_EQ(request._handled_size, total_size);
+    ASSERT_EQ(request._raw, full_raw_request + "a"); // handled_size different with full_raw_request size
     ASSERT_EQ(request._body, body);
 }
 
@@ -182,6 +181,7 @@ TEST(Request, Handle_FSM_Chunked_Body) {
 
     size_t total_size = 0;
     std::string full_raw_request;
+    std::string full_body;
 
     const std::string first_line = "\r\n\r\n\r\n   GET \r  /   HTTP/1.1  \r\n";
     total_size = first_line.size();
@@ -198,7 +198,57 @@ TEST(Request, Handle_FSM_Chunked_Body) {
     const std::string chunk1 = "5\r\n01234\r\n";
     total_size += chunk1.size();
     full_raw_request += chunk1;
+    full_body += "01234";
     EXPECT_NO_THROW(res = request.Handle(MakeShared(chunk1)));
     ASSERT_EQ(res, RequestHandleStatus::WaitMoreData);
     ASSERT_EQ(request._handle_state, RequestHandleState::HandleChunkSize);
+    ASSERT_EQ(request._handled_size, total_size);
+    ASSERT_EQ(request._raw, full_raw_request);
+    ASSERT_EQ(request._body, "01234");
+    ASSERT_EQ(request._chunk_body_size, 5);
+
+    const std::string chunk2_size = "E aaaa \t\t bbb \r\r\r ccc  \r\n";
+    total_size += chunk2_size.size();
+    full_raw_request += chunk2_size;
+    EXPECT_NO_THROW(res = request.Handle(MakeShared(chunk2_size)));
+    ASSERT_EQ(res, RequestHandleStatus::WaitMoreData);
+    ASSERT_EQ(request._handle_state, RequestHandleState::HandleChunkBody);
+    ASSERT_EQ(request._handled_size, total_size);
+    ASSERT_EQ(request._raw, full_raw_request);
+    ASSERT_EQ(request._chunk_body_size, 14);
+
+    const std::string chunk2_body = "123456789abcde";
+    full_body += chunk2_body;
+    total_size += chunk2_body.size();
+    full_raw_request += chunk2_body;
+
+    /// check error
+    Request check_incorrect_chunk_request = request;
+    EXPECT_NO_THROW(res = check_incorrect_chunk_request.Handle(MakeShared(chunk2_body + "f")));
+    ASSERT_EQ(res, RequestHandleStatus::WaitMoreData);
+    EXPECT_ANY_THROW(res = check_incorrect_chunk_request.Handle(MakeShared(kCRLF)));
+    /// end check error
+
+    EXPECT_NO_THROW(res = request.Handle(MakeShared(chunk2_body)));
+    ASSERT_EQ(res, RequestHandleStatus::WaitMoreData);
+
+    total_size += kCRLF.size();
+    full_raw_request += kCRLF;
+    EXPECT_NO_THROW(res = request.Handle(MakeShared(kCRLF)));
+    ASSERT_EQ(res, RequestHandleStatus::WaitMoreData);
+    ASSERT_EQ(request._handle_state, RequestHandleState::HandleChunkSize);
+    ASSERT_EQ(request._handled_size, total_size);
+    ASSERT_EQ(request._raw, full_raw_request);
+    ASSERT_EQ(request._body, full_body);
+
+    const std::string chunk_end = "0\r\n\r\n";
+    total_size += chunk_end.size();
+    full_raw_request += chunk_end;
+    EXPECT_NO_THROW(res = request.Handle(MakeShared(chunk_end + "a")));
+    ASSERT_EQ(res, RequestHandleStatus::Finish);
+    ASSERT_EQ(request._handle_state, RequestHandleState::FinishHandle);
+    ASSERT_EQ(request._handled_size, total_size);
+    ASSERT_EQ(request._raw, full_raw_request + "a"); /// for now raw_request could contain spam data in the end
+    ASSERT_EQ(request._body, full_body);
+    ASSERT_EQ(request._content_length, full_body.size());
 }
