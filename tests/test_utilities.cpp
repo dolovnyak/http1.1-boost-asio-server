@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "utilities.h"
-#include "common.h"
+#include "Http.h"
 
 TEST(Utilities, Split_String_Basic) {
     std::vector<std::string> tokens = SplitString("   \tAA \v Hello    World\t!   \t a ", DELIMITERS);
@@ -39,5 +39,37 @@ TEST(Utilities, Strip_String_Empty) {
     ASSERT_EQ("", str);
 
     str = StripString("   \t\v  ");
+    ASSERT_EQ("", str);
+}
+
+TEST(Utilities, Find_In_Range_Basic) {
+    size_t pos = FindInRange("AA \t Hello    World!\v\t", "Hello", 0, std::string::npos);
+    ASSERT_EQ(5, pos);
+    pos = FindInRange("AA \t Hello    World!\v\t", "Hello", 5, 9);
+    ASSERT_EQ(5, pos);
+    pos = FindInRange("AA \t Hello    World!\v\t", "Hello", 5, 8);
+    ASSERT_EQ(std::string::npos, pos);
+    pos = FindInRange("A q1241352453245345", "A", 0, 0);
+    ASSERT_EQ(0, pos);
+    pos = FindInRange("AA q1241352453245345", "AA", 0, 0);
+    ASSERT_EQ(std::string::npos, pos);
+    pos = FindInRange("AA q1241352453245345", "AA", 0, 1);
+    ASSERT_EQ(0, pos);
+}
+
+TEST(Utilities, Find_In_Range_Empty) {
+    size_t pos = FindInRange("", "", 0, 0);
+    ASSERT_EQ(std::string::npos, pos);
+    pos = FindInRange("", "", 0, std::string::npos);
+    ASSERT_EQ(std::string::npos, pos);
+}
+
+TEST(Utilities, To_Lower_Basic) {
+    std::string str = ToLower("AA \t Hello    World!\v\t");
+    ASSERT_EQ("aa \t hello    world!\v\t", str);
+}
+
+TEST(Utilities, To_Lower_Empty) {
+    std::string str = ToLower("");
     ASSERT_EQ("", str);
 }

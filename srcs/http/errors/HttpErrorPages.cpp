@@ -1,8 +1,7 @@
-#include "HttpErrorCodePages.h"
-#include <stdexcept>
+#include "HttpErrorPages.h"
 
 namespace {
-    const char k301[] =
+    const std::string k301 =
             "<html>" CRLF
             "<head><title>301 Moved Permanently</title></head>" CRLF
             "<body>" CRLF
@@ -11,7 +10,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k302[] =
+    const std::string k302 =
             "<html>" CRLF
             "<head><title>302 Found</title></head>" CRLF
             "<body>" CRLF
@@ -20,7 +19,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k303[] =
+    const std::string k303 =
             "<html>" CRLF
             "<head><title>303 See Other</title></head>" CRLF
             "<body>" CRLF
@@ -29,7 +28,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k307[] =
+    const std::string k307 =
             "<html>" CRLF
             "<head><title>307 Temporary Redirect</title></head>" CRLF
             "<body>" CRLF
@@ -38,7 +37,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k308[] =
+    const std::string k308 =
             "<html>" CRLF
             "<head><title>308 Permanent Redirect</title></head>" CRLF
             "<body>" CRLF
@@ -47,7 +46,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k400[] =
+    const std::string k400 =
             "<html>" CRLF
             "<head><title>400 Bad Request</title></head>" CRLF
             "<body>" CRLF
@@ -56,7 +55,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k401[] =
+    const std::string k401 =
             "<html>" CRLF
             "<head><title>401 Authorization Required</title></head>" CRLF
             "<body>" CRLF
@@ -65,7 +64,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k402[] =
+    const std::string k402 =
             "<html>" CRLF
             "<head><title>402 Payment Required</title></head>" CRLF
             "<body>" CRLF
@@ -74,7 +73,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k403[] =
+    const std::string k403 =
             "<html>" CRLF
             "<head><title>403 Forbidden</title></head>" CRLF
             "<body>" CRLF
@@ -83,7 +82,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k404[] =
+    const std::string k404 =
             "<html>" CRLF
             "<head><title>404 Not Found</title></head>" CRLF
             "<body>" CRLF
@@ -92,7 +91,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k405[] =
+    const std::string k405 =
             "<html>" CRLF
             "<head><title>405 Not Allowed</title></head>" CRLF
             "<body>" CRLF
@@ -101,7 +100,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k406[] =
+    const std::string k406 =
             "<html>" CRLF
             "<head><title>406 Not Acceptable</title></head>" CRLF
             "<body>" CRLF
@@ -110,7 +109,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k408[] =
+    const std::string k408 =
             "<html>" CRLF
             "<head><title>408 Request Time-out</title></head>" CRLF
             "<body>" CRLF
@@ -119,7 +118,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k409[] =
+    const std::string k409 =
             "<html>" CRLF
             "<head><title>409 Conflict</title></head>" CRLF
             "<body>" CRLF
@@ -128,7 +127,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k410[] =
+    const std::string k410 =
             "<html>" CRLF
             "<head><title>410 Gone</title></head>" CRLF
             "<body>" CRLF
@@ -137,7 +136,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k411[] =
+    const std::string k411 =
             "<html>" CRLF
             "<head><title>411 Length Required</title></head>" CRLF
             "<body>" CRLF
@@ -146,7 +145,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k412[] =
+    const std::string k412 =
             "<html>" CRLF
             "<head><title>412 Precondition Failed</title></head>" CRLF
             "<body>" CRLF
@@ -155,7 +154,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k413[] =
+    const std::string k413 =
             "<html>" CRLF
             "<head><title>413 Request Entity Too Large</title></head>" CRLF
             "<body>" CRLF
@@ -164,7 +163,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k414[] =
+    const std::string k414 =
             "<html>" CRLF
             "<head><title>414 Request-URI Too Large</title></head>" CRLF
             "<body>" CRLF
@@ -173,7 +172,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k415[] =
+    const std::string k415 =
             "<html>" CRLF
             "<head><title>415 Unsupported Media Type</title></head>" CRLF
             "<body>" CRLF
@@ -182,7 +181,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k416[] =
+    const std::string k416 =
             "<html>" CRLF
             "<head><title>416 Requested Range Not Satisfiable</title></head>" CRLF
             "<body>" CRLF
@@ -191,7 +190,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k421[] =
+    const std::string k421 =
             "<html>" CRLF
             "<head><title>421 Misdirected Request</title></head>" CRLF
             "<body>" CRLF
@@ -200,7 +199,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k429[] =
+    const std::string k429 =
             "<html>" CRLF
             "<head><title>429 Too Many Requests</title></head>" CRLF
             "<body>" CRLF
@@ -209,7 +208,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k494[] =
+    const std::string k494 =
             "<html>" CRLF
             "<head><title>400 Request Header Or Cookie Too Large</title></head>" CRLF
             "<body>" CRLF
@@ -219,7 +218,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k495[] =
+    const std::string k495 =
             "<html>" CRLF
             "<head><title>400 The SSL certificate error</title></head>" CRLF
             "<body>" CRLF
@@ -229,7 +228,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k496[] =
+    const std::string k496 =
             "<html>" CRLF
             "<head><title>400 No required SSL certificate was sent</title></head>" CRLF
             "<body>" CRLF
@@ -239,7 +238,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k497[] =
+    const std::string k497 =
             "<html>" CRLF
             "<head><title>400 The plain HTTP request was sent to HTTPS port</title></head>" CRLF
             "<body>" CRLF
@@ -249,7 +248,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k500[] =
+    const std::string k500 =
             "<html>" CRLF
             "<head><title>500 Internal Server Error</title></head>" CRLF
             "<body>" CRLF
@@ -258,7 +257,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k501[] =
+    const std::string k501 =
             "<html>" CRLF
             "<head><title>501 Not Implemented</title></head>" CRLF
             "<body>" CRLF
@@ -267,7 +266,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k502[] =
+    const std::string k502 =
             "<html>" CRLF
             "<head><title>502 Bad Gateway</title></head>" CRLF
             "<body>" CRLF
@@ -276,7 +275,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k503[] =
+    const std::string k503 =
             "<html>" CRLF
             "<head><title>503 Service Temporarily Unavailable</title></head>" CRLF
             "<body>" CRLF
@@ -285,7 +284,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k504[] =
+    const std::string k504 =
             "<html>" CRLF
             "<head><title>504 Gateway Time-out</title></head>" CRLF
             "<body>" CRLF
@@ -294,7 +293,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k505[] =
+    const std::string k505 =
             "<html>" CRLF
             "<head><title>505 HTTP Version Not Supported</title></head>" CRLF
             "<body>" CRLF
@@ -303,7 +302,7 @@ namespace {
             "</html>" CRLF;
 
 
-    const char k507[] =
+    const std::string k507 =
             "<html>" CRLF
             "<head><title>507 Insufficient Storage</title></head>" CRLF
             "<body>" CRLF
@@ -312,13 +311,18 @@ namespace {
             "</html>" CRLF;
 }
 
-const char* HttpErrorCodePages::GetByErrorCode(HttpError::Code code) {
-    switch (code) {
-        case HttpError::BadRequest:
-            return k400;
-        case HttpError::NotFound:
-            return k404;
-        case HttpError::MethodNotAllowed:
-            return k405;
-    }
+
+    std::string GetHttpErrorPageByCode(Http::Code code) {
+        switch (code) {
+            case Http::BadRequest:
+                return k400;
+            case Http::NotFound:
+                return k404;
+            case Http::MethodNotAllowed:
+                return k405;
+            case Http::NotImplemented:
+                return k501;
+            default:
+                throw std::logic_error("Incorrect code value in GetHttpErrorPageByCode");
+        }
 }

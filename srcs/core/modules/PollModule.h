@@ -32,6 +32,6 @@ private:
     bool _should_compress;
 
     std::unordered_map<int, SharedPtr<ServerInstance> > _servers;
-    std::unordered_map<int, SharedPtr<Connection> > _connections;
+    std::unordered_map<int, SharedPtr<HttpConnection> > _connections;
     std::queue<SharedPtr<Event> >* _event_queue;
 };

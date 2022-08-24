@@ -40,8 +40,12 @@ std::vector<std::string> SplitString(const std::string& str, const std::string& 
 }
 
 size_t FindInRange(const std::string& str, const std::string& substr, size_t start, size_t end) {
+    if (str.empty() || substr.empty() || start >= str.size() || start > end) {
+        return std::string::npos;
+    }
+
     size_t pos = str.find(substr, start);
-    if (pos == std::string::npos || pos >= end) {
+    if (pos == std::string::npos || pos + substr.size() - 1 > end) {
         return std::string::npos;
     }
     return pos;
@@ -51,4 +55,13 @@ std::string ToLower(const std::string& str) {
     std::string result;
     std::transform(str.begin(), str.end(), std::back_inserter(result), std::tolower);
     return result;
+}
+
+std::string GetCurrentDateTime() {
+    time_t rawtime;
+    time(&rawtime);
+    struct tm* timeinfo = localtime(&rawtime);
+    char buffer[80];
+    strftime(buffer, sizeof(buffer), "%a, %d %b %Y %H:%M:%S %Z", timeinfo);
+    return std::string(buffer);
 }
