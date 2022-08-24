@@ -1,5 +1,7 @@
 #pragma once
 
+#ifndef _STANDARD98
+
 #include <string>
 #include <iostream>
 
@@ -216,22 +218,7 @@ public:
     };
 };
 
-#ifdef _STANDARD98
-#define LOG_SUCCESS(...)
-#define LOG_SUCCESS_BG(...)
-#define LOG_IMPORTANT(...)
-#define LOG_IMPORTANT_BG(...)
-#define LOG_INFO(...)
-#define LOG_INFO_BG(...)
-#define LOG_DEBUG(...)
-#define LOG_DEBUG_BG(...)
-#define LOG_WARNING(...)
-#define LOG_WARNING_BG(...)
-#define LOG_ERROR(...)
-#define LOG_ERROR_BG(...)
-#define LOG_PERROR(...)
-#define LOG_PERROR_BG(...)
-#elif _DEBUG
+#ifdef _DEBUG
 #define LOG_SUCCESS(...)        Log::Success(__VA_ARGS__)
 #define LOG_SUCCESS_BG(...)     Log::SuccessBg(__VA_ARGS__)
 #define LOG_IMPORTANT(...)      Log::Important(__VA_ARGS__)
@@ -261,4 +248,24 @@ public:
 #define LOG_ERROR_BG(...)       Log::ErrorBg(__VA_ARGS__)
 #define LOG_PERROR(...)         Log::Perror(__VA_ARGS__)
 #define LOG_PERROR_BG(...)      Log::PerrorBg(__VA_ARGS__)
+#endif
+
+
+#else  /// _STANDARD98
+
+#define LOG_SUCCESS(...)
+#define LOG_SUCCESS_BG(...)
+#define LOG_IMPORTANT(...)
+#define LOG_IMPORTANT_BG(...)
+#define LOG_INFO(...)
+#define LOG_INFO_BG(...)
+#define LOG_DEBUG(...)
+#define LOG_DEBUG_BG(...)
+#define LOG_WARNING(...)
+#define LOG_WARNING_BG(...)
+#define LOG_ERROR(...)
+#define LOG_ERROR_BG(...)
+#define LOG_PERROR(...)
+#define LOG_PERROR_BG(...)
+
 #endif

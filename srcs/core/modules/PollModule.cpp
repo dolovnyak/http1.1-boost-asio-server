@@ -1,11 +1,13 @@
 #include "PollModule.h"
 #include "Logging.h"
+#include "HandleIncomingDataEvent.h"
 
 #include <sys/ioctl.h>
 #include <sys/poll.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
+
 
 bool PollModule::Setup(const Config& config, std::queue<SharedPtr<Event> >* event_queue) {
     _event_queue = event_queue;
@@ -28,7 +30,7 @@ bool PollModule::Setup(const Config& config, std::queue<SharedPtr<Event> >* even
         }
 
         if (setsockopt(listening_socket_fd, SOL_SOCKET, SO_REUSEADDR, (char*)&option_value, sizeof(option_value)) < 0) {
-            Log::Perror("Failed to set socket options");
+            LOG_PERROR("Failed to set socket options");
             close(listening_socket_fd);
             return false;
         }
@@ -104,7 +106,7 @@ void PollModule::ProcessEvents(int timeout) {
         }
         else {
             if (_poll_fds[i].revents & (POLLHUP | POLLNVAL)) {
-                LOG_INFO("Connection closed: ", _poll_fds[i].fd);
+                LOG_INFO("HttpConnection closed: ", _poll_fds[i].fd);
                 CloseConnection(i);
             }
             else {
@@ -134,28 +136,32 @@ void PollModule::ProcessNewConnection(int index) {
         LOG_INFO("New connection: ", new_connection_fd);
         _poll_fds[_poll_fds_number].fd = new_connection_fd;
         _poll_fds[_poll_fds_number].events = POLLIN;
-        struct pollfd* new_connection_pollfd_ptr = &_poll_fds[_poll_fds_number];
         ++_poll_fds_number;
 
-        SharedPtr<Connection> connection = MakeShared(
-                Connection(new_connection_fd, _servers.at(_poll_fds[index].fd)));
-        _connections.insert(std::pair<int, SharedPtr<Connection> >(new_connection_fd, connection));
+        SharedPtr<HttpConnection> connection = MakeShared(
+                HttpConnection(new_connection_fd, _servers.at(_poll_fds[index].fd)));
+
+        _connections.insert(std::pair<int, SharedPtr<HttpConnection> >(new_connection_fd, connection));
     }
 }
 
 void PollModule::ProcessRead(int index) {
     LOG_INFO("Read processing");
-    char buffer[8];
+    char buffer[8]; /// TODO get from config
 
     LOG_DEBUG("Reading...");
     ssize_t bytes_read = recv(_poll_fds[index].fd, buffer, sizeof(buffer), 0);
-    std::shared_ptr<std::string> raw_request = std::make_shared<std::string>(buffer, bytes_read);
+    SharedPtr<std::string> raw_request_part = MakeShared<std::string>(std::string(buffer, bytes_read));
     LOG_DEBUG("Bytes read: ", bytes_read);
 
     if (bytes_read < 0) {
         if (errno == EWOULDBLOCK || errno == EAGAIN) {
             LOG_WARNING("Something strange in ProcessRead");
-            /// TODO make parse event and push it to queue
+
+            _event_queue->push(MakeShared<Event>(new HandleIncomingDataEvent(
+                    _connections.at(_poll_fds[index].fd),
+                    raw_request_part,
+                    _event_queue)));
         }
         else {
             LOG_PERROR("Failed to read from socket");
@@ -163,17 +169,20 @@ void PollModule::ProcessRead(int index) {
         }
     }
     else if (bytes_read == 0) {
-        LOG_INFO("Connection closed by client: ", _poll_fds[index].fd);
+        LOG_INFO("HttpConnection closed by client: ", _poll_fds[index].fd);
         CloseConnection(index);
     }
     else {
-        /// TODO make parse event and push it to queue
+        _event_queue->push(MakeShared<Event>(new HandleIncomingDataEvent(
+                _connections.at(_poll_fds[index].fd),
+                raw_request_part,
+                _event_queue)));
     }
 }
 
 void PollModule::ProcessWrite(int index) {
     LOG_INFO("Write processing");
-    std::string response = _connections.at(_poll_fds[index].fd)->response.body;
+    std::string response = _connections.at(_poll_fds[index].fd)->response->raw_response;
     ssize_t bytes_send = send(_poll_fds[index].fd, response.c_str(), response.size(), 0);
 
     if (bytes_send < 0) {
@@ -185,7 +194,8 @@ void PollModule::ProcessWrite(int index) {
 }
 
 void PollModule::CloseConnection(int index) {
-    _connections.at(_poll_fds[index].fd)->still_available = false; /// Needed for events check is connection still available before change it
+//    _connections.at(
+//            _poll_fds[index].fd)->_available = false; /// Needed for events check is connection still available before change it
     _connections.erase(_poll_fds[index].fd);
 
     close(_poll_fds[index].fd);

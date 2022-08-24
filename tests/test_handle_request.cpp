@@ -4,6 +4,7 @@
 
 #include "Request.h"
 #include "SharedPtr.h"
+#include "Http.h"
 
 TEST(Request, Check_Init) {
     Request request;
@@ -94,7 +95,7 @@ TEST(Request, Handle_FSM_Headers) {
     ASSERT_EQ(request._handled_size, total_size);
     ASSERT_EQ(request._raw, full_raw_request);
     ASSERT_EQ(request._headers.size(), 1);
-    ASSERT_EQ(request._headers["host"], "123");
+    ASSERT_EQ(request._headers["host"][0], "123");
 
     const std::string check1_header = "check1:  \r\t   1  \t  2  3    \r\n";
     total_size += check1_header.size();
@@ -105,7 +106,7 @@ TEST(Request, Handle_FSM_Headers) {
     ASSERT_EQ(request._handled_size, total_size);
     ASSERT_EQ(request._raw, full_raw_request);
     ASSERT_EQ(request._headers.size(), 2);
-    ASSERT_EQ(request._headers["check1"], "1  \t  2  3"); /// because of strip
+    ASSERT_EQ(request._headers["check1"][0], "1  \t  2  3"); /// because of strip
 
     const std::string check2_header_part1 = "check2: \t first part, ";
     full_raw_request += check2_header_part1;
@@ -125,7 +126,7 @@ TEST(Request, Handle_FSM_Headers) {
     ASSERT_EQ(request._handled_size, total_size);
     ASSERT_EQ(request._raw, full_raw_request);
     ASSERT_EQ(request._headers.size(), 3);
-    ASSERT_EQ(request._headers["check2"], "first part, second part");
+    ASSERT_EQ(request._headers["check2"][0], "first part, second part");
 
     const std::string crln = "\r\n";
     full_raw_request += crln;
@@ -153,7 +154,7 @@ TEST(Request, Handle_FSM_Body_By_Content_Length) {
     total_size += content_length_header.size();
     full_raw_request += content_length_header;
     EXPECT_NO_THROW(res = request.Handle(MakeShared(content_length_header)));
-    ASSERT_EQ(request._headers[CONTENT_LENGTH], "10");
+    ASSERT_EQ(request._headers[CONTENT_LENGTH][0], "10");
 
     total_size += kCRLF.size();
     full_raw_request += kCRLF;
@@ -192,7 +193,7 @@ TEST(Request, Handle_FSM_Chunked_Body) {
     total_size += transfer_encoding_header.size();
     full_raw_request += transfer_encoding_header;
     EXPECT_NO_THROW(res = request.Handle(MakeShared(transfer_encoding_header)));
-    ASSERT_EQ(request._headers[TRANSFER_ENCODING], "chunked");
+    ASSERT_EQ(request._headers[TRANSFER_ENCODING][0], "chunked");
     ASSERT_EQ(request._handle_state, RequestHandleState::HandleChunkSize);
 
     const std::string chunk1 = "5\r\n01234\r\n";

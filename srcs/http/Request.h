@@ -1,10 +1,10 @@
 #pragma once
 
 #include "SharedPtr.h"
-#include "common.h"
 
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 namespace RequestHandleStatus {
     enum Status {
@@ -70,7 +70,7 @@ private:
     /// TODO limit size on this and on headers and on body
     std::string _raw;
 
-    std::unordered_map<std::string, std::string> _headers;
+    std::unordered_map<std::string, std::vector<std::string> > _headers;
 
 private: /// handle helpers
     RequestHandleState::State _handle_state;
