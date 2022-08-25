@@ -5,14 +5,13 @@
 #define CR                  (char) '\r'
 #define LF                  (char) '\n'
 #define CRLF                "\r\n"
+#define CRLF_LEN            2
 #define DELIMITERS          " \f\n\r\t\v" /// from std::isspace
 
 #define CONTENT_LENGTH "content-length"
+
 #define TRANSFER_ENCODING "transfer-encoding"
-
 #define CHUNKED "chunked"
-
-const std::string kCRLF = "\r\n";
 
 namespace Http {
 

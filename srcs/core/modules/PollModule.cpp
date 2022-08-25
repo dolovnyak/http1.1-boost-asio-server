@@ -63,9 +63,9 @@ bool PollModule::Setup(const Config& config, std::queue<SharedPtr<Event> >* even
         _poll_fds[_poll_fds_number].events = POLLIN;
         ++_poll_fds_number;
 
-        SharedPtr<ServerInstance> server_instance = MakeShared(
-                ServerInstance(listening_socket_fd, server_config.name));
-        _servers.insert(std::pair<int, SharedPtr<ServerInstance> >(listening_socket_fd, server_instance));
+        SharedPtr<ServerInfo> server_instance = MakeShared(
+                ServerInfo(listening_socket_fd, server_config.name));
+        _servers.insert(std::pair<int, SharedPtr<ServerInfo> >(listening_socket_fd, server_instance));
     }
 
     if (_servers.empty()) {
@@ -77,12 +77,13 @@ bool PollModule::Setup(const Config& config, std::queue<SharedPtr<Event> >* even
 }
 
 void PollModule::ProcessEvents(int timeout) {
+    ProcessCompress();
+
     LOG_DEBUG("Before PollModule, available sockets num: ", _poll_fds_number);
     if (poll(_poll_fds, _poll_fds_number, timeout) < 0) {
         LOG_PERROR("Failed to poll");
         return;
     }
-    LOG_DEBUG("After PollModule");
 
     int current_size = _poll_fds_number;
     for (int i = 0; i < current_size; i++) {
@@ -106,7 +107,7 @@ void PollModule::ProcessEvents(int timeout) {
         }
         else {
             if (_poll_fds[i].revents & (POLLHUP | POLLNVAL)) {
-                LOG_INFO("HttpConnection closed: ", _poll_fds[i].fd);
+                LOG_INFO("Connection closed: ", _poll_fds[i].fd);
                 CloseConnection(i);
             }
             else {
@@ -115,8 +116,6 @@ void PollModule::ProcessEvents(int timeout) {
             }
         }
     }
-
-    ProcessCompress();
 }
 
 void PollModule::ProcessNewConnection(int index) {
@@ -136,12 +135,13 @@ void PollModule::ProcessNewConnection(int index) {
         LOG_INFO("New connection: ", new_connection_fd);
         _poll_fds[_poll_fds_number].fd = new_connection_fd;
         _poll_fds[_poll_fds_number].events = POLLIN;
+
+        SharedPtr<Connection<PollModule>> connection = MakeShared(
+                Connection<PollModule>(_poll_fds_number, _servers.at(_poll_fds[index].fd), this));
+
+        _connections.insert(std::pair<int, SharedPtr<Connection<PollModule>>>(_poll_fds_number, connection));
+
         ++_poll_fds_number;
-
-        SharedPtr<HttpConnection> connection = MakeShared(
-                HttpConnection(new_connection_fd, _servers.at(_poll_fds[index].fd)));
-
-        _connections.insert(std::pair<int, SharedPtr<HttpConnection> >(new_connection_fd, connection));
     }
 }
 
@@ -155,26 +155,16 @@ void PollModule::ProcessRead(int index) {
     LOG_DEBUG("Bytes read: ", bytes_read);
 
     if (bytes_read < 0) {
-        if (errno == EWOULDBLOCK || errno == EAGAIN) {
-            LOG_WARNING("Something strange in ProcessRead");
-
-            _event_queue->push(MakeShared<Event>(new HandleIncomingDataEvent(
-                    _connections.at(_poll_fds[index].fd),
-                    raw_request_part,
-                    _event_queue)));
-        }
-        else {
-            LOG_PERROR("Failed to read from socket");
-            CloseConnection(index);
-        }
+        LOG_PERROR("Failed to read from socket");
+        CloseConnection(index);
     }
     else if (bytes_read == 0) {
-        LOG_INFO("HttpConnection closed by client: ", _poll_fds[index].fd);
+        LOG_INFO("Connection closed by client: ", _poll_fds[index].fd);
         CloseConnection(index);
     }
     else {
-        _event_queue->push(MakeShared<Event>(new HandleIncomingDataEvent(
-                _connections.at(_poll_fds[index].fd),
+        _event_queue->push(MakeShared<Event>(new HandleIncomingDataEvent<PollModule>(
+                _connections.at(index),
                 raw_request_part,
                 _event_queue)));
     }
@@ -182,7 +172,11 @@ void PollModule::ProcessRead(int index) {
 
 void PollModule::ProcessWrite(int index) {
     LOG_INFO("Write processing");
-    std::string response = _connections.at(_poll_fds[index].fd)->response->raw_response;
+
+    SharedPtr<Connection<PollModule> > connection = _connections.at(index);
+    std::string response = connection->response->raw_response;
+
+    /// TODO maybe it will be needed to make chunked write.
     ssize_t bytes_send = send(_poll_fds[index].fd, response.c_str(), response.size(), 0);
 
     if (bytes_send < 0) {
@@ -190,30 +184,37 @@ void PollModule::ProcessWrite(int index) {
     }
     LOG_INFO("Bytes send: ", bytes_send);
 
-    CloseConnection(index);
+    if (connection->should_close_after_send) {
+        CloseConnection(index);
+    }
 }
 
 void PollModule::CloseConnection(int index) {
-//    _connections.at(
-//            _poll_fds[index].fd)->_available = false; /// Needed for events check is connection still available before change it
-    _connections.erase(_poll_fds[index].fd);
-
+    LOG_INFO("Close connection: ", _poll_fds[index].fd);
+    _connections.at(index)->available = false;
     close(_poll_fds[index].fd);
+    _connections.erase(index);
     _poll_fds[index].fd = -1;
     _should_compress = true;
 }
 
 void PollModule::ProcessCompress() {
-    if (_should_compress) {
-        LOG_INFO("Compress fds processing");
-        for (int i = 0; i < _poll_fds_number; ++i) {
-            if (_poll_fds[i].fd == -1) {
-                for (int j = i; j < _poll_fds_number; ++j) {
-                    _poll_fds[j].fd = _poll_fds[j + 1].fd;
-                }
-                --i;
-                --_poll_fds_number;
+    if (!_should_compress)
+        return;
+    _should_compress = false;
+
+    LOG_INFO("Compressing...");
+    for (int i = 0; i < _poll_fds_number; ++i) {
+        if (_poll_fds[i].fd == -1) {
+            for (int j = i; j < _poll_fds_number; ++j) {
+                _poll_fds[j].fd = _poll_fds[j + 1].fd;
             }
+            --i;
+            --_poll_fds_number;
         }
     }
+}
+
+void PollModule::SendDataToClient(int index) {
+    _poll_fds[index].events = POLLOUT;
 }
