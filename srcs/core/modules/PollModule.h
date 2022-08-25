@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Config.h"
-#include "ServerInstance.h"
+#include "ServerInfo.h"
 #include "Event.h"
 #include "SharedPtr.h"
 
@@ -24,14 +24,19 @@ private:
 
     void ProcessCompress();
 
+private: /// for connection communication
+    void SendDataToClient(int index);
+
     void CloseConnection(int index);
+
+    friend class Connection<PollModule>;
 
 private:
     int _poll_fds_number;
     struct pollfd* _poll_fds;
     bool _should_compress;
 
-    std::unordered_map<int, SharedPtr<ServerInstance> > _servers;
-    std::unordered_map<int, SharedPtr<HttpConnection> > _connections;
+    std::unordered_map<int, SharedPtr<ServerInfo> > _servers;
+    std::unordered_map<int, SharedPtr<Connection<PollModule>> > _connections;
     std::queue<SharedPtr<Event> >* _event_queue;
 };

@@ -8,15 +8,15 @@
 typedef std::unordered_map<std::string, std::vector<std::string> >::iterator HeaderIterator;
 
 namespace {
-    HttpVersion ParseHttpVersion(const std::string& raw_http_version) {
+    HttpVersion ParseHttpVersion(const std::string& raw_http_version, const SharedPtr<ServerInfo>& server_instance_info) {
         std::vector<std::string> tokens = SplitString(raw_http_version, "/");
         if (tokens.size() != 2 || tokens[0] != "HTTP") {
-            throw BadHttpVersion("Incorrect HTTP version");
+            throw BadHttpVersion("Incorrect HTTP version", server_instance_info);
         }
 
         std::vector<std::string> version_tokens = SplitString(tokens[1], ".");
         if (version_tokens.size() != 2) {
-            throw BadHttpVersion("Incorrect HTTP version");
+            throw BadHttpVersion("Incorrect HTTP version", server_instance_info);
         }
 
         try {
@@ -27,70 +27,73 @@ namespace {
             return http_version;
         }
         catch (const std::exception& e) {
-            throw BadHttpVersion("Incorrect HTTP version" + std::string(e.what()));
+            throw BadHttpVersion("Incorrect HTTP version" + std::string(e.what()), server_instance_info);
         }
     }
 }
 
-Request::Request()
-        : _handle_state(RequestHandleState::HandleFirstLine),
+Request::Request(SharedPtr<ServerInfo> server_instance_info)
+        : _server_instance_info(server_instance_info),
+          _handle_state(RequestHandleState::HandleFirstLine),
           _handled_size(0),
           _content_length(0),
           _chunk_body_size(0) {}
 
 RequestHandleState::State Request::ParseFirstLineHandler() {
-    size_t first_line_end = _raw.find(kCRLF, _handled_size);
+    size_t first_line_end = _raw.find(CRLF, _handled_size);
 
     if (first_line_end == std::string::npos) {
         return RequestHandleState::WaitData;
     }
     else if (first_line_end == _handled_size) {
-        _handled_size += kCRLF.size();  /// skip empty lines
+        /// skip empty lines
+        _handled_size += CRLF_LEN;
         return RequestHandleState::HandleFirstLine;
     }
 
     std::vector<std::string> tokens = SplitString(_raw.substr(_handled_size, first_line_end - _handled_size),
                                                   DELIMITERS);
     if (tokens.size() != 3) {
-        throw BadFirstLine("Incorrect first line");
+        throw BadFirstLine("Incorrect first line", _server_instance_info);
     }
     _method = tokens[0];
 
     _resource_target = tokens[1];
     if (_resource_target[0] != '/') {
-        throw BadFirstLine("Incorrect first line");
+        throw BadFirstLine("Incorrect first line", _server_instance_info);
     }
 
-    _http_version = ParseHttpVersion(tokens[2]);
+    _http_version = ParseHttpVersion(tokens[2],_server_instance_info);
 
-    _handled_size = first_line_end + kCRLF.size();
+    _handled_size = first_line_end + CRLF_LEN;
 
     return RequestHandleState::HandleHeader;
 }
 
 RequestHandleState::State Request::ParseHeaderHandler() {
-    size_t header_end = _raw.find(kCRLF, _handled_size);
+    size_t header_end = _raw.find(CRLF, _handled_size);
 
     if (header_end == std::string::npos) {
         return RequestHandleState::WaitData;
     }
     else if (header_end == _handled_size) {
-        _handled_size += kCRLF.size(); /// two empty lines in a raw, switch to body handle
+        /// two empty lines in a raw, switch to body handle
+        _handled_size += CRLF_LEN;
         return RequestHandleState::AnalyzeBodyHeaders;
     }
 
     size_t key_end = FindInRange(_raw, ":", _handled_size, header_end);
     if (key_end == std::string::npos) {
-        throw BadHeader("Incorrect header");
+        throw BadHeader("Incorrect header", _server_instance_info);
     }
     std::string key = _raw.substr(_handled_size, key_end - _handled_size);
     if (key.empty() || key.find_first_of(DELIMITERS) != std::string::npos) {
-        throw BadHeader("Incorrect header");
+        throw BadHeader("Incorrect header", _server_instance_info);
     }
     std::string value = _raw.substr(key_end + 1, header_end - key_end - 1);
     AddHeader(key, value);
 
-    _handled_size = header_end + kCRLF.size();
+    _handled_size = header_end + CRLF_LEN;
 
     return RequestHandleState::HandleHeader;
 }
@@ -101,11 +104,11 @@ RequestHandleState::State Request::AnalyzeBodyHeadersHandler() {
     HeaderIterator it = _headers.find(TRANSFER_ENCODING);
     if (it != _headers.end()) {
         if (it->second.size() != 1) {
-            throw BadHeader("Incorrect header");
+            throw BadHeader("Incorrect header", _server_instance_info);
         }
         std::vector<std::string> tokens = SplitString(it->second.front(), DELIMITERS);
         if (tokens.size() != 1 || ToLower(StripString(tokens[0])) != CHUNKED) {
-            throw UnsupportedTransferEncoding("Unsupported transfer encoding: " + it->second.front());
+            throw UnsupportedTransferEncoding("Unsupported transfer encoding: " + it->second.front(), _server_instance_info);
         }
         return RequestHandleState::HandleChunkSize;
     }
@@ -114,12 +117,12 @@ RequestHandleState::State Request::AnalyzeBodyHeadersHandler() {
     it = _headers.find(CONTENT_LENGTH);
     if (it != _headers.end()) {
         if (it->second.size() != 1) {
-            throw BadHeader("Incorrect header");
+            throw BadHeader("Incorrect header", _server_instance_info);
         }
         std::vector<std::string> tokens = SplitString(it->second.front(), DELIMITERS);
 
         if (tokens.size() != 1) {
-            throw BadContentLength("Incorrect content length");
+            throw BadContentLength("Incorrect content length", _server_instance_info);
         }
 
         try {
@@ -127,7 +130,7 @@ RequestHandleState::State Request::AnalyzeBodyHeadersHandler() {
             return RequestHandleState::HandleBodyByContentLength;
         }
         catch (const std::exception& e) {
-            throw BadContentLength("Incorrect content length" + std::string(e.what()));
+            throw BadContentLength("Incorrect content length" + std::string(e.what()), _server_instance_info);
         }
     }
 
@@ -146,16 +149,16 @@ RequestHandleState::State Request::ParseChunkSizeHandler() {
     std::vector<std::string> tokens = SplitString(_raw.substr(_handled_size, chunk_size_end - _handled_size),
                                                   DELIMITERS);
     if (tokens.empty()) {
-        throw BadChunkSize("Incorrect chunk size");
+        throw BadChunkSize("Incorrect chunk size", _server_instance_info);
     }
 
     try {
         _chunk_body_size = ParsePositiveInt(tokens[0], 16);
-        _handled_size = chunk_size_end + kCRLF.size();
+        _handled_size = chunk_size_end + CRLF_LEN;
         /// for now just ignore chunk extensions
     }
     catch (const std::exception& e) {
-        throw BadChunkSize("Incorrect chunk size" + std::string(e.what()));
+        throw BadChunkSize("Incorrect chunk size" + std::string(e.what()), _server_instance_info);
     }
 
     if (_chunk_body_size == 0) {
@@ -165,17 +168,17 @@ RequestHandleState::State Request::ParseChunkSizeHandler() {
 }
 
 RequestHandleState::State Request::ParseChunkBodyHandler() {
-    size_t raw_size_without_CRLF = _raw.size() - kCRLF.size();
+    size_t raw_size_without_CRLF = _raw.size() - CRLF_LEN;
     if (raw_size_without_CRLF < _handled_size + _chunk_body_size) {
         return RequestHandleState::WaitData;
     }
 
-    if (_raw.substr(_handled_size + _chunk_body_size, kCRLF.size()) != CRLF) {
-        throw BadChunkBody("Incorrect chunk body");
+    if (_raw.substr(_handled_size + _chunk_body_size, CRLF_LEN) != CRLF) {
+        throw BadChunkBody("Incorrect chunk body", _server_instance_info);
     }
 
     _body += _raw.substr(_handled_size, _chunk_body_size);
-    _handled_size += _chunk_body_size + kCRLF.size();
+    _handled_size += _chunk_body_size + CRLF_LEN;
     return RequestHandleState::HandleChunkSize;
 }
 
@@ -186,7 +189,7 @@ RequestHandleState::State Request::ParseChunkTrailerPartHandler() {
     }
     /// for now ignore chunked trailer part data
     _content_length = _body.size();
-    _handled_size = trailer_end + kCRLF.size();
+    _handled_size = trailer_end + CRLF_LEN;
     /// for now _handled_size could be lower than raw size if there are some spam after chunked trailer part
     /// and for now I don't do anything with it, same as with content_length handling.
     return RequestHandleState::FinishHandle;
@@ -208,7 +211,7 @@ RequestHandleState::State Request::ParseBodyByContentLengthHandler() {
 RequestHandleStatus::Status Request::Handle(SharedPtr<std::string> raw_request_part) {
     _raw += *raw_request_part;
     if (_raw.size() >= 1337) { /// TODO get value from config
-        throw PayloadTooLarge("Payload too large");
+        throw PayloadTooLarge("Payload too large", _server_instance_info);
     }
     RequestHandleState::State prev_state = _handle_state;
 

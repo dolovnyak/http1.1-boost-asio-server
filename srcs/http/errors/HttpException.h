@@ -1,14 +1,19 @@
 #pragma once
 
-#include <exception>
 #include "Optional.h"
 #include "Response.h"
 #include "SharedPtr.h"
 #include "HttpErrorPages.h"
+#include "ServerInfo.h"
+
+#include <exception>
 
 class HttpException : public std::exception {
 public:
-    HttpException(const std::string& message, Http::Code error_code, const std::string& error_title);
+    HttpException(const std::string& message,
+                  Http::Code error_code,
+                  const std::string& error_title,
+                  const SharedPtr<ServerInfo>& server_instance_info);
 
     HttpException(const HttpException& other) _NOEXCEPT;
 
@@ -26,52 +31,52 @@ private:
 /// Bad request exceptions
 class BadRequest : public HttpException {
 public:
-    BadRequest(const std::string& message);
+    BadRequest(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info);
 };
 
 class BadHttpVersion : public HttpException {
 public:
-    BadHttpVersion(const std::string& message);
+    BadHttpVersion(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info);
 };
 
 class BadFirstLine : public HttpException {
 public:
-    BadFirstLine(const std::string& message);
+    BadFirstLine(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info);
 };
 
 class BadHeader : public HttpException {
 public:
-    BadHeader(const std::string& message);
+    BadHeader(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info);
 };
 
 class BadContentLength : public HttpException {
 public:
-    BadContentLength(const std::string& message);
+    BadContentLength(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info);
 };
 
 class BadChunkSize : public HttpException {
 public:
-    BadChunkSize(const std::string& message);
+    BadChunkSize(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info);
 };
 
 class BadChunkBody : public HttpException {
 public:
-    BadChunkBody(const std::string& message);
+    BadChunkBody(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info);
 };
 
 /// Not implemented exceptions
 class NotImplemented : public HttpException {
 public:
-    NotImplemented(const std::string& message);
+    NotImplemented(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info);
 };
 
 class UnsupportedTransferEncoding : public HttpException {
 public:
-    UnsupportedTransferEncoding(const std::string& message);
+    UnsupportedTransferEncoding(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info);
 };
 
 /// Payload to large exception
 class PayloadTooLarge : public HttpException {
 public:
-    PayloadTooLarge(const std::string& message);
+    PayloadTooLarge(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info);
 };

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ServerInstance.h"
-#include "HttpConnection.h"
+#include "ServerInfo.h"
+#include "Connection.h"
 #include "Logging.h"
 
 class Event {
@@ -12,12 +12,3 @@ public:
 
     virtual const std::string& GetName() const = 0;
 };
-
-/// EventFSM
-/// InitState -> ParseHttpRequest
-/// ParseHttpRequest -> ParseHttpRequestWaitResult
-/// ParseHttpRequestWaitResult -> ParseHttpRequestWaitResult
-/// ParseHttpRequestWaitResult -> MakeHttpResponse
-/// MakeHttpResponse -> MakeHttpResponseWaitResult
-/// MakeHttpResponseWaitResult -> MakeHttpResponseWaitResult
-/// MakeHttpResponseWaitResult -> WriteToSocket

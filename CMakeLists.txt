@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(web-server)
 
-set(STANDARD98 1)
+#set(STANDARD98 1)
 
 if (STANDARD98)
     set(CMAKE_CXX_STANDARD 98)
@@ -23,11 +23,10 @@ add_library(${WS_LIB}
         srcs/config/Config.cpp
         srcs/cgi/SingleCgiHandler.cpp
         srcs/core/modules/PollModule.cpp
-        srcs/core/events/HandleHttpRequestEvent.cpp
         srcs/http/Request.cpp
         srcs/http/Response.cpp
         srcs/http/parse/parse.cpp
-        srcs/http/errors/HttpErrorCodePages.cpp
+        srcs/http/errors/HttpErrorPages.cpp
         srcs/http/errors/HttpException.cpp
         srcs/utilities/utilities.cpp
         )
@@ -46,14 +45,18 @@ target_include_directories(${WS_LIB} PUBLIC
         srcs/http/errors
         )
 
-target_compile_definitions(${WS_LIB} PRIVATE -D_DEBUG -D_STANDARD98)
+if (STANDARD98)
+    target_compile_definitions(${WS_LIB} PRIVATE -D_STANDARD98)
+else ()
+    target_compile_definitions(${WS_LIB} PRIVATE -D_DEBUG)
+endif ()
 
 ################################################################################
 # web-server target
 ################################################################################
 add_executable(${PROJECT_NAME}
         srcs/main.cpp
-        )
+        srcs/http/errors/HttpErrorPages.h srcs/http/Http.h srcs/core/events/ProcessIncomingDataEvent.h)
 target_link_libraries(${PROJECT_NAME} PUBLIC ${WS_LIB})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -70,6 +73,7 @@ if (NOT STANDARD98)
 
     add_executable(${WS_TESTS}
             tests/test_utilities.cpp
+            tests/test_handle_request.cpp
             )
 
     target_link_libraries(${WS_TESTS}

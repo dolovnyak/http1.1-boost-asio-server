@@ -3,14 +3,14 @@
 
 #include <vector>
 
-Response Response::MakeErrorResponse(Http::Code error, const std::string& error_title) {
+Response Response::MakeErrorResponse(Http::Code error, const std::string& error_title, SharedPtr<ServerInfo> server_instance_info) {
     std::string body = GetHttpErrorPageByCode(error);
     std::vector<Http::Header> headers;
     headers.push_back(Http::Header("Content-Type", "text/html"));
     headers.push_back(Http::Header("Content-Length", std::to_string(body.size())));
-    headers.push_back(Http::Header("Server", "MyServer"));  /// TODO get name from server instance
+    headers.push_back(Http::Header("Server", server_instance_info->name));
     headers.push_back(Http::Header("Date", GetCurrentDateTime()));
-    headers.push_back(Http::Header("HttpConnection", "close"));
+    headers.push_back(Http::Header("Connection", "close"));
     return Response(error, error_title, headers, body);
 }
 

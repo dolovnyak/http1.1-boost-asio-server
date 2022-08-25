@@ -33,9 +33,37 @@ public:
         if (*_ref_count == 1) {
             delete _ptr;
             delete _ref_count;
+            _ref_count = nullptr;
+            _ptr = nullptr;
         } else {
             --(*_ref_count);
         }
+    }
+
+    SharedPtr& operator=(const SharedPtr& other) {
+        if (this == &other) {
+            return *this;
+        }
+
+        if (_ref_count != nullptr) {
+            if (*_ref_count == 1) {
+                delete _ptr;
+                delete _ref_count;
+                _ref_count = nullptr;
+                _ptr = nullptr;
+            } else {
+                --(*_ref_count);
+            }
+        }
+
+        _ptr = other._ptr;
+        _ref_count = other._ref_count;
+
+        if (_ref_count != nullptr) {
+            ++(*_ref_count);
+        }
+
+        return *this;
     }
 
     T operator*() {

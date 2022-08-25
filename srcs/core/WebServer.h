@@ -4,7 +4,7 @@
 
 #include "Config.h"
 #include "core/events/Event.h"
-#include "ServerInstance.h"
+#include "ServerInfo.h"
 #include "Logging.h"
 
 template <class CoreModule>

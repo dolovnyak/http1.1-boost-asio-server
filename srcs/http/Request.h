@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SharedPtr.h"
+#include "ServerInfo.h"
 
 #include <string>
 #include <unordered_map>
@@ -37,7 +38,7 @@ struct HttpVersion {
 
 class Request {
 public:
-    Request();
+    Request(SharedPtr<ServerInfo> server_instance_info);
 
     RequestHandleStatus::Status Handle(SharedPtr<std::string> raw_request_part);
 
@@ -71,6 +72,8 @@ private:
     std::string _raw;
 
     std::unordered_map<std::string, std::vector<std::string> > _headers;
+
+    SharedPtr<ServerInfo> _server_instance_info;
 
 private: /// handle helpers
     RequestHandleState::State _handle_state;

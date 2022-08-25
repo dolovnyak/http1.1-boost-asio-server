@@ -7,7 +7,7 @@
 #include "Http.h"
 
 TEST(Request, Check_Init) {
-    Request request;
+    Request request(MakeShared<ServerInfo>({0, ""}));
     ASSERT_EQ(request._handle_state, RequestHandleState::HandleFirstLine);
     ASSERT_EQ(request._body, "");
     ASSERT_EQ(request._raw, "");
@@ -22,7 +22,7 @@ TEST(Request, Check_Init) {
 
 TEST(Request, Handle_FSM_First_Line) {
     RequestHandleStatus::Status res;
-    Request request;
+    Request request(MakeShared<ServerInfo>({0, ""}));
 
     size_t total_size = 0;
     std::string full_raw_request;
@@ -42,7 +42,7 @@ TEST(Request, Handle_FSM_First_Line) {
     ASSERT_EQ(request._headers.size(), 0);
 
 
-    request = Request();  // reset request
+    request = Request(MakeShared<ServerInfo>({0, ""})); // reset request
 
     const std::string first_line_part1 = "\r\n\r\n\r\n   GET   \r/cgi-";
     full_raw_request = first_line_part1;
@@ -75,7 +75,7 @@ TEST(Request, Handle_FSM_First_Line) {
 
 TEST(Request, Handle_FSM_Headers) {
     RequestHandleStatus::Status res;
-    Request request;
+    Request request(MakeShared<ServerInfo>({0, ""}));
 
     size_t total_size = 0;
     std::string full_raw_request;
@@ -140,7 +140,7 @@ TEST(Request, Handle_FSM_Headers) {
 
 TEST(Request, Handle_FSM_Body_By_Content_Length) {
     RequestHandleStatus::Status res;
-    Request request;
+    Request request(MakeShared<ServerInfo>({0, ""}));
 
     size_t total_size = 0;
     std::string full_raw_request;
@@ -156,9 +156,9 @@ TEST(Request, Handle_FSM_Body_By_Content_Length) {
     EXPECT_NO_THROW(res = request.Handle(MakeShared(content_length_header)));
     ASSERT_EQ(request._headers[CONTENT_LENGTH][0], "10");
 
-    total_size += kCRLF.size();
-    full_raw_request += kCRLF;
-    EXPECT_NO_THROW(res = request.Handle(MakeShared(kCRLF)));
+    total_size += CRLF_LEN;
+    full_raw_request += CRLF;
+    EXPECT_NO_THROW(res = request.Handle(MakeShared(std::string(CRLF))));
     ASSERT_EQ(res, RequestHandleStatus::WaitMoreData);
     ASSERT_EQ(request._handle_state, RequestHandleState::HandleBodyByContentLength);
     ASSERT_EQ(request._handled_size, total_size);
@@ -178,7 +178,7 @@ TEST(Request, Handle_FSM_Body_By_Content_Length) {
 
 TEST(Request, Handle_FSM_Chunked_Body) {
     RequestHandleStatus::Status res;
-    Request request;
+    Request request(MakeShared<ServerInfo>({0, ""}));
 
     size_t total_size = 0;
     std::string full_raw_request;
@@ -227,15 +227,15 @@ TEST(Request, Handle_FSM_Chunked_Body) {
     Request check_incorrect_chunk_request = request;
     EXPECT_NO_THROW(res = check_incorrect_chunk_request.Handle(MakeShared(chunk2_body + "f")));
     ASSERT_EQ(res, RequestHandleStatus::WaitMoreData);
-    EXPECT_ANY_THROW(res = check_incorrect_chunk_request.Handle(MakeShared(kCRLF)));
+    EXPECT_ANY_THROW(res = check_incorrect_chunk_request.Handle(MakeShared(std::string(CRLF))));
     /// end check error
 
     EXPECT_NO_THROW(res = request.Handle(MakeShared(chunk2_body)));
     ASSERT_EQ(res, RequestHandleStatus::WaitMoreData);
 
-    total_size += kCRLF.size();
-    full_raw_request += kCRLF;
-    EXPECT_NO_THROW(res = request.Handle(MakeShared(kCRLF)));
+    total_size += CRLF_LEN;
+    full_raw_request += CRLF;
+    EXPECT_NO_THROW(res = request.Handle(MakeShared(std::string(CRLF))));
     ASSERT_EQ(res, RequestHandleStatus::WaitMoreData);
     ASSERT_EQ(request._handle_state, RequestHandleState::HandleChunkSize);
     ASSERT_EQ(request._handled_size, total_size);
