@@ -36,16 +36,39 @@ HandlerError:
 Хедеры, поддерживаемые в реквесте:
 * Accept - говорит какие типы данных можно возвращать в респонсе.
 * Accept-Encoding - говорит как можно сжимать/кодировать данные в респонсе.
-* HttpConnection - говорит закрывать ли конекшен сразу или keep-alive (keep-alive стоит по умолчанию).
+* Connection - говорит закрывать ли конекшен сразу или keep-alive (keep-alive стоит по умолчанию).
 * Keep-Alive - имеет timeout (как должго не закрывать конекшен) и max (максимальное кол-во реквестов послк которого конекшен закроется)
 * Authorization - авторизация пользователя
 * Cookie
-* HttpConnection (keep-alive or close)
+* Connection (keep-alive or close)
 
 Хедеры, поддерживаемые в респонсе:
 * Date
-* HttpConnection (keep-alive or close)
+* Connection (keep-alive or close)
 * Content-Type
 * Server
 * Set-Cookie (каждый куки это отдельный хедер)
 
+
+Надо распарсить URI, вычленить из него:
+* путь до дирректории
+* путь до файла
+* имя файла
+* расширение файла
+* квери строку
+
+Сделать проверку что если нет хедера Host - то реквест некорректный
+
+/[A-Za-z0-9_\-]+/ - проверка на корректность имени файла
+
+/// создать хедер для лексера
+/// запустить флекс бизон код, скомпиленный в ручную
+/// добавить в смейк сгенеренные файлы
+/// сначала парсить либо путь либо всю первую строку, но ничего больше
+/// она даст мне resource объект из пути к файлу, пути к дерриктории и расширение файла и квери параметрам
+
+
+build flex/bison example (in parse dir)
+~/.brew/opt/bison/bin/bison -o parser.cpp -H parser.y
+~/.brew/opt/flex/bin/flex++ -o lexer.cpp lexer.l
+g++ -std=c++98 main.cpp lexer.cpp parser.cpp -I ~/.brew/opt/flex/include/  -I ./ 
