@@ -56,7 +56,7 @@ endif ()
 ################################################################################
 add_executable(${PROJECT_NAME}
         srcs/main.cpp
-        srcs/http/errors/HttpErrorPages.h srcs/http/Http.h srcs/core/events/ProcessIncomingDataEvent.h)
+        )
 target_link_libraries(${PROJECT_NAME} PUBLIC ${WS_LIB})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
