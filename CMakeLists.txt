@@ -25,9 +25,10 @@ add_library(${WS_LIB}
         srcs/core/modules/PollModule.cpp
         srcs/http/Request.cpp
         srcs/http/Response.cpp
-        srcs/http/parse/parse.cpp
         srcs/http/errors/HttpErrorPages.cpp
         srcs/http/errors/HttpException.cpp
+        srcs/http/parse/Lexer.cpp
+        srcs/http/parse/Parser.cpp
         srcs/utilities/utilities.cpp
         )
 
@@ -44,6 +45,8 @@ target_include_directories(${WS_LIB} PUBLIC
         srcs/http/parse
         srcs/http/errors
         )
+
+INCLUDE(srcs/http/parse/ParseGenerator.cmake)
 
 if (STANDARD98)
     target_compile_definitions(${WS_LIB} PRIVATE -D_STANDARD98)

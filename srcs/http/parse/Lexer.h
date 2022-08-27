@@ -14,15 +14,30 @@
 #undef YY_DECL
 #define YY_DECL yy::Parser::symbol_type yy::Lexer::get_next_token()
 
-#include "parser.hpp" // this is needed for symbol_type
+#include "Parser.h" // this is needed for symbol_type
 
 namespace yy {
 
-class Lexer : public yyFlexLexer {
-public:
-    virtual ~Lexer() {}
+    enum ParseState {
+        None = 0,
+        FirstLine,
+        Expression
+    };
 
-    virtual yy::Parser::symbol_type get_next_token();
-};
+    class Lexer : public yyFlexLexer {
+    public:
+        Lexer() : _parse_state(yy::ParseState::None) {}
+
+        virtual ~Lexer() {}
+
+        virtual yy::Parser::symbol_type get_next_token();
+
+        void set_parse_state(yy::ParseState state) {
+            _parse_state = state;
+        }
+
+    private:
+        ParseState _parse_state;
+    };
 
 }

@@ -15,6 +15,8 @@
 %token END 0 "end-of-input"
 %token <std::string> STRING "string"
 %token <int> NUMBER "number"
+%token FIRST_LINE "first-line"
+%token EXPRESSION "expression"
 
 %locations
 
@@ -22,7 +24,7 @@
 {
     #include <iostream>
     #include <string>
-    #include "lexer.h"
+    #include "Lexer.h"
 
     namespace yy {
 	class Lexer;
@@ -31,8 +33,8 @@
 
 %code top
 {
-    #include "lexer.h"
-    #include "parser.hpp"
+    #include "Lexer.h"
+    #include "Parser.h"
     #include "location.hh"
 
     static yy::Parser::symbol_type yylex(yy::Lexer& lexer) {
@@ -42,17 +44,19 @@
     using namespace yy;
 }
 
-%start line
+%start meta_start
 
 %%
 
-line: STRING { std::cout << "a: " << $1 << std::endl; }
+meta_start:	FIRST_LINE first_line
+		| EXPRESSION expression
+
+first_line:	STRING STRING STRING { std::cout << "first line" << std::endl; }
+
+expression:	STRING STRING STRING { std::cout << "expression" << std::endl; }
 
 %%
 
 void yy::Parser::error(const location &loc , const std::string &message) {
-
-        // Location should be initialized inside scanner action, but is not in this example.
-        // Let's grab location directly from driver class.
-	 std::cout << "Error: " << message << std::endl << "Location: " << loc << std::endl;
+    std::cout << "Error: " << message << std::endl << "Location: " << loc << std::endl;
 }
