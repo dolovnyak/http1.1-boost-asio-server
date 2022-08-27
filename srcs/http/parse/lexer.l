@@ -1,6 +1,6 @@
 %option c++
 %option noyywrap
-%option outfile="lexer.cpp"
+%option outfile="Lexer.cpp"
 %option yyclass="Lexer"
 %option prefix="ws"
 
@@ -9,7 +9,7 @@
 
 #include "location.hh"
 #include "Lexer.h"
-#include "parser.hpp"
+#include "Parser.h"
 
 #define yyterminate() yy::Parser::make_END(yy::location());
 
@@ -17,16 +17,33 @@
 
 %%
 
-[a-z]+      {
-                std::cout << "Scanner: identifier [" << yytext << "]" << std::endl;
-                return yy::Parser::make_STRING(yytext, yy::location());
-            }
+%{
+switch (_parse_state) {
+    case None:
+        break;
 
-[\n\t ]     {
-                std::cout << "Scanner: whitechar (ignored)" << std::endl;
-            }
+    case FirstLine:
+        std::cout << "first line" << std::endl;
+        _parse_state = None;
+        return yy::Parser::make_FIRST_LINE(yy::location());
 
-.           { std::cout << "Scanner: unknown character [" << yytext << "]" << std::endl; }
+    case Expression:
+        std::cout << "expression" << std::endl;
+        _parse_state = None;
+        return yy::Parser::make_EXPRESSION(yy::location());
+}
+%}
 
-<<EOF>>     { std::cout << "EOF" << std::endl; return yyterminate(); }
+[a-zA-Z0-9]+    {
+                    std::cout << "Scanner: identifier [" << yytext << "]" << std::endl;
+                    return yy::Parser::make_STRING(yytext, yy::location());
+                }
+
+[\n\t ]         {
+                    std::cout << "Scanner: whitechar (ignored)" << std::endl;
+                }
+
+.               { std::cout << "Scanner: unknown character [" << yytext << "]" << std::endl; }
+
+<<EOF>>         { std::cout << "EOF" << std::endl; return yyterminate(); }
 %%

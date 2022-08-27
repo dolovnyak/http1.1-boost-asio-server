@@ -33,14 +33,14 @@ namespace {
         std::cout << text_color + bg_color;
         std::cout << val;
         std::cout << TEXT_DEFAULT + BG_DEFAULT;
-    };
+    }
 
     template<typename T>
     void PrintWithErrno(const std::string& text_color, const std::string& bg_color, const T& val) {
         std::cout << text_color + bg_color;
         std::cout << val << " (errno: " << strerror(errno) << ")" << std::endl;
         std::cout << TEXT_DEFAULT + BG_DEFAULT;
-    };
+    }
 }
 
 class Log {
@@ -216,7 +216,25 @@ public:
         Print(TEXT_BLACK, BG_GREEN, t);
         SuccessBg(args...);
     };
+
+    static void TimerStart(const std::string& name) {
+        _timer = std::chrono::system_clock::now();
+        _timer_name = name;
+    };
+
+    static void LogTime() {
+        auto end = std::chrono::system_clock::now();
+        auto seconds = end - _timer;
+        Log::Info("Time elapsed from ", _timer_name, " start: ", std::chrono::duration_cast<std::chrono::microseconds>(seconds).count(), "us ");
+    };
+
+private:
+    static std::chrono::time_point<std::chrono::system_clock> _timer;
+    static std::string _timer_name;
 };
+
+std::chrono::time_point<std::chrono::system_clock> Log::_timer;
+std::string Log::_timer_name;
 
 #ifdef _DEBUG
 #define LOG_SUCCESS(...)        Log::Success(__VA_ARGS__)
@@ -233,6 +251,8 @@ public:
 #define LOG_ERROR_BG(...)       Log::ErrorBg(__VA_ARGS__)
 #define LOG_PERROR(...)         Log::Perror(__VA_ARGS__)
 #define LOG_PERROR_BG(...)      Log::PerrorBg(__VA_ARGS__)
+#define LOG_START_TIMER(...)    Log::TimerStart(__VA_ARGS__)
+#define LOG_TIME()              Log::LogTime()
 #else
 #define LOG_SUCCESS(...)
 #define LOG_SUCCESS_BG(...)
@@ -248,6 +268,8 @@ public:
 #define LOG_ERROR_BG(...)       Log::ErrorBg(__VA_ARGS__)
 #define LOG_PERROR(...)         Log::Perror(__VA_ARGS__)
 #define LOG_PERROR_BG(...)      Log::PerrorBg(__VA_ARGS__)
+#define LOG_START_TIMER()
+#define LOG_TIME()
 #endif
 
 
@@ -267,5 +289,7 @@ public:
 #define LOG_ERROR_BG(...)
 #define LOG_PERROR(...)
 #define LOG_PERROR_BG(...)
+#define LOG_START_TIMER()
+#define LOG_TIME()
 
 #endif
