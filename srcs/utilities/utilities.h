@@ -19,3 +19,7 @@ size_t FindInRange(const std::string& str, const std::string& substr, size_t sta
 std::string ToLower(const std::string& str);
 
 std::string GetCurrentDateTime();
+
+int ParseInt(const std::string& value, int base = 10);
+
+int ParsePositiveInt(const std::string& value, int base = 10);

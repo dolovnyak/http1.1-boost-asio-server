@@ -21,7 +21,7 @@ bool PollModule::Setup(const Config& config, std::queue<SharedPtr<Event> >* even
         return false;
     }
 
-    for (const auto& server_config: config.GetServersConfigs()) {
+    for (const auto& server_config : config.GetServersConfigs()) {
 
         int listening_socket_fd = socket(AF_INET, SOCK_STREAM, 0); /// TODO maybe also support AF_INET6 from config?
         if (listening_socket_fd == -1) {
@@ -136,10 +136,10 @@ void PollModule::ProcessNewConnection(int index) {
         _poll_fds[_poll_fds_number].fd = new_connection_fd;
         _poll_fds[_poll_fds_number].events = POLLIN;
 
-        SharedPtr<Connection<PollModule>> connection = MakeShared(
+        SharedPtr<Connection<PollModule> > connection = MakeShared(
                 Connection<PollModule>(_poll_fds_number, _servers.at(_poll_fds[index].fd), this));
 
-        _connections.insert(std::pair<int, SharedPtr<Connection<PollModule>>>(_poll_fds_number, connection));
+        _connections.insert(std::pair<int, SharedPtr<Connection<PollModule> > >(_poll_fds_number, connection));
 
         ++_poll_fds_number;
     }

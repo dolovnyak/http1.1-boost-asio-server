@@ -16,6 +16,7 @@ add_custom_target(parser_generator ALL
         COMMAND ${FLEX_COMMAND} ${FLEX_INPUT}
         COMMAND ${BISON_COMMAND} -o ${BISON_CPP} --header=${BISON_H} ${BISON_INPUT}
         COMMENT "generate lex/yacc parser"
+        WORKING_DIRECTORY ${PARSE_DIR}
         VERBATIM
         )
 add_dependencies(${WS_LIB} parser_generator)
