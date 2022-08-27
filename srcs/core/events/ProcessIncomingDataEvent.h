@@ -9,7 +9,7 @@
 template<class CoreModule>
 class ProcessIncomingDataEvent : public Event {
 public:
-    ProcessIncomingDataEvent(const SharedPtr<Connection<CoreModule>>& connection,
+    ProcessIncomingDataEvent(const SharedPtr<Connection<CoreModule> >& connection,
                              std::queue<SharedPtr<Event> >* event_queue)
             : _connection(connection), _event_queue(event_queue) {}
 
@@ -21,7 +21,7 @@ public:
 
 
 private:
-    SharedPtr<Connection<CoreModule>> _connection;
+    SharedPtr<Connection<CoreModule> > _connection;
     std::queue<SharedPtr<Event> >* _event_queue;
 };
 

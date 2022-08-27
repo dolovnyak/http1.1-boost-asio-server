@@ -14,6 +14,8 @@ endif ()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pthread")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 
+set(FLEX_INCLUDE_DIR /Users/sbecker/.brew/opt/flex/include)
+
 ################################################################################
 # web-server-lib target
 ################################################################################
@@ -29,6 +31,7 @@ add_library(${WS_LIB}
         srcs/http/errors/HttpException.cpp
         srcs/http/parse/Lexer.cpp
         srcs/http/parse/Parser.cpp
+        srcs/http/parse/ParserWrapper.cpp
         srcs/utilities/utilities.cpp
         )
 
@@ -44,6 +47,7 @@ target_include_directories(${WS_LIB} PUBLIC
         srcs/http
         srcs/http/parse
         srcs/http/errors
+        ${FLEX_INCLUDE_DIR}
         )
 
 INCLUDE(srcs/http/parse/ParseGenerator.cmake)

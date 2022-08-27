@@ -217,24 +217,14 @@ public:
         SuccessBg(args...);
     };
 
-    static void TimerStart(const std::string& name) {
-        _timer = std::chrono::system_clock::now();
-        _timer_name = name;
-    };
+    static void TimerStart(const std::string& name);
 
-    static void LogTime() {
-        auto end = std::chrono::system_clock::now();
-        auto seconds = end - _timer;
-        Log::Info("Time elapsed from ", _timer_name, " start: ", std::chrono::duration_cast<std::chrono::microseconds>(seconds).count(), "us ");
-    };
+    static void LogTime();
 
 private:
     static std::chrono::time_point<std::chrono::system_clock> _timer;
     static std::string _timer_name;
 };
-
-std::chrono::time_point<std::chrono::system_clock> Log::_timer;
-std::string Log::_timer_name;
 
 #ifdef _DEBUG
 #define LOG_SUCCESS(...)        Log::Success(__VA_ARGS__)
