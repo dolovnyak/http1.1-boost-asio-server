@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ServerInfo.h"
-#include "Connection.h"
+#include "Session.h"
 #include "Logging.h"
 
 class Event {

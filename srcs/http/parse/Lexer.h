@@ -22,8 +22,16 @@ namespace yy {
     enum ParseState {
         None = 0,
         FirstLine,
-        Expression
     };
+
+    namespace Token {
+        enum TokenType {
+            Default = 0,
+            HttpMethod,
+            Resource,
+            HttpVersion
+        };
+    }
 
     class Lexer : public yyFlexLexer {
     public:
@@ -35,7 +43,18 @@ namespace yy {
 
         void set_parse_state(yy::ParseState state) {
             _parse_state = state;
+
+            switch (state) {
+                case yy::None:
+                    SetNextExpectedTokenGroup(yy::Token::Default);
+                    break;
+                case yy::FirstLine:
+                    SetNextExpectedTokenGroup(yy::Token::HttpMethod);
+                    break;
+            }
         }
+
+        void SetNextExpectedTokenGroup(Token::TokenType token_type);
 
     private:
         ParseState _parse_state;

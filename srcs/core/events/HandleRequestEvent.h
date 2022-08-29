@@ -4,21 +4,21 @@
 #include "HttpException.h"
 #include "SharedPtr.h"
 #include "utilities.h"
-#include "ProcessIncomingDataEvent.h"
+#include "ProcessRequestEvent.h"
 
 #include <queue>
 
 template<class CoreModule>
-class HandleIncomingDataEvent : public Event {
+class HandleRequestEvent : public Event {
 public:
-    HandleIncomingDataEvent(const SharedPtr<Connection<CoreModule> >& connection,
-                            const SharedPtr<std::string>& incoming_data,
-                            std::queue<SharedPtr<Event> >* event_queue)
+    HandleRequestEvent(const SharedPtr<Session<CoreModule> >& connection,
+                       const SharedPtr<std::string>& incoming_data,
+                       std::queue<SharedPtr<Event> >* event_queue)
             : _connection(connection),
               _incoming_data(incoming_data),
               _event_queue(event_queue) {}
 
-    ~HandleIncomingDataEvent() {};
+    ~HandleRequestEvent() {};
 
     const std::string& GetName() const OVERRIDE;
 
@@ -26,19 +26,19 @@ public:
 
 
 private:
-    SharedPtr<Connection<CoreModule> > _connection;
+    SharedPtr<Session<CoreModule> > _connection;
     SharedPtr<std::string> _incoming_data;
     std::queue<SharedPtr<Event> >* _event_queue;
 };
 
 template<class CoreModule>
-const std::string& HandleIncomingDataEvent<CoreModule>::GetName() const {
-    static std::string kName = "HandleIncomingDataEvent";
+const std::string& HandleRequestEvent<CoreModule>::GetName() const {
+    static std::string kName = "HandleRequestEvent";
     return kName;
 }
 
 template<class CoreModule>
-void HandleIncomingDataEvent<CoreModule>::Process() {
+void HandleRequestEvent<CoreModule>::Process() {
     try {
         if (!_connection->available) {
             LOG_INFO(GetName() + " on closed connection");
@@ -50,10 +50,11 @@ void HandleIncomingDataEvent<CoreModule>::Process() {
         }
 
         RequestHandleStatus::Status status = _connection->request->Handle(_incoming_data);
+
         switch (status) {
             case RequestHandleStatus::Finish:
                 _connection->state = ConnectionState::ProcessRequest;
-                _event_queue->push(MakeShared<Event>(new ProcessIncomingDataEvent<CoreModule>(_connection, _event_queue)));
+                _event_queue->push(MakeShared<Event>(new ProcessRequestEvent<CoreModule>(_connection, _event_queue)));
 
             case RequestHandleStatus::WaitMoreData:
                 return;

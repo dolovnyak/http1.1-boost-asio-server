@@ -77,3 +77,10 @@ int ParsePositiveInt(const std::string& value, int base) {
     }
     return num_value;
 }
+
+int GetIntFromDigit(char digit) {
+    if (digit >= '0' && digit <= '9') {
+        return static_cast<int>(digit - '0');
+    }
+    throw std::runtime_error("GetIntFromDigit: " + std::string(1, digit));
+}

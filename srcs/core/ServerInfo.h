@@ -6,9 +6,9 @@
 
 class ServerInfo {
 public:
-    ServerInfo(int listen_tcp_socket, std::string name)
+    ServerInfo(int listen_tcp_socket, const std::string& name)
     : listening_tcp_socket(listen_tcp_socket),
-      name(std::move(name)) {}
+      name(name) {}
 
 //      ServerInfo(const ServerInfo&) = delete;
 

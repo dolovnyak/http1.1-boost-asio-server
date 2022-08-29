@@ -17,15 +17,15 @@ namespace ConnectionState {
 }
 
 template<class CoreModule>
-class Connection {
+class Session {
 public:
-    Connection(int id, const SharedPtr<ServerInfo>& server_instance, CoreModule* core_module)
+    Session(int connection_id, const SharedPtr<ServerInfo>& server_instance, CoreModule* core_module)
             : server_instance(server_instance),
-              request(MakeShared<Request>(Request(server_instance))),
+              request(MakeShared(new Request(server_instance))),
               available(true),
               state(ConnectionState::HandleRequest),
               _core_module(core_module),
-              _id(id) {}
+              _connection_id(connection_id) {}
 
     void SendProcessedDataToClient();
 
@@ -48,22 +48,23 @@ public:
 private:
     CoreModule* _core_module;
 
-    int _id;
+    int _connection_id;
 };
 
 template<class CoreModule>
-void Connection<CoreModule>::Close() {
-    _core_module->CloseConnection(_id);
+void Session<CoreModule>::Close() {
+    _core_module->CloseConnection(_connection_id);
 }
 
 template<class CoreModule>
-void Connection<CoreModule>::SendProcessedDataToClient() {
-    _core_module->SendDataToClient(_id);
+void Session<CoreModule>::SendProcessedDataToClient() {
+    _core_module->SendDataToClient(_connection_id);
 }
 
 template<class CoreModule>
-void Connection<CoreModule>::SendErrorDataToClient(const SharedPtr<Response>& error_response) {
+void Session<CoreModule>::SendErrorDataToClient(const SharedPtr<Response>& error_response) {
     response = error_response;
     should_close_after_send = true;
-    _core_module->SendDataToClient(_id);
+    _core_module->SendDataToClient(_connection_id);
 }
+

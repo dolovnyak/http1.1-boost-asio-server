@@ -1,6 +1,6 @@
 #include "PollModule.h"
 #include "Logging.h"
-#include "HandleIncomingDataEvent.h"
+#include "HandleRequestEvent.h"
 
 #include <sys/ioctl.h>
 #include <sys/poll.h>
@@ -107,7 +107,7 @@ void PollModule::ProcessEvents(int timeout) {
         }
         else {
             if (_poll_fds[i].revents & (POLLHUP | POLLNVAL)) {
-                LOG_INFO("Connection closed: ", _poll_fds[i].fd);
+                LOG_INFO("Session closed: ", _poll_fds[i].fd);
                 CloseConnection(i);
             }
             else {
@@ -136,10 +136,10 @@ void PollModule::ProcessNewConnection(int index) {
         _poll_fds[_poll_fds_number].fd = new_connection_fd;
         _poll_fds[_poll_fds_number].events = POLLIN;
 
-        SharedPtr<Connection<PollModule> > connection = MakeShared(
-                Connection<PollModule>(_poll_fds_number, _servers.at(_poll_fds[index].fd), this));
+        SharedPtr<Session<PollModule> > connection = MakeShared(
+                Session<PollModule>(_poll_fds_number, _servers.at(_poll_fds[index].fd), this));
 
-        _connections.insert(std::pair<int, SharedPtr<Connection<PollModule> > >(_poll_fds_number, connection));
+        _connections.insert(std::pair<int, SharedPtr<Session<PollModule> > >(_poll_fds_number, connection));
 
         ++_poll_fds_number;
     }
@@ -159,11 +159,11 @@ void PollModule::ProcessRead(int index) {
         CloseConnection(index);
     }
     else if (bytes_read == 0) {
-        LOG_INFO("Connection closed by client: ", _poll_fds[index].fd);
+        LOG_INFO("Session closed by client: ", _poll_fds[index].fd);
         CloseConnection(index);
     }
     else {
-        _event_queue->push(MakeShared<Event>(new HandleIncomingDataEvent<PollModule>(
+        _event_queue->push(MakeShared<Event>(new HandleRequestEvent<PollModule>(
                 _connections.at(index),
                 raw_request_part,
                 _event_queue)));
@@ -173,7 +173,7 @@ void PollModule::ProcessRead(int index) {
 void PollModule::ProcessWrite(int index) {
     LOG_INFO("Write processing");
 
-    SharedPtr<Connection<PollModule> > connection = _connections.at(index);
+    SharedPtr<Session<PollModule> > connection = _connections.at(index);
     std::string response = connection->response->raw_response;
 
     /// TODO maybe it will be needed to make chunked write.
