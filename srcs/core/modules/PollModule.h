@@ -29,7 +29,7 @@ private: /// for connection communication
 
     void CloseConnection(int index);
 
-    friend class Connection<PollModule>;
+    friend class Session<PollModule>; /// TODO maybe del
 
 private:
     int _poll_fds_number;
@@ -37,6 +37,6 @@ private:
     bool _should_compress;
 
     std::unordered_map<int, SharedPtr<ServerInfo> > _servers;
-    std::unordered_map<int, SharedPtr<Connection<PollModule> > > _connections;
+    std::unordered_map<int, SharedPtr<Session<PollModule> > > _connections;
     std::queue<SharedPtr<Event> >* _event_queue;
 };

@@ -25,6 +25,7 @@ add_library(${WS_LIB}
         srcs/config/Config.cpp
         srcs/cgi/SingleCgiHandler.cpp
         srcs/core/modules/PollModule.cpp
+        srcs/http/Http.cpp
         srcs/http/Request.cpp
         srcs/http/Response.cpp
         srcs/http/errors/HttpErrorPages.cpp
@@ -80,7 +81,7 @@ if (NOT STANDARD98)
 
     add_executable(${WS_TESTS}
             tests/test_utilities.cpp
-            tests/test_handle_request.cpp
+            tests/test_fsm_handle_request.cpp
             )
 
     target_link_libraries(${WS_TESTS}

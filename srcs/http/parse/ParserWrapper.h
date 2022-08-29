@@ -4,15 +4,17 @@
 #include "Parser.h"
 #include <sstream>
 
+class Request;
+
 class ParserWrapper {
 public:
-    ParserWrapper() : _lexer(), _parser(_lexer) {
-        _lexer.set_debug(true);
+    ParserWrapper(Request& request) : _lexer(), _parser(_lexer, request) {
+        _lexer.switch_streams(&_ss, nullptr);
     }
 
-    void Parse(const std::string& input, yy::ParseState state) {
+    void Parse(const std::string& raw, size_t start, size_t end, yy::ParseState state) {
         _lexer.set_parse_state(state);
-        _ss << input;
+        _ss.write(const_cast<char*>(raw.c_str()) + start, end - start);
         _parser.parse();
     }
 

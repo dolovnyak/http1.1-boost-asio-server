@@ -45,6 +45,11 @@ BadChunkBody::BadChunkBody(const std::string& message, const SharedPtr<ServerInf
         : HttpException(message, Http::BadRequest, "Bad chunk body", server_instance_info) {}
 
 
+///Method not allowed exceptions
+MethodNotAllowed::MethodNotAllowed(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info)
+        : HttpException(message, Http::MethodNotAllowed, "Method not allowed", server_instance_info) {}
+
+
 /// Not implemented exceptions
 NotImplemented::NotImplemented(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info)
         : HttpException(message, Http::NotImplemented, "Not implemented", server_instance_info) {}

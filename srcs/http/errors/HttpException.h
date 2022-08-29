@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Optional.h"
 #include "Response.h"
 #include "SharedPtr.h"
 #include "HttpErrorPages.h"
@@ -62,6 +61,12 @@ public:
 class BadChunkBody : public HttpException {
 public:
     BadChunkBody(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info);
+};
+
+///Method not allowed exceptions
+class MethodNotAllowed : public HttpException {
+public:
+    MethodNotAllowed(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info);
 };
 
 /// Not implemented exceptions

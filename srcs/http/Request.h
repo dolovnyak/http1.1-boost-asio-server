@@ -2,10 +2,13 @@
 
 #include "SharedPtr.h"
 #include "ServerInfo.h"
+#include "Optional.h"
+#include "ParserWrapper.h"
 
 #include <string>
 #include <unordered_map>
 #include <vector>
+
 
 namespace RequestHandleStatus {
     enum Status {
@@ -36,12 +39,18 @@ struct HttpVersion {
     int minor;
 };
 
+struct RequestTarget {
+    std::string path;
+    std::string query;
+};
+
 class Request {
 public:
     Request(SharedPtr<ServerInfo> server_instance_info);
 
-    RequestHandleStatus::Status Handle(SharedPtr<std::string> raw_request_part);
+    Request(const Request& other);
 
+    RequestHandleStatus::Status Handle(SharedPtr<std::string> raw_request_part);
 private:
     void AddHeader(const std::string& key, const std::string& value);
 
@@ -59,28 +68,32 @@ private:
 
     RequestHandleState::State AnalyzeBodyHeadersHandler();
 
-private:
-    std::string _method;
+public:
+    std::string method;
 
-    std::string _resource_target;
+    std::string resource_target;
 
-    HttpVersion _http_version;
+    HttpVersion http_version;
 
-    std::string _body;
+    std::string body;
 
     /// TODO limit size on this and on headers and on body
-    std::string _raw;
+    std::string raw;
 
-    std::unordered_map<std::string, std::vector<std::string> > _headers;
+    std::unordered_map<std::string, std::vector<std::string> > headers;
 
-    SharedPtr<ServerInfo> _server_instance_info;
+    SharedPtr<ServerInfo> server_instance_info;
+
+    RequestTarget target;
 
 private: /// handle helpers
     RequestHandleState::State _handle_state;
 
     size_t _handled_size;
 
-    size_t _content_length;
+    Optional<size_t> _content_length;
 
     size_t _chunk_body_size;
+
+    ParserWrapper _parser;
 };
