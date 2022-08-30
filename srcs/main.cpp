@@ -4,7 +4,7 @@
 
 int main(int argc, char** argv) {
     if (argc != 2) {
-        LOG_IMPORTANT("Usage: ./webserver <config_file_path>");
+        LOG_ERROR("Usage: ./webserver <config_file_path>");
         exit(EXIT_FAILURE);
     }
 

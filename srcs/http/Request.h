@@ -51,9 +51,10 @@ public:
     Request(const Request& other);
 
     RequestHandleStatus::Status Handle(SharedPtr<std::string> raw_request_part);
-private:
+
     void AddHeader(const std::string& key, const std::string& value);
 
+private:
     RequestHandleState::State ParseFirstLineHandler();
 
     RequestHandleState::State ParseHeaderHandler();
@@ -70,8 +71,6 @@ private:
 
 public:
     std::string method;
-
-    std::string resource_target;
 
     HttpVersion http_version;
 

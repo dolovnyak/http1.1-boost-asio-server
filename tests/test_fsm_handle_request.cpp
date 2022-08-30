@@ -15,7 +15,8 @@ TEST(Request, Check_Init) {
     ASSERT_EQ(request._handled_size, 0);
     ASSERT_EQ(request._content_length.HasValue(), false);
     ASSERT_EQ(request.method, "");
-    ASSERT_EQ(request.resource_target, "");
+    ASSERT_EQ(request.target.path, "");
+    ASSERT_EQ(request.target.query, "");
     ASSERT_EQ(request.http_version.major, 0);
     ASSERT_EQ(request.http_version.minor, 0);
 }
@@ -35,7 +36,8 @@ TEST(Request, Handle_FSM_First_Line) {
         ASSERT_EQ(request._handled_size, total_size);
         ASSERT_EQ(request.raw, full_raw_request);
         ASSERT_EQ(request.method, "GET");
-        ASSERT_EQ(request.resource_target, "/");
+        ASSERT_EQ(request.target.path, "/");
+        ASSERT_EQ(request.target.query, "");
         ASSERT_EQ(request.http_version.major, 1);
         ASSERT_EQ(request.http_version.minor, 1);
         ASSERT_EQ(request.headers.size(), 0);
@@ -44,7 +46,7 @@ TEST(Request, Handle_FSM_First_Line) {
 
     Request request(MakeShared<ServerInfo>({0, ""}));
 
-    const std::string first_line_part1 = "\r\n\r\n\r\n   GET   \r/cgi-";
+    const std::string first_line_part1 = "\r\n\r\n\r\nGET /cgi-";
     std::string full_raw_request = first_line_part1;
     EXPECT_NO_THROW(res = request.Handle(MakeShared(first_line_part1)));
     ASSERT_EQ(res, RequestHandleStatus::WaitMoreData);
@@ -52,13 +54,14 @@ TEST(Request, Handle_FSM_First_Line) {
     ASSERT_EQ(request._handled_size, 6); /// empty lines
     ASSERT_EQ(request.raw, full_raw_request);
     ASSERT_EQ(request.method, "");
-    ASSERT_EQ(request.resource_target, "");
+    ASSERT_EQ(request.target.path, "");
     ASSERT_EQ(request.http_version.major, 0);
     ASSERT_EQ(request.http_version.minor, 0);
     ASSERT_EQ(request.headers.size(), 0);
 
 
-    const std::string first_line_part2 = "bin   HTTP/1.1  \r\n";
+    const std::string first_line_part2 = "bin/a/a/a/a.lua??\?\?////a=asd//\?\?/?? HTTP/1.1\r\n";
+
     size_t total_size = first_line_part1.size() + first_line_part2.size();
     full_raw_request += first_line_part2;
     EXPECT_NO_THROW(res = request.Handle(MakeShared(first_line_part2)));
@@ -67,7 +70,8 @@ TEST(Request, Handle_FSM_First_Line) {
     ASSERT_EQ(request._handled_size, total_size);
     ASSERT_EQ(request.raw, full_raw_request);
     ASSERT_EQ(request.method, "GET");
-    ASSERT_EQ(request.resource_target, "/cgi-bin");
+    ASSERT_EQ(request.target.path, "/cgi-bin/a/a/a/a.lua");
+    ASSERT_EQ(request.target.query, "?\?\?////a=asd//\?\?/??");
     ASSERT_EQ(request.http_version.major, 1);
     ASSERT_EQ(request.http_version.minor, 1);
     ASSERT_EQ(request.headers.size(), 0);
@@ -80,7 +84,7 @@ TEST(Request, Handle_FSM_Headers) {
     size_t total_size = 0;
     std::string full_raw_request;
 
-    const std::string first_line = "\r\n\r\n\r\n   GET \r  /   HTTP/1.1  \r\n";
+    const std::string first_line = "\r\n\r\n\r\nGET / HTTP/1.1\r\n";
     total_size = first_line.size();
     full_raw_request = first_line;
     res = request.Handle(MakeShared(first_line));
@@ -97,7 +101,7 @@ TEST(Request, Handle_FSM_Headers) {
     ASSERT_EQ(request.headers.size(), 1);
     ASSERT_EQ(request.headers["host"][0], "123");
 
-    const std::string check1_header = "check1:  \r\t   1  \t  2  3    \r\n";
+    const std::string check1_header = "check1:     1    2  3    \r\n";
     total_size += check1_header.size();
     full_raw_request += check1_header;
     EXPECT_NO_THROW(res = request.Handle(MakeShared((check1_header))));
@@ -145,7 +149,7 @@ TEST(Request, Handle_FSM_Body_By_Content_Length) {
     size_t total_size = 0;
     std::string full_raw_request;
 
-    const std::string first_line = "\r\n\r\n\r\n   GET \r  /   HTTP/1.1  \r\n";
+    const std::string first_line = "\r\n\r\n\r\nGET / HTTP/1.1\r\n";
     total_size = first_line.size();
     full_raw_request = first_line;
     EXPECT_NO_THROW(res = request.Handle(MakeShared(first_line)));
@@ -184,7 +188,7 @@ TEST(Request, Handle_FSM_Chunked_Body) {
     std::string full_raw_request;
     std::string full_body;
 
-    const std::string first_line = "\r\n\r\n\r\n   GET \r  /   HTTP/1.1  \r\n";
+    const std::string first_line = "\r\n\r\n\r\nGET / HTTP/1.1\r\n";
     total_size = first_line.size();
     full_raw_request = first_line;
     EXPECT_NO_THROW(res = request.Handle(MakeShared(first_line)));
@@ -252,4 +256,29 @@ TEST(Request, Handle_FSM_Chunked_Body) {
     ASSERT_EQ(request.raw, full_raw_request + "a"); /// for now raw_request could contain spam data in the end
     ASSERT_EQ(request.body, full_body);
     ASSERT_EQ(request._content_length.Value(), full_body.size());
+}
+
+TEST(Request, Request_Target_Parse) {
+    RequestHandleStatus::Status res;
+    Request request(MakeShared<ServerInfo>({0, ""}));
+
+    size_t total_size = 0;
+
+    std::string full_raw_request;
+    std::string full_body;
+    const std::string first_line = "\r\n\r\n\r\nGET /? HTTP/1.2\r\n";
+    total_size = first_line.size();
+    full_raw_request = first_line;
+    EXPECT_NO_THROW(res = request.Handle(MakeShared(first_line)));
+
+    ASSERT_EQ(res, RequestHandleStatus::WaitMoreData);
+    ASSERT_EQ(request._handle_state, RequestHandleState::HandleHeader);
+    ASSERT_EQ(request._handled_size, total_size);
+    ASSERT_EQ(request.raw, full_raw_request);
+    ASSERT_EQ(request.method, "GET");
+    ASSERT_EQ(request.target.path, "/");
+    ASSERT_EQ(request.target.query, "");
+    ASSERT_EQ(request.http_version.major, 1);
+    ASSERT_EQ(request.http_version.minor, 2);
+    ASSERT_EQ(request.headers.size(), 0);
 }

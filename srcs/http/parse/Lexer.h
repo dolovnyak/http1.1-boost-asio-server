@@ -22,14 +22,19 @@ namespace yy {
     enum ParseState {
         None = 0,
         FirstLine,
+        Header
     };
 
     namespace Token {
         enum TokenType {
             Default = 0,
+
             HttpMethod,
             Resource,
-            HttpVersion
+            HttpVersion,
+
+            HeaderKey,
+            HeaderValue,
         };
     }
 
@@ -50,6 +55,9 @@ namespace yy {
                     break;
                 case yy::FirstLine:
                     SetNextExpectedTokenGroup(yy::Token::HttpMethod);
+                    break;
+                case yy::Header:
+                    SetNextExpectedTokenGroup(yy::Token::HeaderKey);
                     break;
             }
         }

@@ -1,3 +1,4 @@
+#define private public
 #include "Request.h"
 #include <sstream>
 #define _DEBUG
@@ -28,12 +29,6 @@ HttpVersion ParseHttpVersion(const std::string& raw_http_version, const SharedPt
 }
 
 int main() {
-    yy::location loc;
-
-    std::stringstream ss;
-    yy::Lexer lexer;
-    lexer.switch_streams(&ss, nullptr);
-
     {
         SharedPtr<ServerInfo> server_instance_info = MakeShared(ServerInfo(2, "kabun"));
         Request request(server_instance_info);
@@ -53,15 +48,15 @@ int main() {
             }
         }
 
-        request.resource_target = tokens[1];
-        if (request.resource_target[0] != '/') {
+        request.target.path = tokens[1];
+        if (request.target.path[0] != '/') {
             throw BadFirstLine("Incorrect first line", server_instance_info);
         }
 
         request.http_version = ParseHttpVersion(tokens[2], server_instance_info);
 
         LOG_INFO("Method: ", request.method);
-        LOG_INFO("Resource target: ", request.resource_target);
+        LOG_INFO("Resource target: ", request.target.path);
         LOG_INFO("HTTP version: ", request.http_version.major, ".", request.http_version.minor);
 
         LOG_TIME();
@@ -73,15 +68,23 @@ int main() {
         Request request(server_instance_info);
         LOG_START_TIMER("MAIN_NEW");
 
-        ss << "!#$%&'*+-.^_`|~0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz / HTTP/1.1";
+        std::string first_line = "!#$%&'*+-.^_`|~0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz /a.lua??\?\?////a=asd//\?\?/??kabun HTTP/1.1";
 
-        lexer.set_parse_state(yy::ParseState::FirstLine);
+        request._parser.Parse(first_line, 0, first_line.size(), yy::ParseState::FirstLine);
 
-        yy::Parser parser(lexer, request);
-        parser.parse();
+        LOG_WARNING("first line parsed");
+
+        std::string header = "Host: kabun.com";
+        request._parser.Parse(header, 0, header.size(), yy::ParseState::Header);
+
         LOG_INFO("Method: ", request.method);
-        LOG_INFO("Resource target: ", request.resource_target);
+        LOG_INFO("Resource target: ", request.target.path);
+        LOG_INFO("Resource query: ", request.target.query);
         LOG_INFO("HTTP version: ", request.http_version.major, ".", request.http_version.minor);
+        LOG_INFO("Headers size: ", request.headers.size());
+        for (auto& header: request.headers) {
+            LOG_INFO("Header: ", header.first, ", ", header.second[0]);
+        }
 
         LOG_TIME();
     }
