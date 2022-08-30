@@ -18,7 +18,7 @@ Request::Request(SharedPtr<ServerInfo> server_instance_info)
 Request::Request(const Request& other)
         : _parser(*this) {
     method = other.method;
-    resource_target = other.resource_target;
+    target = other.target;
     http_version = other.http_version;
     body = other.body;
     raw = other.raw;
@@ -60,16 +60,7 @@ RequestHandleState::State Request::ParseHeaderHandler() {
         return RequestHandleState::AnalyzeBodyHeaders;
     }
 
-    size_t key_end = FindInRange(raw, ":", _handled_size, header_end);
-    if (key_end == std::string::npos) {
-        throw BadHeader("Incorrect header", server_instance_info);
-    }
-    std::string key = raw.substr(_handled_size, key_end - _handled_size);
-    if (key.empty() || key.find_first_of(DELIMITERS) != std::string::npos) {
-        throw BadHeader("Incorrect header", server_instance_info);
-    }
-    std::string value = raw.substr(key_end + 1, header_end - key_end - 1);
-    AddHeader(key, value);
+    _parser.Parse(raw, _handled_size, header_end, yy::ParseState::Header);
 
     _handled_size = header_end + CRLF_LEN;
 
