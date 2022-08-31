@@ -42,7 +42,20 @@ RequestHandleState::State Request::ParseFirstLineHandler() {
         _handled_size += CRLF_LEN;
         return RequestHandleState::HandleFirstLine;
     }
-    _parser.Parse(raw, _handled_size, first_line_end, yy::ParseState::FirstLine);
+
+    try {
+        _parser.Parse(raw, _handled_size, first_line_end, yy::ParseState::FirstLine);
+    }
+    catch (const HttpException& e) {
+        throw e;
+    }
+    catch (const std::runtime_error& e) {
+        throw BadFirstLine("Bad first line", server_instance_info);
+    }
+    catch (const std::logic_error& e) {
+        LOG_ERROR("Logic error in parser: %s", e.what());
+        throw InternalServerError("Internal server error", server_instance_info);
+    }
 
     _handled_size = first_line_end + CRLF_LEN;
     return RequestHandleState::HandleHeader;
@@ -60,7 +73,19 @@ RequestHandleState::State Request::ParseHeaderHandler() {
         return RequestHandleState::AnalyzeBodyHeaders;
     }
 
-    _parser.Parse(raw, _handled_size, header_end, yy::ParseState::Header);
+    try {
+        _parser.Parse(raw, _handled_size, header_end, yy::ParseState::Header);
+    }
+    catch (const HttpException& e) {
+        throw e;
+    }
+    catch (const std::runtime_error& e) {
+        throw BadFirstLine("Bad first line", server_instance_info);
+    }
+    catch (const std::logic_error& e) {
+        LOG_ERROR("Logic error in parser: %s", e.what());
+        throw InternalServerError("Internal server error", server_instance_info);
+    }
 
     _handled_size = header_end + CRLF_LEN;
 
@@ -104,6 +129,10 @@ RequestHandleState::State Request::AnalyzeBodyHeadersHandler() {
         }
     }
 
+    it = headers.find(HOST);
+    if (it == headers.end() || it->second.size() != 1) {
+        throw BadRequest("Host header error", server_instance_info);
+    }
 
     /// if there are no transfer-encoding chunked and content-length headers, then we finish parse and consider body as empty
     return RequestHandleState::FinishHandle;

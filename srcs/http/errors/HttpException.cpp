@@ -63,3 +63,8 @@ UnsupportedTransferEncoding::UnsupportedTransferEncoding(const std::string& mess
 PayloadTooLarge::PayloadTooLarge(const std::string& message,
                                  const SharedPtr<ServerInfo>& server_instance_info)
         : HttpException(message, Http::PayloadTooLarge, "Payload too large", server_instance_info) {}
+
+
+InternalServerError::InternalServerError(const std::string& message,
+                                         const SharedPtr<ServerInfo>& server_instance_info)
+        : HttpException(message, Http::InternalServerError, "Internal server error", server_instance_info) {}

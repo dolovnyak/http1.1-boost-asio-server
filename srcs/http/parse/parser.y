@@ -20,16 +20,20 @@
 %token END 0                                "end-of-input"
 
 %token SINGLE_SPACE                         "single-space"
-%token SPACES                               "spaces"
 
 %token <std::string> ABSOLUTE_PATH          "absolute-path"
 %token <std::string> TCHAR_STRING           "tchar-strign"
 %token <std::string> QUERY_STRING           "query-string"
 %token <std::string> VCHAR_STRING           "vchar-string"
+%token <std::string> SPACES_STRING          "spaces-string"
+
 %token <std::pair<int, int> > HTTP_VERSION  "http-version"
 %token COLON                                "colon"
 
 %type <std::string> header_key              "header-key"
+%type <std::string> header_value            "header-value"
+
+%right SPACES_STRING
 
 %locations
 
@@ -99,13 +103,23 @@ http_version:       HTTP_VERSION {
 
 
 /// https://www.rfc-editor.org/rfc/rfc7230#section-3.2
-header:             header_key VCHAR_STRING {
-                        request.AddHeader($1, $2);
+header:             header_key optional_spaces header_value optional_spaces {
+                        request.AddHeader($1, $3);
                     }
+
+optional_spaces:    SPACES_STRING
+                    | %empty
 
 header_key:         TCHAR_STRING COLON {
                         lexer.SetNextExpectedTokenGroup(yy::Token::HeaderValue);
                         $$ = $1;
+                    }
+
+header_value:       VCHAR_STRING {
+                        $$ = $1;
+                    }
+                    | header_value SPACES_STRING VCHAR_STRING {
+                        $$ = $1 + $2 + $3;
                     }
 
 %%

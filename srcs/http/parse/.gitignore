@@ -4,3 +4,4 @@ Parser.h
 position.hh
 stack.hh
 location.hh
+*.output
