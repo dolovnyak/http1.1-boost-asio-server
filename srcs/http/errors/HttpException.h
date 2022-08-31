@@ -27,7 +27,7 @@ private:
     SharedPtr<Response> _error_response;
 };
 
-/// Bad request exceptions
+/// 400
 class BadRequest : public HttpException {
 public:
     BadRequest(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info);
@@ -63,13 +63,29 @@ public:
     BadChunkBody(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info);
 };
 
-///Method not allowed exceptions
+
+/// 405
 class MethodNotAllowed : public HttpException {
 public:
     MethodNotAllowed(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info);
 };
 
-/// Not implemented exceptions
+
+/// 413
+class PayloadTooLarge : public HttpException {
+public:
+    PayloadTooLarge(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info);
+};
+
+
+/// 500
+class InternalServerError : public HttpException {
+public:
+    InternalServerError(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info);
+};
+
+
+/// 501
 class NotImplemented : public HttpException {
 public:
     NotImplemented(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info);
@@ -78,10 +94,4 @@ public:
 class UnsupportedTransferEncoding : public HttpException {
 public:
     UnsupportedTransferEncoding(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info);
-};
-
-/// Payload to large exception
-class PayloadTooLarge : public HttpException {
-public:
-    PayloadTooLarge(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info);
 };

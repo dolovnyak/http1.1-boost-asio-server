@@ -12,6 +12,7 @@
 
 #define TRANSFER_ENCODING "transfer-encoding"
 #define CHUNKED "chunked"
+#define HOST "host"
 
 namespace Http {
 
@@ -30,6 +31,7 @@ namespace Http {
         NotFound = 404,
         MethodNotAllowed = 405,
         PayloadTooLarge = 413,
+        InternalServerError = 500,
         NotImplemented = 501,
     };
 }

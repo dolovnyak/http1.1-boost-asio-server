@@ -74,7 +74,7 @@ int main() {
 
         LOG_WARNING("first line parsed");
 
-        std::string header = "Host: kabun.com";
+        std::string header = "Host:     kabun.com   a       ";
         request._parser.Parse(header, 0, header.size(), yy::ParseState::Header);
 
         LOG_INFO("Method: ", request.method);

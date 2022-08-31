@@ -101,7 +101,7 @@ TEST(Request, Handle_FSM_Headers) {
     ASSERT_EQ(request.headers.size(), 1);
     ASSERT_EQ(request.headers["host"][0], "123");
 
-    const std::string check1_header = "check1:     1    2  3    \r\n";
+    const std::string check1_header = "check1:     1  \t  2  3    \r\n";
     total_size += check1_header.size();
     full_raw_request += check1_header;
     EXPECT_NO_THROW(res = request.Handle(MakeShared((check1_header))));
