@@ -84,3 +84,106 @@ int GetIntFromDigit(char digit) {
     }
     throw std::runtime_error("GetIntFromDigit: " + std::string(1, digit));
 }
+
+bool IsTchar(char c) {
+    return isalnum(c) || c == '!' || c == '#' || c == '$' || c == '%' || c == '&' || c == '\'' || c == '*' ||
+           c == '+' || c == '-' || c == '.' || c == '^' || c == '_' || c == '`' || c == '|' || c == '~';
+}
+
+bool IsTcharString(const std::string& str) {
+    for (size_t i = 0; i < str.size(); ++i) {
+        if (!IsTchar(str[i])) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool IsUnreserved(char c) {
+    return isalnum(c) || c == '-' || c == '.' || c == '_' || c == '~';
+}
+
+bool IsSubDelimiter(char c) {
+    return c == '!' || c == '$' || c == '&' || c == '\'' || c == '(' || c == ')' || c == '*' || c == '+' ||
+           c == ',' || c == ';' || c == '=';
+}
+
+bool IsHexDigit(char c) {
+    return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
+}
+
+// unreserved / pct-encoded / sub-delims / ":" / "@"
+bool IsPcharString(const std::string& str) {
+
+    for (size_t start = 0; start < str.size();) {
+
+        if (str.size() - start >= 3 && str[start] == '%' && IsHexDigit(str[start + 1]) && IsHexDigit(str[start + 2])) {
+            start += 3;
+            continue;
+        }
+
+        if (!(IsUnreserved(str[start]) || IsSubDelimiter(str[start]) || str[start] == ':' || str[start] == '@')) {
+            return false;
+        }
+        ++start;
+    }
+    return true;
+}
+
+bool IsAbsolutePath(const std::string& str) {
+    if (str.empty() || str[0] != '/') {
+        return false;
+    }
+
+    size_t prev_slash_pos = 0;
+    size_t i = str.find('/', 1);
+    for (; i != std::string::npos; i = str.find('/', i + 1)) {
+        size_t distance = i - prev_slash_pos;
+
+        if (distance <= 1) {
+            return false;
+        }
+
+        if (!IsPcharString(str.substr(prev_slash_pos + 1, distance - 1))) {
+            return false;
+        }
+        prev_slash_pos = i;
+    }
+    if (prev_slash_pos + 1 < str.size() && !IsPcharString(str.substr(prev_slash_pos + 1))) {
+        return false;
+    }
+
+    return true;
+}
+
+bool IsQueryString(const std::string& str) {
+    /// like pchar but with "/" and "?"
+    for (size_t start = 0; start < str.size();) {
+
+        if (str.size() - start >= 3 && str[start] == '%' && IsHexDigit(str[start + 1]) && IsHexDigit(str[start + 2])) {
+            start += 3;
+            continue;
+        }
+
+        if (!IsUnreserved(str[start]) && !IsSubDelimiter(str[start]) &&
+            str[start] != ':' && str[start] != '@' && str[start] != '/' && str[start] != '?') {
+            return false;
+        }
+        ++start;
+    }
+    return true;
+}
+
+bool IsObsText(char c) {
+    return static_cast<unsigned char>(c) >= 0x80 && static_cast<unsigned char>(c) <= 0xFF;
+}
+
+bool IsFieldContent(const std::string& str) {
+    for (size_t i = 0; i < str.size(); ++i) {
+        if (!isprint(str[i]) && !IsObsText(str[i]) && str[i] != '\t') {
+            return false;
+        }
+    }
+    return true;
+}

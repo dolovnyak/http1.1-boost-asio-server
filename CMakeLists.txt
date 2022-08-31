@@ -30,9 +30,6 @@ add_library(${WS_LIB}
         srcs/http/Response.cpp
         srcs/http/errors/HttpErrorPages.cpp
         srcs/http/errors/HttpException.cpp
-        srcs/http/parse/Lexer.cpp
-        srcs/http/parse/Parser.cpp
-        srcs/http/parse/ParserWrapper.cpp
         srcs/utilities/utilities.cpp
         )
 
@@ -46,12 +43,9 @@ target_include_directories(${WS_LIB} PUBLIC
         srcs/core/events
         srcs/core/modules
         srcs/http
-        srcs/http/parse
         srcs/http/errors
         ${FLEX_INCLUDE_DIR}
         )
-
-INCLUDE(srcs/http/parse/ParseGenerator.cmake)
 
 if (STANDARD98)
     target_compile_definitions(${WS_LIB} PRIVATE -D_STANDARD98)

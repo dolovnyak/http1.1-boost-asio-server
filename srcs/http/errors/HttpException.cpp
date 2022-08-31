@@ -22,7 +22,7 @@ SharedPtr<Response> HttpException::GetErrorResponse() const _NOEXCEPT {
     return _error_response;
 }
 
-/// Bad request exceptions
+/// 400
 BadRequest::BadRequest(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info)
         : HttpException(message, Http::BadRequest, "Bad request", server_instance_info) {}
 
@@ -45,12 +45,32 @@ BadChunkBody::BadChunkBody(const std::string& message, const SharedPtr<ServerInf
         : HttpException(message, Http::BadRequest, "Bad chunk body", server_instance_info) {}
 
 
-///Method not allowed exceptions
+/// 404
+NotFound::NotFound(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info)
+        : HttpException(message, Http::NotFound, "Not found", server_instance_info) {}
+
+
+/// 405
 MethodNotAllowed::MethodNotAllowed(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info)
         : HttpException(message, Http::MethodNotAllowed, "Method not allowed", server_instance_info) {}
 
 
-/// Not implemented exceptions
+/// 411
+LengthRequired::LengthRequired(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info)
+        : HttpException(message, Http::LengthRequired, "Length required", server_instance_info) {}
+
+
+/// 413
+PayloadTooLarge::PayloadTooLarge(const std::string& message,
+                                 const SharedPtr<ServerInfo>& server_instance_info)
+        : HttpException(message, Http::PayloadTooLarge, "Payload too large", server_instance_info) {}
+
+/// 500
+InternalServerError::InternalServerError(const std::string& message,
+                                         const SharedPtr<ServerInfo>& server_instance_info)
+        : HttpException(message, Http::InternalServerError, "Internal server error", server_instance_info) {}
+
+/// 501
 NotImplemented::NotImplemented(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info)
         : HttpException(message, Http::NotImplemented, "Not implemented", server_instance_info) {}
 
@@ -58,13 +78,3 @@ UnsupportedTransferEncoding::UnsupportedTransferEncoding(const std::string& mess
                                                          const SharedPtr<ServerInfo>& server_instance_info)
         : HttpException(message, Http::NotImplemented, "Unsupported transfer encoding", server_instance_info) {}
 
-
-/// Payload to large exception
-PayloadTooLarge::PayloadTooLarge(const std::string& message,
-                                 const SharedPtr<ServerInfo>& server_instance_info)
-        : HttpException(message, Http::PayloadTooLarge, "Payload too large", server_instance_info) {}
-
-
-InternalServerError::InternalServerError(const std::string& message,
-                                         const SharedPtr<ServerInfo>& server_instance_info)
-        : HttpException(message, Http::InternalServerError, "Internal server error", server_instance_info) {}

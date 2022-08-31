@@ -13,10 +13,10 @@ TEST(Request, Check_Init) {
     ASSERT_EQ(request.raw, "");
     ASSERT_EQ(request.headers.size(), 0);
     ASSERT_EQ(request._handled_size, 0);
-    ASSERT_EQ(request._content_length.HasValue(), false);
+    ASSERT_EQ(request.content_length.HasValue(), false);
     ASSERT_EQ(request.method, "");
-    ASSERT_EQ(request.target.path, "");
-    ASSERT_EQ(request.target.query, "");
+    ASSERT_EQ(request.target.file_path, "");
+    ASSERT_EQ(request.target.query_string, "");
     ASSERT_EQ(request.http_version.major, 0);
     ASSERT_EQ(request.http_version.minor, 0);
 }
@@ -36,8 +36,9 @@ TEST(Request, Handle_FSM_First_Line) {
         ASSERT_EQ(request._handled_size, total_size);
         ASSERT_EQ(request.raw, full_raw_request);
         ASSERT_EQ(request.method, "GET");
-        ASSERT_EQ(request.target.path, "/");
-        ASSERT_EQ(request.target.query, "");
+        ASSERT_EQ(request.target.file_path, "/");
+        ASSERT_EQ(request.target.directory_path, "/");
+        ASSERT_EQ(request.target.query_string, "");
         ASSERT_EQ(request.http_version.major, 1);
         ASSERT_EQ(request.http_version.minor, 1);
         ASSERT_EQ(request.headers.size(), 0);
@@ -54,7 +55,7 @@ TEST(Request, Handle_FSM_First_Line) {
     ASSERT_EQ(request._handled_size, 6); /// empty lines
     ASSERT_EQ(request.raw, full_raw_request);
     ASSERT_EQ(request.method, "");
-    ASSERT_EQ(request.target.path, "");
+    ASSERT_EQ(request.target.file_path, "");
     ASSERT_EQ(request.http_version.major, 0);
     ASSERT_EQ(request.http_version.minor, 0);
     ASSERT_EQ(request.headers.size(), 0);
@@ -70,8 +71,8 @@ TEST(Request, Handle_FSM_First_Line) {
     ASSERT_EQ(request._handled_size, total_size);
     ASSERT_EQ(request.raw, full_raw_request);
     ASSERT_EQ(request.method, "GET");
-    ASSERT_EQ(request.target.path, "/cgi-bin/a/a/a/a.lua");
-    ASSERT_EQ(request.target.query, "?\?\?////a=asd//\?\?/??");
+    ASSERT_EQ(request.target.file_path, "/cgi-bin/a/a/a/a.lua");
+    ASSERT_EQ(request.target.query_string, "?\?\?////a=asd//\?\?/??");
     ASSERT_EQ(request.http_version.major, 1);
     ASSERT_EQ(request.http_version.minor, 1);
     ASSERT_EQ(request.headers.size(), 0);
@@ -160,6 +161,12 @@ TEST(Request, Handle_FSM_Body_By_Content_Length) {
     EXPECT_NO_THROW(res = request.Handle(MakeShared(content_length_header)));
     ASSERT_EQ(request.headers[CONTENT_LENGTH][0], "10");
 
+    const std::string host_header = "host: a\r\n";
+    total_size += host_header.size();
+    full_raw_request += host_header;
+    EXPECT_NO_THROW(res = request.Handle(MakeShared(host_header)));
+    ASSERT_EQ(request.headers[HOST][0], "a");
+
     total_size += CRLF_LEN;
     full_raw_request += CRLF;
     EXPECT_NO_THROW(res = request.Handle(MakeShared(std::string(CRLF))));
@@ -167,7 +174,7 @@ TEST(Request, Handle_FSM_Body_By_Content_Length) {
     ASSERT_EQ(request._handle_state, RequestHandleState::HandleBodyByContentLength);
     ASSERT_EQ(request._handled_size, total_size);
     ASSERT_EQ(request.raw, full_raw_request);
-    ASSERT_EQ(request._content_length.Value(), 10);
+    ASSERT_EQ(request.content_length.Value(), 10);
 
     const std::string body = "0123456789";
     total_size += body.size();
@@ -192,6 +199,12 @@ TEST(Request, Handle_FSM_Chunked_Body) {
     total_size = first_line.size();
     full_raw_request = first_line;
     EXPECT_NO_THROW(res = request.Handle(MakeShared(first_line)));
+
+    const std::string host_header = "host: a\r\n";
+    total_size += host_header.size();
+    full_raw_request += host_header;
+    EXPECT_NO_THROW(res = request.Handle(MakeShared(host_header)));
+    ASSERT_EQ(request.headers[HOST][0], "a");
 
     const std::string transfer_encoding_header = "Transfer-Encoding: chunked\r\n\r\n";
     total_size += transfer_encoding_header.size();
@@ -255,7 +268,7 @@ TEST(Request, Handle_FSM_Chunked_Body) {
     ASSERT_EQ(request._handled_size, total_size);
     ASSERT_EQ(request.raw, full_raw_request + "a"); /// for now raw_request could contain spam data in the end
     ASSERT_EQ(request.body, full_body);
-    ASSERT_EQ(request._content_length.Value(), full_body.size());
+    ASSERT_EQ(request.content_length.Value(), full_body.size());
 }
 
 TEST(Request, Request_Target_Parse) {
@@ -276,8 +289,8 @@ TEST(Request, Request_Target_Parse) {
     ASSERT_EQ(request._handled_size, total_size);
     ASSERT_EQ(request.raw, full_raw_request);
     ASSERT_EQ(request.method, "GET");
-    ASSERT_EQ(request.target.path, "/");
-    ASSERT_EQ(request.target.query, "");
+    ASSERT_EQ(request.target.file_path, "/");
+    ASSERT_EQ(request.target.query_string, "");
     ASSERT_EQ(request.http_version.major, 1);
     ASSERT_EQ(request.http_version.minor, 2);
     ASSERT_EQ(request.headers.size(), 0);

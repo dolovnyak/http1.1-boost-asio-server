@@ -25,7 +25,7 @@ public:
               available(true),
               state(ConnectionState::HandleRequest),
               _core_module(core_module),
-              _connection_id(connection_id) {}
+              _session_id(connection_id) {}
 
     void SendProcessedDataToClient();
 
@@ -41,30 +41,30 @@ public:
 
     bool available;
 
-    bool should_close_after_send;
+    bool keep_alive;
 
     ConnectionState::State state;
 
 private:
     CoreModule* _core_module;
 
-    int _connection_id;
+    int _session_id;
 };
 
 template<class CoreModule>
 void Session<CoreModule>::Close() {
-    _core_module->CloseConnection(_connection_id);
+    _core_module->CloseSession(_session_id);
 }
 
 template<class CoreModule>
 void Session<CoreModule>::SendProcessedDataToClient() {
-    _core_module->SendDataToClient(_connection_id);
+    _core_module->SendDataToClient(_session_id);
 }
 
 template<class CoreModule>
 void Session<CoreModule>::SendErrorDataToClient(const SharedPtr<Response>& error_response) {
     response = error_response;
-    should_close_after_send = true;
-    _core_module->SendDataToClient(_connection_id);
+    keep_alive = false;
+    _core_module->SendDataToClient(_session_id);
 }
 

@@ -25,3 +25,21 @@ int ParseInt(const std::string& value, int base = 10);
 int ParsePositiveInt(const std::string& value, int base = 10);
 
 int GetIntFromDigit(char digit);
+
+bool IsTchar(char c);
+
+bool IsTcharString(const std::string& str);
+
+bool IsUnreserved(char c);
+
+bool IsSubDelimiter(char c);
+
+bool IsHexDigit(char c);
+
+bool IsPcharString(const std::string& str);
+
+bool IsAbsolutePath(const std::string& str);
+
+bool IsQueryString(const std::string& str);
+
+bool IsFieldContent(const std::string& str);

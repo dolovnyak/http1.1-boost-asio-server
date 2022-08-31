@@ -5,13 +5,14 @@
 #include "utilities.h"
 
 #include <queue>
+#include <sys/unistd.h>
 
 template<class CoreModule>
 class ProcessRequestEvent : public Event {
 public:
     ProcessRequestEvent(const SharedPtr<Session<CoreModule> >& connection,
                         std::queue<SharedPtr<Event> >* event_queue)
-            : _connection(connection), _event_queue(event_queue) {}
+            : _session(connection), _event_queue(event_queue) {}
 
     ~ProcessRequestEvent() {}
 
@@ -21,7 +22,10 @@ public:
 
 
 private:
-    SharedPtr<Session<CoreModule> > _connection;
+    void CgiProcess(const std::string& directory_path);
+    void FileProcess(const std::string& directory_path);
+
+    SharedPtr<Session<CoreModule> > _session;
     std::queue<SharedPtr<Event> >* _event_queue;
 };
 
@@ -32,59 +36,110 @@ const std::string& ProcessRequestEvent<CoreModule>::GetName() const {
     return kName;
 }
 
+//template<class CoreModule>
+//void ProcessRequestEvent<CoreModule>::CgiProcess(const std::string& directory_path) {
+//
+//    if (_session->request->method == "GET") {
+//        /// может запустить cgi процесс (не передавая ему тело)
+//    }
+//    else if (_session->request->method == "POST") {
+//        /// может запустить cgi процесс (передавая ему тело)
+//    }
+//    else if (_session->request->GetMethod() == "DELETE") {
+//        /// может запустить cgi процесс
+//    }
+//    else if (_session->request->GetMethod() == "HEAD") {
+//        /// читает файл/запускает cgi процесс и возвращает только заголовки
+//    }
+//    else if (_session->request->GetMethod() == "PUT"
+//             || _session->request->GetMethod() == "OPTIONS"
+//             || _session->request->GetMethod() == "CONNECT"
+//             || _session->request->GetMethod() == "TRACE"
+//             || _session->request->GetMethod() == "PATCH") {
+//        throw NotImplemented("Method " + _session->request->GetMethod() + " is not implemented",
+//                             _session->server_instance);
+//    }
+//    else {
+//        throw MethodNotAllowed("Method not allowed", _session->server_instance);
+//    }
+//}
+
+//template<class CoreModule>
+//void ProcessRequestEvent<CoreModule>::FileProcess(const std::string& directory_path) {
+//    std::istream is(&_session->request->target.file_path);
+//    if (!is) {
+//        throw NotFound("File not found", _session->server_instance);
+//    }
+//
+//}
+
 template<class CoreModule>
 void ProcessRequestEvent<CoreModule>::Process() {
     try {
-        if (!_connection->available) {
+        if (!_session->available) {
             LOG_INFO(GetName(), " on closed connection");
             return;
         }
-        if (_connection->state != ConnectionState::ProcessRequest) {
+        if (_session->state != ConnectionState::ProcessRequest) {
             LOG_INFO(GetName(), " on wrong connection state");
             return;
         }
 
-        /// analyze resource here and check if it valid and exists, if no throw http exception
-
-//        if (_connection->request->GetMethod() == "GET") {
-//            _connection->state = ConnectionState::HandleRequest;
+//        /// git dir and check is it CGI or simple file
+//        /// два класса FileHandler и CGIHandler
+//        if (_session->request->target.file_path.rbegin() == '/') {
+//            _session->request->target.file_path += _session->server_instance->default_file_name;
 //        }
-//        else if (_connection->request->GetMethod() == "POST") {
-//            /// resource should be script
-//            _connection->state = ConnectionState::HandleRequest;
-//        }
-//        else if (_connection->request->GetMethod() == "DELETE") {
-//            /// resource should be script
-//            _connection->state = ConnectionState::HandleRequest;
-//        }
-//        else if (_connection->request->GetMethod() == "HEAD") {
-//            _connection->state = ConnectionState::HandleRequest;
-//        }
-//        else if (_connection->request->GetMethod() == "PUT"
-//                 || _connection->request->GetMethod() == "OPTIONS"
-//                 || _connection->request->GetMethod() == "CONNECT"
-//                 || _connection->request->GetMethod() == "TRACE"
-//                 || _connection->request->GetMethod() == "PATCH") {
-//            throw NotImplemented("Method " + _connection->request->GetMethod() + " is not implemented",
-//                                 _connection->server_instance);
+//        _session->request->target.file_path = _session->server_instance->root_path + _session->request->target.file_path;
+//        std::string directory_path = _session->request->target.file_path.substr(0, _session->request->target.file_path.find_last_of('/'));
+//
+//        if (_session->server_instance->cgi_directory_paths.find(directory_path) != _session->server_instance->cgi_directory_paths.end()) {
+//            /// file is cgi script
+//            if (!access(_session->request->target.file_path, X_OK)) {
+//                throw NotFound("File not found or not available", _session->server_instance);
+//            }
+//            CgiProcess(directory_path);
 //        }
 //        else {
-//            throw MethodNotAllowed("Method not allowed", _connection->server_instance);
+//            /// file is simple file
+//            if (!access(_session->request->target.file_path, R_OK)) {
+//                throw NotFound("File not found or not available", _session->server_instance);
+//            }
+//            FileProcess(directory_path);
 //        }
-        /// Analyze method and resource -> will return handler type
-        /// Run handler -> will return response
-
-        /// посмотреть какой метод и поддерживаемый ли он
-        /// распарсить ресурс
-        /// если ресурс ведет к файлу, который лежит в папке cgi (или возможно чутка по-другому если будет fastCgi) -> CgiHandler
-        /// если к обычному файлу -> FileHandler
-
-//        _connection->ProcessIncomingData();
-//        _connection->SendProcessedDataToClient();
+//
+//
+//        if (_session->request->method == "GET") {
+//            /// может просто вернуть файл
+//
+//        }
+//        else if (_session->request->method == "POST") {
+//            if (!_session->request->content_length.HasValue()) {
+//                throw LengthRequired("Length required", _session->server_instance);
+//            }
+//        }
+//        else if (_session->request->GetMethod() == "DELETE") {
+//            /// может запустить cgi процесс
+//            /// может удалить файл (если есть права)
+//        }
+//        else if (_session->request->GetMethod() == "HEAD") {
+//            /// читает файл/запускает cgi процесс и возвращает только заголовки
+//        }
+//        else if (_session->request->GetMethod() == "PUT"
+//                 || _session->request->GetMethod() == "OPTIONS"
+//                 || _session->request->GetMethod() == "CONNECT"
+//                 || _session->request->GetMethod() == "TRACE"
+//                 || _session->request->GetMethod() == "PATCH") {
+//            throw NotImplemented("Method " + _session->request->GetMethod() + " is not implemented",
+//                                 _session->server_instance);
+//        }
+//        else {
+//            throw MethodNotAllowed("Method not allowed", _session->server_instance);
+//        }
     }
     catch (const HttpException& e) {
-        _connection->state = ConnectionState::ResponseToClient;
-        _connection->SendErrorDataToClient(e.GetErrorResponse());
+        _session->state = ConnectionState::ResponseToClient;
+        _session->SendErrorDataToClient(e.GetErrorResponse());
         LOG_INFO("HttpException: ", e.what());
     }
     catch (const std::exception& e) {

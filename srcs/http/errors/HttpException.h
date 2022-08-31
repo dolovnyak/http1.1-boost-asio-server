@@ -63,6 +63,11 @@ public:
     BadChunkBody(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info);
 };
 
+class NotFound : public HttpException {
+public:
+    NotFound(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info);
+};
+
 
 /// 405
 class MethodNotAllowed : public HttpException {
@@ -70,6 +75,11 @@ public:
     MethodNotAllowed(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info);
 };
 
+/// 411
+class LengthRequired : public HttpException {
+public:
+    LengthRequired(const std::string& message, const SharedPtr<ServerInfo>& server_instance_info);
+};
 
 /// 413
 class PayloadTooLarge : public HttpException {
