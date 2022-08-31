@@ -139,7 +139,7 @@ void PollModule::ProcessNewConnection(int index) {
         SharedPtr<Session<PollModule> > connection = MakeShared(
                 Session<PollModule>(_poll_fds_number, _servers.at(_poll_fds[index].fd), this));
 
-        _connections.insert(std::pair<int, SharedPtr<Session<PollModule> > >(_poll_fds_number, connection));
+        _sessions.insert(std::pair<int, SharedPtr<Session<PollModule> > >(_poll_fds_number, connection));
 
         ++_poll_fds_number;
     }
@@ -164,7 +164,7 @@ void PollModule::ProcessRead(int index) {
     }
     else {
         _event_queue->push(MakeShared<Event>(new HandleRequestEvent<PollModule>(
-                _connections.at(index),
+                _sessions.at(index),
                 raw_request_part,
                 _event_queue)));
     }
@@ -173,7 +173,7 @@ void PollModule::ProcessRead(int index) {
 void PollModule::ProcessWrite(int index) {
     LOG_INFO("Write processing");
 
-    SharedPtr<Session<PollModule> > connection = _connections.at(index);
+    SharedPtr<Session<PollModule> > connection = _sessions.at(index);
     std::string response = connection->response->raw_response;
 
     /// TODO maybe it will be needed to make chunked write.
@@ -184,16 +184,16 @@ void PollModule::ProcessWrite(int index) {
     }
     LOG_INFO("Bytes send: ", bytes_send);
 
-    if (connection->should_close_after_send) {
+    if (!connection->keep_alive) {
         CloseConnection(index);
     }
 }
 
 void PollModule::CloseConnection(int index) {
     LOG_INFO("Close connection: ", _poll_fds[index].fd);
-    _connections.at(index)->available = false;
+    _sessions.at(index)->available = false;
     close(_poll_fds[index].fd);
-    _connections.erase(index);
+    _sessions.erase(index);
     _poll_fds[index].fd = -1;
     _should_compress = true;
 }

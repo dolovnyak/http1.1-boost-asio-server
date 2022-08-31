@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <string>
 #include <utility>
+#include <unordered_set>
 
 class ServerInfo {
 public:
@@ -14,5 +15,8 @@ public:
 
     int listening_tcp_socket;
     std::string name;
+    std::string default_file_name;
+    std::string root_path;
+    std::unordered_set<std::string> cgi_directory_paths;
     /// maybe it will be contain name, root path and cgi directory paths
 };

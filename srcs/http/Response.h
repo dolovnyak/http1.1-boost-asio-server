@@ -21,6 +21,8 @@ public:
     static Response MakeErrorResponse(Http::Code code, const std::string& error_title,
                                       SharedPtr<ServerInfo> server_instance_info);
 
+    static Response MakeOkResponse(const std::string& body, SharedPtr<ServerInfo> server_instance_info);
+
     Response(Http::Code code, const std::string& title,
              const std::vector<Http::Header>& custom_headers,
              const std::string& body);

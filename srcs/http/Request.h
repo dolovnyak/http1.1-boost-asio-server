@@ -3,7 +3,6 @@
 #include "SharedPtr.h"
 #include "ServerInfo.h"
 #include "Optional.h"
-#include "ParserWrapper.h"
 
 #include <string>
 #include <unordered_map>
@@ -40,15 +39,14 @@ struct HttpVersion {
 };
 
 struct RequestTarget {
-    std::string path;
-    std::string query;
+    std::string file_path;
+    std::string directory_path;
+    std::string query_string;
 };
 
 class Request {
 public:
     Request(SharedPtr<ServerInfo> server_instance_info);
-
-    Request(const Request& other);
 
     RequestHandleStatus::Status Handle(SharedPtr<std::string> raw_request_part);
 
@@ -67,7 +65,7 @@ private:
 
     RequestHandleState::State ParseBodyByContentLengthHandler();
 
-    RequestHandleState::State AnalyzeBodyHeadersHandler();
+    RequestHandleState::State AnalyzeHeadersBeforeParseBodyHandler();
 
 public:
     std::string method;
@@ -85,14 +83,12 @@ public:
 
     RequestTarget target;
 
+    Optional<size_t> content_length;
+
 private: /// handle helpers
     RequestHandleState::State _handle_state;
 
     size_t _handled_size;
 
-    Optional<size_t> _content_length;
-
     size_t _chunk_body_size;
-
-    ParserWrapper _parser;
 };

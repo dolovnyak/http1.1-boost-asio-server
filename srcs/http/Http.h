@@ -30,6 +30,7 @@ namespace Http {
         BadRequest = 400,
         NotFound = 404,
         MethodNotAllowed = 405,
+        LengthRequired = 411,
         PayloadTooLarge = 413,
         InternalServerError = 500,
         NotImplemented = 501,
