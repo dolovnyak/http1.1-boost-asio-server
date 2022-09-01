@@ -2,78 +2,42 @@
 #include "Logging.h"
 #include "HandleRequestEvent.h"
 
-#include <sys/ioctl.h>
 #include <sys/poll.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
+
+PollModule::PollModule(const SharedPtr<Config>& config, std::queue<SharedPtr<Event> >* event_queue)
+        : _config(config),
+          _event_queue(event_queue),
+          _poll_fds_number(0),
+          _poll_fds(nullptr),
+          _should_compress(false),
+          _read_buffer_size(_config->read_buffer_size),
+          _read_buffer(new char[_read_buffer_size]) {
 
 
-bool PollModule::Setup(const Config& config, std::queue<SharedPtr<Event> >* event_queue) {
-    _event_queue = event_queue;
-
-    _poll_fds_number = 0;
-    int option_value = 1;
-
-    _poll_fds = (pollfd*)calloc(config.GetMaxEventsNumber(), sizeof(struct pollfd));
+    _poll_fds = (pollfd*)calloc(_config->max_sockets_number, sizeof(struct pollfd)); /// TODO remake on new
     if (_poll_fds == nullptr) {
-        LOG_ERROR("Failed to allocate memory for poll_fds");
-        return false;
+        throw std::runtime_error("Failed to allocate memory for poll fds");
     }
 
-    for (const auto& server_config : config.GetServersConfigs()) {
+    for (size_t i = 0; i < _config->servers_configs.size(); ++i) {
+        int socket = Http::SetupSocket(_config->servers_configs[i], _config);
 
-        int listening_socket_fd = socket(AF_INET, SOCK_STREAM, 0); /// TODO maybe also support AF_INET6 from config?
-        if (listening_socket_fd == -1) {
-            LOG_ERROR("Failed to create listening socket");
-            return false;
-        }
-
-        if (setsockopt(listening_socket_fd, SOL_SOCKET, SO_REUSEADDR, (char*)&option_value, sizeof(option_value)) < 0) {
-            LOG_PERROR("Failed to set socket options");
-            close(listening_socket_fd);
-            return false;
-        }
-
-        if (ioctl(listening_socket_fd, FIONBIO, (char*)&option_value) < 0) {
-            LOG_PERROR("Failed to set socket non blocking");
-            close(listening_socket_fd);
-            return false;
-        }
-
-        struct sockaddr_in address = {};
-        bzero(&address, sizeof(address));
-        address.sin_family = AF_INET;
-        address.sin_addr.s_addr = htonl(INADDR_ANY);
-        address.sin_port = htons(server_config.port);
-
-        if (bind(listening_socket_fd, (struct sockaddr*)&address, sizeof(address)) < 0) {
-            LOG_PERROR("Failed to bind socket");
-            close(listening_socket_fd);
-            return false;
-        }
-
-        if (listen(listening_socket_fd, server_config.max_connection_number) < 0) {
-            LOG_PERROR("Failed to set listen backlog");
-            close(listening_socket_fd);
-            return false;
-        }
-
-        _poll_fds[_poll_fds_number].fd = listening_socket_fd;
+        _poll_fds[_poll_fds_number].fd = socket;
         _poll_fds[_poll_fds_number].events = POLLIN;
         ++_poll_fds_number;
 
-        SharedPtr<ServerInfo> server_instance = MakeShared(
-                ServerInfo(listening_socket_fd, server_config.name));
-        _servers.insert(std::pair<int, SharedPtr<ServerInfo> >(listening_socket_fd, server_instance));
+        _servers.insert(std::pair<int, SharedPtr<ServerConfig> >(socket, _config->servers_configs[i]));
     }
 
     if (_servers.empty()) {
-        LOG_ERROR("No server instances created");
-        return false;
+        throw std::runtime_error("No server instances created");
     }
+}
 
-    return true;
+PollModule::~PollModule() {
+    delete[] _read_buffer;
+    free(_poll_fds);
 }
 
 void PollModule::ProcessEvents(int timeout) {
@@ -107,8 +71,8 @@ void PollModule::ProcessEvents(int timeout) {
         }
         else {
             if (_poll_fds[i].revents & (POLLHUP | POLLNVAL)) {
-                LOG_INFO("Session closed: ", _poll_fds[i].fd);
-                CloseConnection(i);
+                LOG_INFO("HttpSession closed: ", _poll_fds[i].fd);
+                CloseSocket(i);
             }
             else {
                 LOG_ERROR("Incorrect revents value: ", _poll_fds[i].revents);
@@ -128,18 +92,18 @@ void PollModule::ProcessNewConnection(int index) {
                 break;
             }
             else {
-                LOG_PERROR("Failed to accept new connection");
+                LOG_PERROR("Failed to accept new session");
                 break;
             }
         }
-        LOG_INFO("New connection: ", new_connection_fd);
+        LOG_INFO("New session: ", new_connection_fd);
         _poll_fds[_poll_fds_number].fd = new_connection_fd;
         _poll_fds[_poll_fds_number].events = POLLIN;
 
-        SharedPtr<Session<PollModule> > connection = MakeShared(
-                Session<PollModule>(_poll_fds_number, _servers.at(_poll_fds[index].fd), this));
+        SharedPtr<HttpSession<PollModule> > session = MakeShared(
+                HttpSession<PollModule>(_poll_fds_number, _servers.at(_poll_fds[index].fd), this));
 
-        _sessions.insert(std::pair<int, SharedPtr<Session<PollModule> > >(_poll_fds_number, connection));
+        _sessions.insert(std::pair<int, SharedPtr<HttpSession<PollModule> > >(_poll_fds_number, session));
 
         ++_poll_fds_number;
     }
@@ -147,20 +111,19 @@ void PollModule::ProcessNewConnection(int index) {
 
 void PollModule::ProcessRead(int index) {
     LOG_INFO("Read processing");
-    char buffer[8]; /// TODO get from config
 
     LOG_DEBUG("Reading...");
-    ssize_t bytes_read = recv(_poll_fds[index].fd, buffer, sizeof(buffer), 0);
-    SharedPtr<std::string> raw_request_part = MakeShared<std::string>(std::string(buffer, bytes_read));
+    ssize_t bytes_read = recv(_poll_fds[index].fd, _read_buffer, _read_buffer_size, 0);
+    SharedPtr<std::string> raw_request_part = MakeShared<std::string>(std::string(_read_buffer, bytes_read));
     LOG_DEBUG("Bytes read: ", bytes_read);
 
     if (bytes_read < 0) {
         LOG_PERROR("Failed to read from socket");
-        CloseConnection(index);
+        CloseSocket(index);
     }
     else if (bytes_read == 0) {
-        LOG_INFO("Session closed by client: ", _poll_fds[index].fd);
-        CloseConnection(index);
+        LOG_INFO("HttpSession closed by client: ", _poll_fds[index].fd);
+        CloseSocket(index);
     }
     else {
         _event_queue->push(MakeShared<Event>(new HandleRequestEvent<PollModule>(
@@ -173,7 +136,7 @@ void PollModule::ProcessRead(int index) {
 void PollModule::ProcessWrite(int index) {
     LOG_INFO("Write processing");
 
-    SharedPtr<Session<PollModule> > connection = _sessions.at(index);
+    SharedPtr<HttpSession<PollModule> > connection = _sessions.at(index);
     std::string response = connection->response->raw_response;
 
     /// TODO maybe it will be needed to make chunked write.
@@ -185,11 +148,11 @@ void PollModule::ProcessWrite(int index) {
     LOG_INFO("Bytes send: ", bytes_send);
 
     if (!connection->keep_alive) {
-        CloseConnection(index);
+        CloseSocket(index);
     }
 }
 
-void PollModule::CloseConnection(int index) {
+void PollModule::CloseSocket(int index) {
     LOG_INFO("Close connection: ", _poll_fds[index].fd);
     _sessions.at(index)->available = false;
     close(_poll_fds[index].fd);

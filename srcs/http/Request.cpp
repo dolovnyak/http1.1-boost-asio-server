@@ -4,11 +4,9 @@
 #include "HttpErrorPages.h"
 #include "Logging.h"
 
-typedef std::unordered_map<std::string, std::vector<std::string> >::iterator HeaderIterator;
-
 namespace {
     std::string ParseMethod(const std::string& raw_method,
-                            const SharedPtr<ServerInfo>& server_instance_info) {
+                            const SharedPtr<ServerConfig>& server_instance_info) {
         if (!IsTcharString(raw_method)) {
             throw BadFirstLine("Incorrect first line", server_instance_info);
         }
@@ -16,23 +14,35 @@ namespace {
     }
 
     RequestTarget ParseRequestTarget(const std::string& raw_request_target,
-                                     const SharedPtr<ServerInfo>& server_instance_info) {
+                                     const SharedPtr<ServerConfig>& server_instance_info) {
         RequestTarget request_target;
 
         size_t path_end = raw_request_target.find_first_of('?');
 
         if (path_end == std::string::npos) {
-            request_target.file_path = raw_request_target;
+            request_target.full_path = raw_request_target;
             request_target.directory_path = raw_request_target.substr(0, raw_request_target.find_last_of('/') + 1);
             request_target.query_string = "";
         }
         else {
-            request_target.file_path = raw_request_target.substr(0, path_end);
-            request_target.directory_path = request_target.file_path.substr(0, request_target.file_path.find_last_of('/') + 1);
+            request_target.full_path = raw_request_target.substr(0, path_end);
+            request_target.directory_path = request_target.full_path.substr(0, request_target.full_path.find_last_of('/') + 1);
             request_target.query_string = raw_request_target.substr(path_end + 1);
         }
 
-        if (!IsAbsolutePath(request_target.file_path)) {
+        if (request_target.full_path != request_target.directory_path) {
+            request_target.file_name = request_target.full_path.substr(request_target.full_path.find_last_of('/') + 1);
+            if (request_target.file_name.find('.') != std::string::npos) {
+                request_target.extension = request_target.file_name.substr(request_target.file_name.find_last_of('.') + 1);
+            }
+        }
+        else {
+            request_target.file_name = "";
+            request_target.extension = "";
+        }
+
+
+        if (!IsAbsolutePath(request_target.full_path)) {
             throw BadFirstLine("Incorrect first line", server_instance_info);
         }
         if (!IsQueryString(request_target.query_string)) {
@@ -43,7 +53,7 @@ namespace {
     }
 
     HttpVersion ParseHttpVersion(const std::string& raw_http_version,
-                                 const SharedPtr<ServerInfo>& server_instance_info) {
+                                 const SharedPtr<ServerConfig>& server_instance_info) {
         std::vector<std::string> tokens = SplitString(raw_http_version, "/");
         if (tokens.size() != 2 || tokens[0] != "HTTP") {
             throw BadHttpVersion("Incorrect HTTP version", server_instance_info);
@@ -67,8 +77,8 @@ namespace {
     }
 }
 
-Request::Request(SharedPtr<ServerInfo> server_instance_info)
-        : server_instance_info(server_instance_info),
+Request::Request(const SharedPtr<ServerConfig>& server_config)
+        : server_config(server_config),
           content_length(),
           _handle_state(RequestHandleState::HandleFirstLine),
           _handled_size(0),
@@ -89,13 +99,13 @@ RequestHandleState::State Request::ParseFirstLineHandler() {
     std::vector<std::string> tokens = SplitString(raw.substr(_handled_size, first_line_end - _handled_size),
                                                   DELIMITERS);
     if (tokens.size() != 3) {
-        throw BadFirstLine("Incorrect first line", server_instance_info);
+        throw BadFirstLine("Incorrect first line", server_config);
     }
-    method = ParseMethod(tokens[0], server_instance_info);
+    method = ParseMethod(tokens[0], server_config);
 
-    target = ParseRequestTarget(tokens[1], server_instance_info);
+    target = ParseRequestTarget(tokens[1], server_config);
 
-    http_version = ParseHttpVersion(tokens[2], server_instance_info);
+    http_version = ParseHttpVersion(tokens[2], server_config);
 
     _handled_size = first_line_end + CRLF_LEN;
 
@@ -116,15 +126,15 @@ RequestHandleState::State Request::ParseHeaderHandler() {
 
     size_t key_end = FindInRange(raw, ":", _handled_size, header_end);
     if (key_end == std::string::npos) {
-        throw BadHeader("Incorrect header", server_instance_info);
+        throw BadHeader("Incorrect header", server_config);
     }
     std::string key = raw.substr(_handled_size, key_end - _handled_size);
     if (key.empty() || !IsTcharString(key)) {
-        throw BadHeader("Incorrect header", server_instance_info);
+        throw BadHeader("Incorrect header", server_config);
     }
     std::string value = raw.substr(key_end + 1, header_end - key_end - 1);
     if (value.empty() || !IsFieldContent(value)) {
-        throw BadHeader("Incorrect header", server_instance_info);
+        throw BadHeader("Incorrect header", server_config);
     }
 
     AddHeader(key, value);
@@ -136,21 +146,17 @@ RequestHandleState::State Request::ParseHeaderHandler() {
 
 RequestHandleState::State Request::AnalyzeHeadersBeforeParseBodyHandler() {
 
-    HeaderIterator it = headers.find(HOST);
-    if (it == headers.end() || it->second.size() != 1) {
-        throw BadRequest("Host header error", server_instance_info);
-    }
 
     /// transfer encoding
-    it = headers.find(TRANSFER_ENCODING);
+    HeaderIterator it = headers.find(TRANSFER_ENCODING);
     if (it != headers.end()) {
         if (it->second.size() != 1) {
-            throw BadHeader("Incorrect header", server_instance_info);
+            throw BadHeader("Incorrect header", server_config);
         }
         std::vector<std::string> tokens = SplitString(it->second.front(), DELIMITERS);
         if (tokens.size() != 1 || ToLower(StripString(tokens[0])) != CHUNKED) {
             throw UnsupportedTransferEncoding("Unsupported transfer encoding: " + it->second.front(),
-                                              server_instance_info);
+                                              server_config);
         }
         return RequestHandleState::HandleChunkSize;
     }
@@ -159,12 +165,12 @@ RequestHandleState::State Request::AnalyzeHeadersBeforeParseBodyHandler() {
     it = headers.find(CONTENT_LENGTH);
     if (it != headers.end()) {
         if (it->second.size() != 1) {
-            throw BadHeader("Incorrect header", server_instance_info);
+            throw BadHeader("Incorrect header", server_config);
         }
         std::vector<std::string> tokens = SplitString(it->second.front(), DELIMITERS);
 
         if (tokens.size() != 1) {
-            throw BadContentLength("Incorrect content length", server_instance_info);
+            throw BadContentLength("Incorrect content length", server_config);
         }
 
         try {
@@ -172,7 +178,7 @@ RequestHandleState::State Request::AnalyzeHeadersBeforeParseBodyHandler() {
             return RequestHandleState::HandleBodyByContentLength;
         }
         catch (const std::exception& e) {
-            throw BadContentLength("Incorrect content length" + std::string(e.what()), server_instance_info);
+            throw BadContentLength("Incorrect content length" + std::string(e.what()), server_config);
         }
     }
 
@@ -190,7 +196,7 @@ RequestHandleState::State Request::ParseChunkSizeHandler() {
     std::vector<std::string> tokens = SplitString(raw.substr(_handled_size, chunk_size_end - _handled_size),
                                                   DELIMITERS);
     if (tokens.empty()) {
-        throw BadChunkSize("Incorrect chunk size", server_instance_info);
+        throw BadChunkSize("Incorrect chunk size", server_config);
     }
 
     try {
@@ -199,7 +205,7 @@ RequestHandleState::State Request::ParseChunkSizeHandler() {
         /// for now just ignore chunk extensions
     }
     catch (const std::exception& e) {
-        throw BadChunkSize("Incorrect chunk size" + std::string(e.what()), server_instance_info);
+        throw BadChunkSize("Incorrect chunk size" + std::string(e.what()), server_config);
     }
 
     if (_chunk_body_size == 0) {
@@ -215,7 +221,7 @@ RequestHandleState::State Request::ParseChunkBodyHandler() {
     }
 
     if (raw.substr(_handled_size + _chunk_body_size, CRLF_LEN) != CRLF) {
-        throw BadChunkBody("Incorrect chunk body", server_instance_info);
+        throw BadChunkBody("Incorrect chunk body", server_config);
     }
 
     body += raw.substr(_handled_size, _chunk_body_size);
@@ -252,7 +258,7 @@ RequestHandleState::State Request::ParseBodyByContentLengthHandler() {
 RequestHandleStatus::Status Request::Handle(SharedPtr<std::string> raw_request_part) {
     raw += *raw_request_part;
     if (raw.size() >= 1337) { /// TODO get value from config
-        throw PayloadTooLarge("Payload too large", server_instance_info);
+        throw PayloadTooLarge("Payload too large", server_config);
     }
     RequestHandleState::State prev_state = _handle_state;
 

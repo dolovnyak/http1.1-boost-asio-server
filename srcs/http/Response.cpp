@@ -3,7 +3,7 @@
 
 #include <vector>
 
-Response Response::MakeErrorResponse(Http::Code error, const std::string& error_title, SharedPtr<ServerInfo> server_instance_info) {
+Response Response::MakeErrorResponse(Http::Code error, const std::string& error_title, SharedPtr<ServerConfig> server_instance_info) {
     std::string body = GetHttpErrorPageByCode(error);
     std::vector<Http::Header> headers;
     headers.push_back(Http::Header("Content-Type", "text/html"));
@@ -14,7 +14,7 @@ Response Response::MakeErrorResponse(Http::Code error, const std::string& error_
     return Response(error, error_title, headers, body);
 }
 
-Response Response::MakeOkResponse(const std::string& body, SharedPtr<ServerInfo> server_instance_info) {
+Response Response::MakeOkResponse(const std::string& body, SharedPtr<ServerConfig> server_instance_info) {
     std::vector<Http::Header> headers;
     headers.push_back(Http::Header("Content-Type", "text/html"));
     headers.push_back(Http::Header("Content-Length", std::to_string(body.size())));

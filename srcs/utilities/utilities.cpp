@@ -187,3 +187,12 @@ bool IsFieldContent(const std::string& str) {
     }
     return true;
 }
+
+bool IsPositiveNumberString(const std::string& str) {
+    for (size_t i = 0; i < str.size(); ++i) {
+        if (!isdigit(str[i])) {
+            return false;
+        }
+    }
+    return true;
+}

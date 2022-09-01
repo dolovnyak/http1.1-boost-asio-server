@@ -2,7 +2,7 @@
 
 #include "Http.h"
 #include "HttpErrorPages.h"
-#include "ServerInfo.h"
+#include "ServerConfig.h"
 #include "SharedPtr.h"
 
 /// У респонса должен быть набор базовых хедеров:
@@ -19,9 +19,9 @@
 class Response {
 public:
     static Response MakeErrorResponse(Http::Code code, const std::string& error_title,
-                                      SharedPtr<ServerInfo> server_instance_info);
+                                      SharedPtr<ServerConfig> server_instance_info);
 
-    static Response MakeOkResponse(const std::string& body, SharedPtr<ServerInfo> server_instance_info);
+    static Response MakeOkResponse(const std::string& body, SharedPtr<ServerConfig> server_instance_info);
 
     Response(Http::Code code, const std::string& title,
              const std::vector<Http::Header>& custom_headers,

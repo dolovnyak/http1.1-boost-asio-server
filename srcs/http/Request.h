@@ -1,13 +1,14 @@
 #pragma once
 
 #include "SharedPtr.h"
-#include "ServerInfo.h"
 #include "Optional.h"
+#include "Config.h"
 
 #include <string>
 #include <unordered_map>
 #include <vector>
 
+typedef std::unordered_map<std::string, std::vector<std::string> >::iterator HeaderIterator;
 
 namespace RequestHandleStatus {
     enum Status {
@@ -39,14 +40,16 @@ struct HttpVersion {
 };
 
 struct RequestTarget {
-    std::string file_path;
+    std::string full_path;
     std::string directory_path;
+    std::string file_name;
+    std::string extension;
     std::string query_string;
 };
 
 class Request {
 public:
-    Request(SharedPtr<ServerInfo> server_instance_info);
+    Request(const SharedPtr<ServerConfig>& server_config);
 
     RequestHandleStatus::Status Handle(SharedPtr<std::string> raw_request_part);
 
@@ -79,7 +82,7 @@ public:
 
     std::unordered_map<std::string, std::vector<std::string> > headers;
 
-    SharedPtr<ServerInfo> server_instance_info;
+    SharedPtr<ServerConfig> server_config;
 
     RequestTarget target;
 
