@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Config.h"
+
 #include <string>
 
 #define CR                  (char) '\r'
@@ -13,6 +15,10 @@
 #define TRANSFER_ENCODING "transfer-encoding"
 #define CHUNKED "chunked"
 #define HOST "host"
+#define CONNECTION "connection"
+#define KEEP_ALIVE "keep-alive"
+#define CLOSE "close"
+#define TIMEOUT "timeout"
 
 namespace Http {
 
@@ -35,4 +41,6 @@ namespace Http {
         InternalServerError = 500,
         NotImplemented = 501,
     };
+
+    int SetupSocket(SharedPtr<ServerConfig> server_config, SharedPtr<Config> config);
 }

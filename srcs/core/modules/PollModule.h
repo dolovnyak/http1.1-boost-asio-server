@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Config.h"
-#include "ServerInfo.h"
 #include "Event.h"
 #include "SharedPtr.h"
 
@@ -11,7 +10,9 @@
 
 class PollModule {
 public:
-    bool Setup(const Config& config, std::queue<SharedPtr<Event> >* event_queue);
+    PollModule(const SharedPtr<Config>& config, std::queue<SharedPtr<Event> >* event_queue);
+
+    ~PollModule();
 
     void ProcessEvents(int timeout);
 
@@ -25,18 +26,22 @@ private:
     void ProcessCompress();
 
 private: /// for connection communication
+
+    void CloseSocket(int index);
+
     void SendDataToClient(int index);
 
-    void CloseConnection(int index);
-
-    friend class Session<PollModule>; /// TODO maybe del
+    friend class HttpSession<PollModule>;
 
 private:
+    SharedPtr<Config> _config;
+    std::queue<SharedPtr<Event> >* _event_queue;
+    std::unordered_map<int, SharedPtr<ServerConfig> > _servers;
+    std::unordered_map<int, SharedPtr<HttpSession<PollModule> > > _sessions;
+
     int _poll_fds_number;
     struct pollfd* _poll_fds;
     bool _should_compress;
-
-    std::unordered_map<int, SharedPtr<ServerInfo> > _servers;
-    std::unordered_map<int, SharedPtr<Session<PollModule> > > _sessions;
-    std::queue<SharedPtr<Event> >* _event_queue;
+    size_t _read_buffer_size;
+    char* _read_buffer;
 };

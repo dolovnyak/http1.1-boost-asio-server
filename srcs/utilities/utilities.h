@@ -43,3 +43,5 @@ bool IsAbsolutePath(const std::string& str);
 bool IsQueryString(const std::string& str);
 
 bool IsFieldContent(const std::string& str);
+
+bool IsPositiveNumberString(const std::string& str);

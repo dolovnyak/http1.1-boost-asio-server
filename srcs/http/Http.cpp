@@ -1,46 +1,42 @@
-#include <string>
-#include <unordered_set>
+#include "Http.h"
 
-#define CR                  (char) '\r'
-#define LF                  (char) '\n'
-#define CRLF                "\r\n"
-#define CRLF_LEN            2
-#define DELIMITERS          " \f\n\r\t\v" /// from std::isspace
+#include <sys/ioctl.h>
+#include <netinet/in.h>
+#include <unistd.h>
 
-#define CONTENT_LENGTH "content-length"
+int SetupSocket(SharedPtr<ServerConfig> server_config, SharedPtr<Config> config) {
+    int option_value = 1;
+    int socket_fd = socket(AF_INET, SOCK_STREAM, 0);
 
-#define TRANSFER_ENCODING "transfer-encoding"
-#define CHUNKED "chunked"
+    if (socket_fd == -1) {
+        throw std::runtime_error("Failed to create listening socket");
+    }
 
-namespace Http {
+    if (setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, (char*)&option_value, sizeof(option_value)) < 0) {
+        close(socket_fd);
+        throw std::runtime_error("Failed to set socket options");
+    }
 
-    class Header {
-    public:
-        Header(const std::string& key, const std::string& value)
-                : key(key), value(value) {}
+    if (ioctl(socket_fd, FIONBIO, (char*)&option_value) < 0) {
+        close(socket_fd);
+        throw std::runtime_error("Failed to set socket non blocking");
+    }
 
-        std::string key;
-        std::string value;
-    };
+    struct sockaddr_in address = {};
+    bzero(&address, sizeof(address));
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = htonl(INADDR_ANY);
+    address.sin_port = htons(server_config->port);
 
-    enum Code {
-        OK = 200,
-        BadRequest = 400,
-        NotFound = 404,
-        MethodNotAllowed = 405,
-        PayloadTooLarge = 413,
-        NotImplemented = 501,
-    };
+    if (bind(socket_fd, (struct sockaddr*)&address, sizeof(address)) < 0) {
+        close(socket_fd);
+        throw std::runtime_error("Failed to bind socket");
+    }
 
-    std::unordered_set<std::string> supported_methods = {
-            "GET",
-            "POST",
-            "PUT",
-            "DELETE",
-            "HEAD",
-            "OPTIONS",
-            "CONNECT",
-            "TRACE",
-            "PATCH",
-    };
+    if (listen(socket_fd, config->max_sockets_number) < 0) {
+        close(socket_fd);
+        throw std::runtime_error("Failed to set listen backlog");
+    }
+
+    return socket_fd;
 }

@@ -11,10 +11,10 @@
 template<class CoreModule>
 class HandleRequestEvent : public Event {
 public:
-    HandleRequestEvent(const SharedPtr<Session<CoreModule> >& connection,
+    HandleRequestEvent(const SharedPtr<HttpSession<CoreModule> >& session,
                        const SharedPtr<std::string>& incoming_data,
                        std::queue<SharedPtr<Event> >* event_queue)
-            : _session(connection),
+            : _session(session),
               _incoming_data(incoming_data),
               _event_queue(event_queue) {}
 
@@ -26,7 +26,7 @@ public:
 
 
 private:
-    SharedPtr<Session<CoreModule> > _session;
+    SharedPtr<HttpSession<CoreModule> > _session;
     SharedPtr<std::string> _incoming_data;
     std::queue<SharedPtr<Event> >* _event_queue;
 };
@@ -61,11 +61,15 @@ void HandleRequestEvent<CoreModule>::Process() {
         }
     }
     catch (const HttpException& e) {
-        _session->state = ConnectionState::ResponseToClient;
-        _session->SendErrorDataToClient(e.GetErrorResponse());
+        _session->SendDataToClient(e.GetErrorResponse(), e.ShouldKeepAlive());
         LOG_INFO("HttpException: ", e.what());
     }
     catch (const std::exception& e) {
         LOG_ERROR("Unexpected exception: ", e.what());
+        _session->SendDataToClient(
+                MakeShared(Response::MakeErrorResponse(Http::InternalServerError,
+                                                       "Internal server error",
+                                                       _session->server_instance_info)),
+                false);
     }
 }

@@ -3,14 +3,13 @@
 #include <queue>
 
 #include "Config.h"
-#include "core/events/Event.h"
-#include "ServerInfo.h"
+#include "Event.h"
 #include "Logging.h"
 
 template <class CoreModule>
 class WebServer {
 public:
-    bool Setup(const Config& config);
+    WebServer(const SharedPtr<Config>& config);
 
     void Run();
 
@@ -19,26 +18,19 @@ private:
     void ProcessEvents();
 
 private:
-    Config _config;
+    SharedPtr<Config> _config;
     CoreModule _core_module;
     std::queue<SharedPtr<Event> > _event_queue;
 };
 
-template <class EventHandler>
-bool WebServer<EventHandler>::Setup(const Config& config) {
-    _config = config; /// TODO maybe remove
-
-    if (!_core_module.Setup(config, &_event_queue)) {
-        LOG_ERROR("Failed to setup core module");
-        return false;
-    }
-
-    return true;
-}
+template <class CoreModule>
+WebServer<CoreModule>::WebServer(const SharedPtr<Config>& config)
+: _config(config), _core_module(config, &_event_queue) {}
 
 template <class CoreModule>
 void WebServer<CoreModule>::Run() {
     while (true) {
+        /// TODO maybe if event_queue is empty set timeout to -1 (infinity) and if not - set timeout to 0
         ProcessCoreEvents();
         ProcessEvents();
     }

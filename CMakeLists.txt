@@ -14,8 +14,6 @@ endif ()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pthread")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 
-set(FLEX_INCLUDE_DIR /Users/sbecker/.brew/opt/flex/include)
-
 ################################################################################
 # web-server-lib target
 ################################################################################
@@ -25,12 +23,15 @@ add_library(${WS_LIB}
         srcs/config/Config.cpp
         srcs/cgi/SingleCgiHandler.cpp
         srcs/core/modules/PollModule.cpp
-        srcs/http/Http.cpp
         srcs/http/Request.cpp
         srcs/http/Response.cpp
         srcs/http/errors/HttpErrorPages.cpp
         srcs/http/errors/HttpException.cpp
+        srcs/http/resource_handlers/CgiHandler.cpp
+        srcs/http/resource_handlers/FileHandler.cpp
+        srcs/http/Http.cpp
         srcs/utilities/utilities.cpp
+        srcs/utilities/Logging.cpp
         )
 
 target_include_directories(${WS_LIB} PUBLIC
@@ -42,9 +43,10 @@ target_include_directories(${WS_LIB} PUBLIC
         srcs/core
         srcs/core/events
         srcs/core/modules
+        srcs/core/session
         srcs/http
         srcs/http/errors
-        ${FLEX_INCLUDE_DIR}
+        srcs/http/resource_handlers
         )
 
 if (STANDARD98)

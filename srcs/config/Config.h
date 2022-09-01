@@ -1,36 +1,38 @@
 #pragma once
 
+#include "SharedPtr.h"
+
 #include <string>
 #include <vector>
 
-#define READ_BUFFER_SIZE 1024  // TODO maybe set it in cmake file or set in config and make buffer dynamic
-
 struct ServerConfig {
-    ServerConfig(std::string name, uint16_t port, std::string root_path, std::vector<std::string> cgi_directory_paths,
-                 int32_t max_connections_number);
+    ServerConfig(int port, const std::string& name, const std::string& root_path,
+                 const std::vector<std::string>& cgi_file_extensions,
+                 const std::string& default_file_name,
+                 int default_keep_alive_timeout,
+                 int max_keep_alive_timeout);
+
+    int port;
 
     std::string name;
-    uint16_t port;
+
     std::string root_path;
-    std::vector<std::string> cgi_directory_paths;
-    int32_t max_connection_number;
+
+    std::vector<std::string> cgi_file_extensions;
+
+    std::string default_file_name;
+
+    int default_keep_alive_timeout;
+
+    int max_keep_alive_timeout;
 };
 
-class Config {
-public:
+struct Config {
     bool Load(const char* path);
 
-    uint32_t GetThreadsNumber() const;
+    int max_sockets_number;
 
-    uint32_t GetMaxEventsNumber() const;
+    size_t read_buffer_size;
 
-    int32_t GetTimeout() const;
-
-    const std::vector<ServerConfig>& GetServersConfigs() const;
-
-private:
-    uint32_t _threads_number; /// minimum 3
-    uint32_t _max_sockets_number; /// socket array size for epoll_wait or poll
-    int32_t _timeout;
-    std::vector<ServerConfig> _servers_configs;
+    std::vector<SharedPtr<ServerConfig> > servers_configs;
 };

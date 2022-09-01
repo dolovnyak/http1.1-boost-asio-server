@@ -8,18 +8,19 @@ int main(int argc, char** argv) {
         exit(EXIT_FAILURE);
     }
 
-    Config config;
-    if (!config.Load(argv[1])) {
+    SharedPtr<Config> config = MakeShared(Config());
+    if (!config->Load(argv[1])) {
         LOG_ERROR("Failed to load config");
         exit(EXIT_FAILURE);
     }
 
-    WebServer<PollModule> web_server;
-    if (!web_server.Setup(config)) {
-        LOG_ERROR("Failed to setup web server");
+    try {
+        WebServer<PollModule> web_server(config);
+        web_server.Run();
+    }
+    catch (const std::exception& e) {
+        LOG_ERROR("Failed to run web server: %s", e.what());
         exit(EXIT_FAILURE);
     }
-
-    web_server.Run();
     return 0;
 }
