@@ -4,10 +4,11 @@
 
 #include <string>
 #include <vector>
+#include <unordered_set>
 
 struct ServerConfig {
     ServerConfig(int port, const std::string& name, const std::string& root_path,
-                 const std::vector<std::string>& cgi_file_extensions,
+                 const std::unordered_set<std::string>& cgi_file_extensions,
                  const std::string& default_file_name,
                  int default_keep_alive_timeout,
                  int max_keep_alive_timeout);
@@ -18,7 +19,7 @@ struct ServerConfig {
 
     std::string root_path;
 
-    std::vector<std::string> cgi_file_extensions;
+    std::unordered_set<std::string> cgi_file_extensions;
 
     std::string default_file_name;
 

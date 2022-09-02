@@ -24,6 +24,10 @@ SharedPtr<Response> HttpException::GetErrorResponse() const _NOEXCEPT {
     return _error_response;
 }
 
+bool HttpException::ShouldKeepAlive() const _NOEXCEPT {
+    return _keep_alive;
+}
+
 /// 400
 BadRequest::BadRequest(const std::string& message, const SharedPtr<ServerConfig>& server_instance_info)
         : HttpException(message, Http::BadRequest, "Bad request", false, server_instance_info) {}

@@ -30,9 +30,14 @@ WebServer<CoreModule>::WebServer(const SharedPtr<Config>& config)
 template <class CoreModule>
 void WebServer<CoreModule>::Run() {
     while (true) {
-        /// TODO maybe if event_queue is empty set timeout to -1 (infinity) and if not - set timeout to 0
-        ProcessCoreEvents();
-        ProcessEvents();
+        try {
+            /// TODO maybe if event_queue is empty set timeout to -1 (infinity) and if not - set timeout to 0
+            ProcessCoreEvents();
+            ProcessEvents();
+        }
+        catch (const std::exception& e) {
+            LOG_ERROR("Exception in main loop: %s", e.what());
+        }
     }
 }
 
@@ -43,7 +48,9 @@ void WebServer<CoreModule>::ProcessCoreEvents() {
 
 template <class CoreModule>
 void WebServer<CoreModule>::ProcessEvents() {
-    while (!_event_queue.empty()) {
+    /// events which spawned by current events will processed in next iteration
+    size_t event_queue_size = _event_queue.size();
+    for (size_t i = 0; i < event_queue_size; ++i) {
         _event_queue.front()->Process();
         _event_queue.pop();
     }

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "HttpSession.h"
 #include "Logging.h"
 
 class Event {

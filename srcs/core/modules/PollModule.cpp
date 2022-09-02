@@ -1,6 +1,7 @@
 #include "PollModule.h"
 #include "Logging.h"
-#include "HandleRequestEvent.h"
+#include "HttpSession.h"
+#include "EventMaker.h"
 
 #include <sys/poll.h>
 #include <sys/socket.h>
@@ -8,7 +9,7 @@
 PollModule::PollModule(const SharedPtr<Config>& config, std::queue<SharedPtr<Event> >* event_queue)
         : _config(config),
           _event_queue(event_queue),
-          _poll_fds_number(0),
+          _session_last_id(0),
           _poll_fds(nullptr),
           _should_compress(false),
           _read_buffer_size(_config->read_buffer_size),
@@ -23,9 +24,9 @@ PollModule::PollModule(const SharedPtr<Config>& config, std::queue<SharedPtr<Eve
     for (size_t i = 0; i < _config->servers_configs.size(); ++i) {
         int socket = Http::SetupSocket(_config->servers_configs[i], _config);
 
-        _poll_fds[_poll_fds_number].fd = socket;
-        _poll_fds[_poll_fds_number].events = POLLIN;
-        ++_poll_fds_number;
+        _poll_fds[_session_last_id].fd = socket;
+        _poll_fds[_session_last_id].events = POLLIN;
+        ++_session_last_id;
 
         _servers.insert(std::pair<int, SharedPtr<ServerConfig> >(socket, _config->servers_configs[i]));
     }
@@ -43,13 +44,13 @@ PollModule::~PollModule() {
 void PollModule::ProcessEvents(int timeout) {
     ProcessCompress();
 
-    LOG_DEBUG("Before PollModule, available sockets num: ", _poll_fds_number);
-    if (poll(_poll_fds, _poll_fds_number, timeout) < 0) {
+    LOG_DEBUG("Before PollModule, available sockets num: ", _session_last_id);
+    if (poll(_poll_fds, _session_last_id, timeout) < 0) {
         LOG_PERROR("Failed to poll");
         return;
     }
 
-    int current_size = _poll_fds_number;
+    int current_size = _session_last_id;
     for (int i = 0; i < current_size; i++) {
         LOG_DEBUG("PollModule fd: ", _poll_fds[i].fd, "; PollModule event_system: ", _poll_fds[i].events,
                   "; PollModule revents ", _poll_fds[i].revents);
@@ -61,7 +62,7 @@ void PollModule::ProcessEvents(int timeout) {
         }
 
         if (_servers.find(_poll_fds[i].fd) != _servers.end()) {
-            ProcessNewConnection(i);
+            ProcessNewHttpSessions(i);
         }
         else if (_poll_fds[i].revents & POLLIN) {
             ProcessRead(i);
@@ -82,13 +83,13 @@ void PollModule::ProcessEvents(int timeout) {
     }
 }
 
-void PollModule::ProcessNewConnection(int index) {
-    LOG_INFO("New connections processing");
+void PollModule::ProcessNewHttpSessions(int index) {
+    LOG_INFO("New sessions processing");
     for (;;) {
-        int new_connection_fd = accept(_poll_fds[index].fd, nullptr, nullptr); // TODO maybe fill address from this
-        if (new_connection_fd == -1) {
+        int socket = accept(_poll_fds[index].fd, nullptr, nullptr); // TODO maybe fill address from this
+        if (socket == -1) {
             if (errno == EAGAIN || errno == EWOULDBLOCK) {
-                LOG_INFO("Finish processing new connections");
+                LOG_INFO("Finish processing new sessions");
                 break;
             }
             else {
@@ -96,17 +97,20 @@ void PollModule::ProcessNewConnection(int index) {
                 break;
             }
         }
-        LOG_INFO("New session: ", new_connection_fd);
-        _poll_fds[_poll_fds_number].fd = new_connection_fd;
-        _poll_fds[_poll_fds_number].events = POLLIN;
 
-        SharedPtr<HttpSession<PollModule> > session = MakeShared(
-                HttpSession<PollModule>(_poll_fds_number, _servers.at(_poll_fds[index].fd), this));
-
-        _sessions.insert(std::pair<int, SharedPtr<HttpSession<PollModule> > >(_poll_fds_number, session));
-
-        ++_poll_fds_number;
+        SharedPtr<Session<PollModule> > session = MakeShared<Session<PollModule> >(
+                new HttpSession<PollModule>(_session_last_id, _servers.at(_poll_fds[index].fd), this));
+        AddSession(socket, session);
     }
+}
+
+void PollModule::AddSession(int socket, const SharedPtr<Session<PollModule> >& session) {
+    LOG_INFO("New session: ", socket);
+
+    _sessions.insert(std::pair<int, SharedPtr<Session<PollModule> > >(_session_last_id, session));
+    _poll_fds[_session_last_id].fd = socket;
+    _poll_fds[_session_last_id].events = POLLIN;
+    ++_session_last_id;
 }
 
 void PollModule::ProcessRead(int index) {
@@ -126,18 +130,18 @@ void PollModule::ProcessRead(int index) {
         CloseSocket(index);
     }
     else {
-        _event_queue->push(MakeShared<Event>(new HandleRequestEvent<PollModule>(
-                _sessions.at(index),
-                raw_request_part,
-                _event_queue)));
+        SharedPtr<Event> read_event = EventMaker<PollModule>::MakeReadEvent(_sessions.at(index),
+                                                                            raw_request_part,
+                                                                            _event_queue);
+        _event_queue->push(read_event);
     }
 }
 
 void PollModule::ProcessWrite(int index) {
     LOG_INFO("Write processing");
 
-    SharedPtr<HttpSession<PollModule> > connection = _sessions.at(index);
-    std::string response = connection->response->raw_response;
+    SharedPtr<Session<PollModule> > session = _sessions.at(index);
+    std::string response = session->response_data;
 
     /// TODO maybe it will be needed to make chunked write.
     ssize_t bytes_send = send(_poll_fds[index].fd, response.c_str(), response.size(), 0);
@@ -147,17 +151,18 @@ void PollModule::ProcessWrite(int index) {
     }
     LOG_INFO("Bytes send: ", bytes_send);
 
-    if (!connection->keep_alive) {
+    if (session->ShouldCloseAfterResponse()) {
         CloseSocket(index);
     }
 }
 
-void PollModule::CloseSocket(int index) {
-    LOG_INFO("Close connection: ", _poll_fds[index].fd);
-    _sessions.at(index)->available = false;
-    close(_poll_fds[index].fd);
-    _sessions.erase(index);
-    _poll_fds[index].fd = -1;
+void PollModule::CloseSocket(int socket_id) {
+    LOG_INFO("Close connection: ", _poll_fds[socket_id].fd);
+
+    _sessions.at(socket_id)->available = false;
+    close(_poll_fds[socket_id].fd);
+    _sessions.erase(socket_id);
+    _poll_fds[socket_id].fd = -1;
     _should_compress = true;
 }
 
@@ -167,17 +172,17 @@ void PollModule::ProcessCompress() {
     _should_compress = false;
 
     LOG_INFO("Compressing...");
-    for (int i = 0; i < _poll_fds_number; ++i) {
+    for (int i = 0; i < _session_last_id; ++i) {
         if (_poll_fds[i].fd == -1) {
-            for (int j = i; j < _poll_fds_number; ++j) {
+            for (int j = i; j < _session_last_id; ++j) {
                 _poll_fds[j].fd = _poll_fds[j + 1].fd;
             }
             --i;
-            --_poll_fds_number;
+            --_session_last_id;
         }
     }
 }
 
-void PollModule::SendDataToClient(int index) {
-    _poll_fds[index].events = POLLOUT;
+void PollModule::SendDataToSocket(int socket_id) {
+    _poll_fds[socket_id].events = POLLOUT;
 }
