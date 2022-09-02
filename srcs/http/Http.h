@@ -31,6 +31,19 @@ namespace Http {
         std::string value;
     };
 
+    enum Method {
+        GET,
+        HEAD,
+        POST,
+        DELETE,
+        PUT,
+        CONNECT,
+        OPTIONS,
+        TRACE,
+        PATCH,
+        UNKNOWN
+    };
+
     enum Code {
         OK = 200,
         BadRequest = 400,
@@ -41,6 +54,8 @@ namespace Http {
         InternalServerError = 500,
         NotImplemented = 501,
     };
+
+    Method GetMethod(const std::string& method);
 
     int SetupSocket(SharedPtr<ServerConfig> server_config, SharedPtr<Config> config);
 }

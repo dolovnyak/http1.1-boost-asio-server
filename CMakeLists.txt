@@ -21,7 +21,6 @@ set(WS_LIB ${PROJECT_NAME}-lib)
 
 add_library(${WS_LIB}
         srcs/config/Config.cpp
-        srcs/cgi/SingleCgiHandler.cpp
         srcs/core/modules/PollModule.cpp
         srcs/http/Request.cpp
         srcs/http/Response.cpp
@@ -60,7 +59,7 @@ endif ()
 ################################################################################
 add_executable(${PROJECT_NAME}
         srcs/main.cpp
-        )
+        srcs/core/events/EventMaker.h)
 target_link_libraries(${PROJECT_NAME} PUBLIC ${WS_LIB})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES

@@ -7,7 +7,7 @@ namespace {
     std::vector<SharedPtr<ServerConfig> > mock_1_server_config() {
         std::vector<SharedPtr<ServerConfig> > configs;
 
-        ServerConfig config(2222, "Kabun", "examples/aaaa/", std::vector<std::string>(), "index.html", 10, 300);
+        ServerConfig config(2222, "Kabun", "examples/aaaa/", std::unordered_set<std::string>(), "index.html", 10, 300);
         configs.push_back(MakeShared(config));
         return configs;
     }
@@ -16,12 +16,12 @@ namespace {
     std::vector<SharedPtr<ServerConfig> > mock_2_server_configs() {
         std::vector<SharedPtr<ServerConfig> > configs;
 
-        ServerConfig config1(1337, "HelloWorld", "examples/hello_world/", std::vector<std::string>(), "index.html", 10, 300);
+        ServerConfig config1(1337, "HelloWorld", "examples/hello_world/", std::unordered_set<std::string>(), "index.html", 10, 300);
         configs.push_back(MakeShared(config1));
 
-        std::vector<std::string> cgi_extensions;
-        cgi_extensions.push_back(".py");
-        cgi_extensions.push_back(".php");
+        std::unordered_set<std::string> cgi_extensions;
+        cgi_extensions.insert(".py");
+        cgi_extensions.insert(".php");
         ServerConfig config2(1488, "CgiChecker", "examples/cgi_checker/", cgi_extensions, "index.html", 10, 300);
 
         configs.push_back(MakeShared(config2));
@@ -49,7 +49,7 @@ bool Config::Load(const char* path) {
 }
 
 ServerConfig::ServerConfig(int port, const std::string& name, const std::string& root_path,
-                           const std::vector<std::string>& cgi_file_extensions,
+                           const std::unordered_set<std::string>& cgi_file_extensions,
                            const std::string& default_file_name,
                            int default_keep_alive_timeout,
                            int max_keep_alive_timeout)

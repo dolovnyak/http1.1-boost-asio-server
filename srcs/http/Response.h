@@ -2,7 +2,6 @@
 
 #include "Http.h"
 #include "HttpErrorPages.h"
-#include "ServerConfig.h"
 #include "SharedPtr.h"
 
 /// У респонса должен быть набор базовых хедеров:

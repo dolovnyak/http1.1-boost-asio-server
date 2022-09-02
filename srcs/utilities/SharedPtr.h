@@ -74,6 +74,10 @@ public:
         return _ptr;
     }
 
+    T* Get() {
+        return _ptr;
+    }
+
 private:
     SharedPtr(T* ptr) : _ptr(ptr), _ref_count(new int(1)) {}
 
