@@ -14,11 +14,11 @@ Response Response::MakeErrorResponse(Http::Code error, const std::string& error_
     return Response(error, error_title, headers, body);
 }
 
-Response Response::MakeOkResponse(const std::string& body, SharedPtr<ServerConfig> server_instance_info) {
+Response Response::MakeOkResponse(const std::string& body, SharedPtr<ServerConfig> server_config) {
     std::vector<Http::Header> headers;
     headers.push_back(Http::Header("Content-Type", "text/html"));
     headers.push_back(Http::Header("Content-Length", std::to_string(body.size())));
-    headers.push_back(Http::Header("Server", server_instance_info->name));
+    headers.push_back(Http::Header("Server", server_config->name));
     headers.push_back(Http::Header("Date", GetCurrentDateTime()));
     headers.push_back(Http::Header("Connection", "close"));
     return Response(Http::Code::OK, "OK", headers, body);
@@ -26,10 +26,10 @@ Response Response::MakeOkResponse(const std::string& body, SharedPtr<ServerConfi
 
 Response::Response(Http::Code code, const std::string& title,
                    const std::vector<Http::Header>& headers, const std::string& body) {
-    raw_response = "HTTP/1.1 " + std::to_string(code) + " " + title + "\r\n";
+    response = "HTTP/1.1 " + std::to_string(code) + " " + title + "\r\n";
     for (size_t i = 0; i < headers.size(); ++i) {
-        raw_response += headers[i].key + ": " + headers[i].value + "\r\n";
+        response += headers[i].key + ": " + headers[i].value + "\r\n";
     }
-    raw_response += "\r\n";
-    raw_response += body;
+    response += "\r\n";
+    response += body;
 }

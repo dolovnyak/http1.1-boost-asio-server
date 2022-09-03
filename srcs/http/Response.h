@@ -20,15 +20,11 @@ public:
     static Response MakeErrorResponse(Http::Code code, const std::string& error_title,
                                       SharedPtr<ServerConfig> server_instance_info);
 
-    static Response MakeOkResponse(const std::string& body, SharedPtr<ServerConfig> server_instance_info);
+    static Response MakeOkResponse(const std::string& body, SharedPtr<ServerConfig> server_config);
 
     Response(Http::Code code, const std::string& title,
              const std::vector<Http::Header>& custom_headers,
              const std::string& body);
 
-    std::string raw_response;
-
-private:
-
-    std::string _body;
+    std::string response;
 };

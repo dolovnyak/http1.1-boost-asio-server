@@ -26,8 +26,6 @@ add_library(${WS_LIB}
         srcs/http/Response.cpp
         srcs/http/errors/HttpErrorPages.cpp
         srcs/http/errors/HttpException.cpp
-        srcs/http/resource_handlers/CgiHandler.cpp
-        srcs/http/resource_handlers/FileHandler.cpp
         srcs/http/Http.cpp
         srcs/utilities/utilities.cpp
         srcs/utilities/Logging.cpp
@@ -59,7 +57,7 @@ endif ()
 ################################################################################
 add_executable(${PROJECT_NAME}
         srcs/main.cpp
-        srcs/core/events/EventMaker.h)
+        )
 target_link_libraries(${PROJECT_NAME} PUBLIC ${WS_LIB})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES

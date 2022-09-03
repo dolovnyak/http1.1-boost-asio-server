@@ -7,20 +7,29 @@
 template<class CoreModule>
 class Session {
 public:
-    Session(int session_id, CoreModule* core_module)
+    Session(int core_module_index, CoreModule* core_module, int socket)
             : available(true),
-              _session_id(session_id),
-              _core_module(core_module) {}
+              core_module_index(core_module_index),
+              core_module(core_module),
+              socket(socket) {}
 
     virtual ~Session() {}
 
     virtual bool ShouldCloseAfterResponse() const = 0;
 
+    virtual const std::string& GetResponseData() const = 0;
+
+    void Close();
+
     bool available;
 
-    std::string response_data;
-
-protected:
-    int _session_id;
-    CoreModule* _core_module;
+public:
+    int core_module_index;
+    CoreModule* core_module;
+    int socket;
 };
+
+template<class CoreModule>
+void Session<CoreModule>::Close() {
+    this->core_module->CloseSession(core_module_index);
+}

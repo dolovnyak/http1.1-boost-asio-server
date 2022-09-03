@@ -17,21 +17,22 @@ public:
 
     void ProcessEvents(int timeout);
 
-    void SendDataToSocket(int socket_id);
+    void SendDataToSocket(int poll_index);
 
     void AddSession(int socket, const SharedPtr<Session<PollModule> >& session);
 
+    int GetCoreModuleIndex() const;
+
+    void CloseSession(int poll_index);
+
 private:
-    void ProcessRead(int index);
+    void ProcessInnerRead(int poll_index);
 
-    void ProcessWrite(int index);
+    void ProcessInnerWrite(int poll_index);
 
-    void ProcessNewHttpSessions(int index);
+    void ProcessInnerNewHttpSessions(int poll_index);
 
     void ProcessCompress();
-
-    void CloseSocket(int socket_id);
-
 
 private:
     SharedPtr<Config> _config;
@@ -39,7 +40,7 @@ private:
     std::unordered_map<int, SharedPtr<ServerConfig> > _servers;
     std::unordered_map<int, SharedPtr<Session<PollModule> > > _sessions;
 
-    int _session_last_id;
+    int _poll_current_index;
     struct pollfd* _poll_fds;
     bool _should_compress;
     size_t _read_buffer_size;

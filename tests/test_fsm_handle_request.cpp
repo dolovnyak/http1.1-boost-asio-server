@@ -6,15 +6,17 @@
 #include "SharedPtr.h"
 #include "Http.h"
 
+SharedPtr<ServerConfig> default_server_config = MakeShared(ServerConfig({8080, "kabun", "/", {}, "index.html", 0, 0}));
+
 TEST(Request, Check_Init) {
-    Request request(MakeShared<ServerConfig>({0, ""}));
+    Request request(default_server_config);
     ASSERT_EQ(request._handle_state, RequestHandleState::HandleFirstLine);
     ASSERT_EQ(request.body, "");
     ASSERT_EQ(request.raw, "");
     ASSERT_EQ(request.headers.size(), 0);
     ASSERT_EQ(request._handled_size, 0);
     ASSERT_EQ(request.content_length.HasValue(), false);
-    ASSERT_EQ(request.method, "");
+    ASSERT_EQ(request.raw_method, "");
     ASSERT_EQ(request.target.full_path, "");
     ASSERT_EQ(request.target.query_string, "");
     ASSERT_EQ(request.http_version.major, 0);
@@ -25,7 +27,7 @@ TEST(Request, Handle_FSM_First_Line) {
     RequestHandleStatus::Status res;
 
     {
-        Request request(MakeShared<ServerConfig>({0, ""}));
+        Request request(default_server_config);
 
         const std::string first_line = "\r\n\r\n\r\nGET / HTTP/1.1\r\n";
         size_t total_size = first_line.size();
@@ -35,7 +37,7 @@ TEST(Request, Handle_FSM_First_Line) {
         ASSERT_EQ(request._handle_state, RequestHandleState::HandleHeader);
         ASSERT_EQ(request._handled_size, total_size);
         ASSERT_EQ(request.raw, full_raw_request);
-        ASSERT_EQ(request.method, "GET");
+        ASSERT_EQ(request.raw_method, "GET");
         ASSERT_EQ(request.target.full_path, "/");
         ASSERT_EQ(request.target.directory_path, "/");
         ASSERT_EQ(request.target.file_name, "");
@@ -47,7 +49,7 @@ TEST(Request, Handle_FSM_First_Line) {
     }
 
 
-    Request request(MakeShared<ServerConfig>({0, ""}));
+    Request request(default_server_config);
 
     const std::string first_line_part1 = "\r\n\r\n\r\nGET /cgi-";
     std::string full_raw_request = first_line_part1;
@@ -56,7 +58,7 @@ TEST(Request, Handle_FSM_First_Line) {
     ASSERT_EQ(request._handle_state, RequestHandleState::HandleFirstLine);
     ASSERT_EQ(request._handled_size, 6); /// empty lines
     ASSERT_EQ(request.raw, full_raw_request);
-    ASSERT_EQ(request.method, "");
+    ASSERT_EQ(request.raw_method, "");
     ASSERT_EQ(request.target.full_path, "");
     ASSERT_EQ(request.http_version.major, 0);
     ASSERT_EQ(request.http_version.minor, 0);
@@ -72,7 +74,7 @@ TEST(Request, Handle_FSM_First_Line) {
     ASSERT_EQ(request._handle_state, RequestHandleState::HandleHeader);
     ASSERT_EQ(request._handled_size, total_size);
     ASSERT_EQ(request.raw, full_raw_request);
-    ASSERT_EQ(request.method, "GET");
+    ASSERT_EQ(request.raw_method, "GET");
     ASSERT_EQ(request.target.full_path, "/cgi-bin/a/a/a/a.lua");
     ASSERT_EQ(request.target.directory_path, "/cgi-bin/a/a/a/");
     ASSERT_EQ(request.target.file_name, "a.lua"); /// TODO add test which will check dot behavior
@@ -85,7 +87,7 @@ TEST(Request, Handle_FSM_First_Line) {
 
 TEST(Request, Handle_FSM_Headers) {
     RequestHandleStatus::Status res;
-    Request request(MakeShared<ServerConfig>({0, ""}));
+    Request request(default_server_config);
 
     size_t total_size = 0;
     std::string full_raw_request;
@@ -150,7 +152,7 @@ TEST(Request, Handle_FSM_Headers) {
 
 TEST(Request, Handle_FSM_Body_By_Content_Length) {
     RequestHandleStatus::Status res;
-    Request request(MakeShared<ServerConfig>({0, ""}));
+    Request request(default_server_config);
 
     size_t total_size = 0;
     std::string full_raw_request;
@@ -194,7 +196,7 @@ TEST(Request, Handle_FSM_Body_By_Content_Length) {
 
 TEST(Request, Handle_FSM_Chunked_Body) {
     RequestHandleStatus::Status res;
-    Request request(MakeShared<ServerConfig>({0, ""}));
+    Request request(default_server_config);
 
     size_t total_size = 0;
     std::string full_raw_request;
@@ -278,7 +280,7 @@ TEST(Request, Handle_FSM_Chunked_Body) {
 
 TEST(Request, Request_Target_Parse) {
     RequestHandleStatus::Status res;
-    Request request(MakeShared<ServerConfig>({0, ""}));
+    Request request(default_server_config);
 
     size_t total_size = 0;
 
@@ -293,7 +295,7 @@ TEST(Request, Request_Target_Parse) {
     ASSERT_EQ(request._handle_state, RequestHandleState::HandleHeader);
     ASSERT_EQ(request._handled_size, total_size);
     ASSERT_EQ(request.raw, full_raw_request);
-    ASSERT_EQ(request.method, "GET");
+    ASSERT_EQ(request.raw_method, "GET");
     ASSERT_EQ(request.target.full_path, "/");
     ASSERT_EQ(request.target.query_string, "");
     ASSERT_EQ(request.http_version.major, 1);

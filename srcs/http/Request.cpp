@@ -101,7 +101,7 @@ RequestHandleState::State Request::ParseFirstLineHandler() {
     if (tokens.size() != 3) {
         throw BadFirstLine("Incorrect first line", server_config);
     }
-    method = ParseMethod(tokens[0], server_config);
+    raw_method = ParseMethod(tokens[0], server_config);
 
     target = ParseRequestTarget(tokens[1], server_config);
 
@@ -325,4 +325,18 @@ void Request::AddHeader(const std::string& key, const std::string& value) {
         headers[lower_key] = std::vector<std::string>();
     }
     headers[lower_key].push_back(StripString(value));
+}
+
+void Request::Clear() {
+    raw_method.clear();
+    method = Http::Method::UNKNOWN;
+    http_version = HttpVersion();
+    body.clear();
+    raw.clear();
+    headers.clear();
+    target.Clear();
+    content_length = Optional<size_t>();
+    _handle_state = RequestHandleState::HandleFirstLine;
+    _handled_size = 0;
+    _chunk_body_size = 0;
 }

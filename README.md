@@ -44,5 +44,8 @@
 
 Сgi нужно запускать, чтобы его относительные пути сохранялись.
 
-
-Сейчас надо переделать PollModule, чтобы он мог обрабатывать не только http сессии, но и все через интерфейсы.
+Events interaction:
+Core inner read event -> HttpReadRequestEvent -> HttpProcessRequestEvent -> 
+Core inner read event -> HttpFileReadEvent -> Core inner read zero bytes event -> 
+FileReadZeroByteEvent -> Core inner write event (response to client) -> 
+Core inner after write event -> HttpAfterResponseEvent

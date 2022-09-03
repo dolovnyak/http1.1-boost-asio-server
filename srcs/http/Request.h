@@ -3,6 +3,7 @@
 #include "SharedPtr.h"
 #include "Optional.h"
 #include "Config.h"
+#include "Http.h"
 
 #include <string>
 #include <unordered_map>
@@ -45,6 +46,14 @@ struct RequestTarget {
     std::string file_name;
     std::string extension;
     std::string query_string;
+
+    void Clear() {
+        full_path.clear();
+        directory_path.clear();
+        file_name.clear();
+        extension.clear();
+        query_string.clear();
+    }
 };
 
 class Request {
@@ -54,6 +63,8 @@ public:
     RequestHandleStatus::Status Handle(SharedPtr<std::string> raw_request_part);
 
     void AddHeader(const std::string& key, const std::string& value);
+
+    void Clear();
 
 private:
     RequestHandleState::State ParseFirstLineHandler();
@@ -71,7 +82,9 @@ private:
     RequestHandleState::State AnalyzeHeadersBeforeParseBodyHandler();
 
 public:
-    std::string method;
+    std::string raw_method;
+
+    Http::Method method;
 
     HttpVersion http_version;
 

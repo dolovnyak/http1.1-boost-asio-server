@@ -1,5 +1,7 @@
 #include "utilities.h"
 
+#include <sys/ioctl.h>
+
 std::string StripString(const std::string& str) {
     std::string::const_iterator start_it = str.cbegin();
     std::string::const_reverse_iterator end_it = str.crbegin();
@@ -193,6 +195,14 @@ bool IsPositiveNumberString(const std::string& str) {
         if (!isdigit(str[i])) {
             return false;
         }
+    }
+    return true;
+}
+
+bool SetSocketNonBlocking(int fd) {
+    int option_value = 1;
+    if (ioctl(fd, FIONBIO, (char*)&option_value) < 0) {
+        return false;
     }
     return true;
 }

@@ -16,7 +16,7 @@ namespace {
     std::vector<SharedPtr<ServerConfig> > mock_2_server_configs() {
         std::vector<SharedPtr<ServerConfig> > configs;
 
-        ServerConfig config1(1337, "HelloWorld", "examples/hello_world/", std::unordered_set<std::string>(), "index.html", 10, 300);
+        ServerConfig config1(1337, "HelloWorld", "/Users/sbecker/Desktop/projects/webserver-42/", std::unordered_set<std::string>(), "index.html", 10, 300);
         configs.push_back(MakeShared(config1));
 
         std::unordered_set<std::string> cgi_extensions;
@@ -33,11 +33,13 @@ namespace {
 bool Config::Load(const char* path) {
     /// TODO delete
     if (std::string(path) == "1") {
+        read_buffer_size = 1024;
         max_sockets_number = 256;
         servers_configs = mock_1_server_config();
         return true;
     }
     else if (std::string(path) == "2") {
+        read_buffer_size = 1024;
         max_sockets_number = 128;
         servers_configs = mock_2_server_configs();
         return true;

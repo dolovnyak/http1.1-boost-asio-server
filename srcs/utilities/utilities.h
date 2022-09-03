@@ -9,7 +9,6 @@
 #define OVERRIDE override
 #endif
 
-
 std::string StripString(const std::string& str);
 
 std::vector<std::string> SplitString(const std::string& str, const std::string& delimiters);
@@ -45,3 +44,5 @@ bool IsQueryString(const std::string& str);
 bool IsFieldContent(const std::string& str);
 
 bool IsPositiveNumberString(const std::string& str);
+
+bool SetSocketNonBlocking(int socket);
