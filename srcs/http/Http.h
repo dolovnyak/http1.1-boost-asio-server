@@ -32,6 +32,7 @@ namespace Http {
     };
 
     enum Method {
+        UNKNOWN = 0,
         GET,
         HEAD,
         POST,
@@ -40,8 +41,7 @@ namespace Http {
         CONNECT,
         OPTIONS,
         TRACE,
-        PATCH,
-        UNKNOWN
+        PATCH
     };
 
     enum Code {

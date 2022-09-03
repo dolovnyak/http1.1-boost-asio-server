@@ -31,7 +31,6 @@ template <class CoreModule>
 void WebServer<CoreModule>::Run() {
     while (true) {
         try {
-            /// TODO maybe if event_queue is empty set timeout to -1 (infinity) and if not - set timeout to 0
             ProcessCoreEvents();
             ProcessEvents();
         }
@@ -43,7 +42,12 @@ void WebServer<CoreModule>::Run() {
 
 template <class CoreModule>
 void WebServer<CoreModule>::ProcessCoreEvents() {
-    _core_module.ProcessEvents(-1);
+    if (_event_queue.empty()) {
+        _core_module.ProcessEvents(-1);
+    }
+    else {
+        _core_module.ProcessEvents(0);
+    }
 }
 
 template <class CoreModule>

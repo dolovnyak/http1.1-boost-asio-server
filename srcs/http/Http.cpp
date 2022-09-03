@@ -1,4 +1,5 @@
 #include "Http.h"
+#include "utilities.h"
 
 #include <sys/ioctl.h>
 #include <netinet/in.h>
@@ -19,7 +20,7 @@ namespace Http {
             throw std::runtime_error("Failed to set socket options");
         }
 
-        if (ioctl(socket_fd, FIONBIO, (char*)&option_value) < 0) {
+        if (!SetSocketNonBlocking(socket_fd)) {
             close(socket_fd);
             throw std::runtime_error("Failed to set socket non blocking");
         }
