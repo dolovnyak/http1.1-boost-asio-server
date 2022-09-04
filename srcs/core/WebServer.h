@@ -1,12 +1,14 @@
 #pragma once
 
-#include <queue>
-
 #include "Config.h"
 #include "Event.h"
 #include "Logging.h"
+#include "Session.h"
 
-template <class CoreModule>
+#include <queue>
+#include <unordered_map>
+
+template<class CoreModule>
 class WebServer {
 public:
     WebServer(const SharedPtr<Config>& config);
@@ -15,19 +17,22 @@ public:
 
 private:
     void ProcessCoreEvents();
+
     void ProcessEvents();
 
 private:
     SharedPtr<Config> _config;
-    CoreModule _core_module;
     std::queue<SharedPtr<Event> > _event_queue;
+    std::unordered_map<int, SharedPtr<Session<CoreModule> > > _sessions;
+    CoreModule _core_module;
 };
 
-template <class CoreModule>
+template<class CoreModule>
 WebServer<CoreModule>::WebServer(const SharedPtr<Config>& config)
-: _config(config), _core_module(config, &_event_queue) {}
+        : _config(config),
+          _core_module(config, &_event_queue, &_sessions) {}
 
-template <class CoreModule>
+template<class CoreModule>
 void WebServer<CoreModule>::Run() {
     while (true) {
         try {
@@ -40,7 +45,7 @@ void WebServer<CoreModule>::Run() {
     }
 }
 
-template <class CoreModule>
+template<class CoreModule>
 void WebServer<CoreModule>::ProcessCoreEvents() {
     if (_event_queue.empty()) {
         _core_module.ProcessEvents(-1);
@@ -50,7 +55,7 @@ void WebServer<CoreModule>::ProcessCoreEvents() {
     }
 }
 
-template <class CoreModule>
+template<class CoreModule>
 void WebServer<CoreModule>::ProcessEvents() {
     /// events which spawned by current events will processed in next iteration
     size_t event_queue_size = _event_queue.size();

@@ -43,8 +43,8 @@ void HttpAfterResponseEvent<CoreModule>::Process() {
         return;
     }
 
-    if (_http_session->state != ConnectionState::ProcessRequest) {
-        LOG_INFO(GetName(), " on wrong connection state");
+    if (_http_session->state != ConnectionState::ResponseToClient) {
+        LOG_INFO(GetName(), " on wrong session state");
         return;
     }
 

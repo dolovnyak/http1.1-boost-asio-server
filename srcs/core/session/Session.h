@@ -1,8 +1,17 @@
 #pragma once
 
 #include "Event.h"
+#include "Logging.h"
 
 #include <queue>
+
+namespace SessionType {
+    enum Type {
+        Server,
+        Http,
+        File,
+    };
+}
 
 template<class CoreModule>
 class Session {
@@ -21,6 +30,10 @@ public:
 
     void Close();
 
+    virtual const std::string& GetName() const = 0;
+
+    virtual SessionType::Type GetType() const = 0;
+
     bool available;
 
 public:
@@ -32,4 +45,14 @@ public:
 template<class CoreModule>
 void Session<CoreModule>::Close() {
     this->core_module->CloseSession(core_module_index);
+}
+
+template<class CoreModule>
+void LogSession(Event* event, SharedPtr<Session<CoreModule> > session) {
+    LOG_INFO(event->GetName(), " on ", session->GetName(), "_fd_", session->socket);
+}
+
+template<class CoreModule>
+void LogSession(SharedPtr<Session<CoreModule> > session, const std::string& message) {
+    LOG_INFO(session->GetName(), "_fd_", session->socket, ": ", message);
 }

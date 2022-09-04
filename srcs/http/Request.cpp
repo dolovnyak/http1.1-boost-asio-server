@@ -6,15 +6,15 @@
 
 namespace {
     std::string ParseMethod(const std::string& raw_method,
-                            const SharedPtr<ServerConfig>& server_instance_info) {
+                            const SharedPtr<ServerConfig>& server_config) {
         if (!IsTcharString(raw_method)) {
-            throw BadFirstLine("Incorrect first line", server_instance_info);
+            throw BadFirstLine("Incorrect first line", server_config);
         }
         return raw_method;
     }
 
     RequestTarget ParseRequestTarget(const std::string& raw_request_target,
-                                     const SharedPtr<ServerConfig>& server_instance_info) {
+                                     const SharedPtr<ServerConfig>& server_config) {
         RequestTarget request_target;
 
         size_t path_end = raw_request_target.find_first_of('?');
@@ -43,25 +43,25 @@ namespace {
 
 
         if (!IsAbsolutePath(request_target.full_path)) {
-            throw BadFirstLine("Incorrect first line", server_instance_info);
+            throw BadFirstLine("Incorrect first line", server_config);
         }
         if (!IsQueryString(request_target.query_string)) {
-            throw BadFirstLine("Incorrect first line", server_instance_info);
+            throw BadFirstLine("Incorrect first line", server_config);
         }
 
         return request_target;
     }
 
     HttpVersion ParseHttpVersion(const std::string& raw_http_version,
-                                 const SharedPtr<ServerConfig>& server_instance_info) {
+                                 const SharedPtr<ServerConfig>& server_config) {
         std::vector<std::string> tokens = SplitString(raw_http_version, "/");
         if (tokens.size() != 2 || tokens[0] != "HTTP") {
-            throw BadHttpVersion("Incorrect HTTP version", server_instance_info);
+            throw BadHttpVersion("Incorrect HTTP version", server_config);
         }
 
         std::vector<std::string> version_tokens = SplitString(tokens[1], ".");
         if (version_tokens.size() != 2) {
-            throw BadHttpVersion("Incorrect HTTP version", server_instance_info);
+            throw BadHttpVersion("Incorrect HTTP version", server_config);
         }
 
         try {
@@ -72,7 +72,7 @@ namespace {
             return http_version;
         }
         catch (const std::exception& e) {
-            throw BadHttpVersion("Incorrect HTTP version" + std::string(e.what()), server_instance_info);
+            throw BadHttpVersion("Incorrect HTTP version" + std::string(e.what()), server_config);
         }
     }
 }

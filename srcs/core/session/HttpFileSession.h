@@ -15,8 +15,17 @@ public:
         return true;
     }
 
+    SessionType::Type GetType() const override {
+        return SessionType::File;
+    }
+
     const std::string& GetResponseData() const override {
         throw std::logic_error("HttpFileSession::GetResponseData() should not be called");
+    }
+
+    const std::string& GetName() const override {
+        static std::string kName = "HttpFileSession";
+        return kName;
     }
 
     SharedPtr<Session<CoreModule> > main_http_session;

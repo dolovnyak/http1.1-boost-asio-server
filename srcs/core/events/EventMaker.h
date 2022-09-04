@@ -16,39 +16,37 @@ public:
     static SharedPtr<Event> MakeReadEvent(SharedPtr<Session<CoreModule> > session,
                                           const SharedPtr<std::string>& incoming_data,
                                           std::queue<SharedPtr<Event> >* event_queue) {
-
-        if (dynamic_cast<HttpSession<CoreModule>*>(session.Get()) != nullptr) {
-            return MakeShared<Event>(new HttpReadRequestEvent<CoreModule>(session, incoming_data, event_queue));
+        switch (session->GetType()) {
+            case SessionType::Http:
+                return MakeShared<Event>(new HttpReadRequestEvent<CoreModule>(session, incoming_data, event_queue));
+            case SessionType::File:
+                return MakeShared<Event>(new HttpReadFileEvent<CoreModule>(session, incoming_data, event_queue));
+            case SessionType::Server:
+                throw std::logic_error("EventMaker::MakeReadEvent() should not be called for ServerSession");
         }
-
-        if (dynamic_cast<HttpFileSession<CoreModule>*>(session.Get()) != nullptr) {
-            return MakeShared<Event>(new HttpReadFileEvent<CoreModule>(session, incoming_data, event_queue));
-        }
-
-        throw std::logic_error("Unknown session type in EventMaker::MakeReadEvent");
     }
 
     static SharedPtr<Event> MakeReadZeroBytesEvent(SharedPtr<Session<CoreModule> > session,
                                                    std::queue<SharedPtr<Event> >* event_queue) {
-
-        if (dynamic_cast<HttpSession<CoreModule>*>(session.Get()) != nullptr) {
-            return MakeShared<Event>(new HttpReadRequestZeroBytesEvent<CoreModule>(session, event_queue));
+        switch (session->GetType()) {
+            case SessionType::Http:
+                return MakeShared<Event>(new HttpReadRequestZeroBytesEvent<CoreModule>(session, event_queue));
+            case SessionType::File:
+                return MakeShared<Event>(new HttpReadFileZeroBytesEvent<CoreModule>(session, event_queue));
+            case SessionType::Server:
+                throw std::logic_error("EventMaker::MakeReadZeroBytesEvent() should not be called for ServerSession");
         }
-
-        if (dynamic_cast<HttpFileSession<CoreModule>*>(session.Get()) != nullptr) {
-            return MakeShared<Event>(new HttpReadFileZeroBytesEvent<CoreModule>(session, event_queue));
-        }
-
-        throw std::logic_error("Unknown session type in EventMaker::MakeReadZeroBytesEvent");
     }
 
     static SharedPtr<Event> MakeAfterWriteEvent(SharedPtr<Session<CoreModule> > session,
                                                 std::queue<SharedPtr<Event> >* event_queue) {
-
-        if (dynamic_cast<HttpSession<CoreModule>*>(session.Get()) != nullptr) {
-            return MakeShared<Event>(new HttpAfterResponseEvent<CoreModule>(session, event_queue));
+        switch (session->GetType()) {
+            case SessionType::Http:
+                return MakeShared<Event>(new HttpAfterResponseEvent<CoreModule>(session, event_queue));
+            case SessionType::File:
+                throw std::logic_error("EventMaker::MakeAfterWriteEvent() should not be called for FileSession");
+            case SessionType::Server:
+                throw std::logic_error("EventMaker::MakeAfterWriteEvent() should not be called for ServerSession");
         }
-
-        throw std::logic_error("MakeAfterWriteEvent: Only HttpSession could write to client");
     }
 };

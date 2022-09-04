@@ -4,6 +4,7 @@
 #include "Event.h"
 #include "SharedPtr.h"
 #include "Session.h"
+#include "ServerSession.h"
 
 #include <unordered_map>
 #include <queue>
@@ -11,7 +12,9 @@
 
 class PollModule {
 public:
-    PollModule(const SharedPtr<Config>& config, std::queue<SharedPtr<Event> >* event_queue);
+    PollModule(const SharedPtr<Config>& config,
+               std::queue<SharedPtr<Event> >* event_queue,
+               std::unordered_map<int, SharedPtr<Session<PollModule> > >* sessions);
 
     ~PollModule();
 
@@ -21,26 +24,27 @@ public:
 
     void AddSession(int socket, const SharedPtr<Session<PollModule> >& session);
 
-    int GetCoreModuleIndex() const;
-
     void CloseSession(int poll_index);
+
+    void CloseSocket(int poll_index);
+
+    int GetCoreModuleIndex() const;
 
 private:
     void ProcessInnerRead(int poll_index);
 
     void ProcessInnerWrite(int poll_index);
 
-    void ProcessInnerNewHttpSessions(int poll_index);
+    void ProcessInnerNewHttpSessions(int poll_index, SharedPtr<ServerConfig> server_config);
 
     void ProcessCompress();
 
 private:
     SharedPtr<Config> _config;
     std::queue<SharedPtr<Event> >* _event_queue;
-    std::unordered_map<int, SharedPtr<ServerConfig> > _servers;
-    std::unordered_map<int, SharedPtr<Session<PollModule> > > _sessions;
+    std::unordered_map<int, SharedPtr<Session<PollModule> > >* _sessions;
 
-    int _poll_current_index;
+    int _poll_index;
     struct pollfd* _poll_fds;
     bool _should_compress;
     size_t _read_buffer_size;

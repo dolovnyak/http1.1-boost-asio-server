@@ -2,4 +2,4 @@
 
 #include "Http.h"
 
-std::string GetHttpErrorPageByCode(Http::Code code);
+const std::string& GetHttpErrorPageByCode(Http::Code code);

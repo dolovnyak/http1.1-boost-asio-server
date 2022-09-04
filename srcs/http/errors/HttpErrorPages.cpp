@@ -1,5 +1,7 @@
 #include "HttpErrorPages.h"
 
+#include <unordered_map>
+
 namespace {
     const std::string k301 =
             "<html>" CRLF
@@ -312,17 +314,41 @@ namespace {
 }
 
 
-    std::string GetHttpErrorPageByCode(Http::Code code) {
-        switch (code) {
-            case Http::BadRequest:
-                return k400;
-            case Http::NotFound:
-                return k404;
-            case Http::MethodNotAllowed:
-                return k405;
-            case Http::NotImplemented:
-                return k501;
-            default:
-                throw std::logic_error("Incorrect code value in GetHttpErrorPageByCode");
-        }
+    const std::string& GetHttpErrorPageByCode(Http::Code code) {
+    static std::unordered_map<int, std::string> error_pages = {
+            {400, k400},
+            {401, k401},
+            {402, k402},
+            {403, k403},
+            {404, k404},
+            {405, k405},
+            {406, k406},
+            {408, k408},
+            {409, k409},
+            {410, k410},
+            {411, k411},
+            {412, k412},
+            {413, k413},
+            {414, k414},
+            {415, k415},
+            {416, k416},
+            {421, k421},
+            {429, k429},
+            {494, k494},
+            {495, k495},
+            {496, k496},
+            {497, k497},
+            {500, k500},
+            {501, k501},
+            {502, k502},
+            {503, k503},
+            {504, k504},
+            {505, k505},
+            {507, k507}
+    };
+    const std::unordered_map<int, std::string>::iterator& it = error_pages.find(code);
+    if (it != error_pages.end()) {
+        return it->second;
+    }
+    throw std::logic_error("Unknown http error code");
 }

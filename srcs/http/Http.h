@@ -53,6 +53,7 @@ namespace Http {
         PayloadTooLarge = 413,
         InternalServerError = 500,
         NotImplemented = 501,
+        HttpVersionNotSupported = 505,
     };
 
     Method GetMethod(const std::string& method);

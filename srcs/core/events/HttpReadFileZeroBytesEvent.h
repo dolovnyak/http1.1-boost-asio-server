@@ -64,9 +64,10 @@ void HttpReadFileZeroBytesEvent<CoreModule>::Process() {
     }
 
     _main_http_session->SendDataToClient(
-            Response::MakeOkResponse(_file_session->read_data, _main_http_session->server_config).response,
+            Response::MakeOkResponse(_file_session->read_data,
+                                     _main_http_session->server_config,
+                                     _main_http_session->keep_alive).response,
             _main_http_session->keep_alive);
-    _main_http_session->state = ConnectionState::ReadRequest;
     _file_session->Close();
 }
 

@@ -36,6 +36,14 @@ struct HttpVersion {
     HttpVersion() : major(0), minor(0) {}
     HttpVersion(int major, int minor) : major(major), minor(minor) {}
 
+    bool operator==(const HttpVersion& other) const {
+        return major == other.major && minor == other.minor;
+    }
+
+    bool operator!=(const HttpVersion& other) const {
+        return !(*this == other);
+    }
+
     int major;
     int minor;
 };
