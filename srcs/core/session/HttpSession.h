@@ -22,22 +22,30 @@ template<class CoreModule>
 class HttpSession : public Session<CoreModule> {
 public:
     HttpSession(int core_module_index, CoreModule* core_module, int socket,
-                const SharedPtr<ServerConfig>& server_instance)
+                SharedPtr<ServerConfig> server_config)
             : Session<CoreModule>(core_module_index, core_module, socket),
-              server_config(server_instance),
-              request(MakeShared(new Request(server_instance))),
+              server_config(server_config),
+              request(MakeShared(new Request(server_config))),
               keep_alive(true),
               keep_alive_timeout(server_config->default_keep_alive_timeout),
               started_time(time(nullptr)),
               state(ConnectionState::ReadRequest) {}
 
+    ~HttpSession() {}
+
     const std::string& GetResponseData() const OVERRIDE;
+
+    SessionType::Type GetType() const override {
+        return SessionType::Http;
+    }
 
     void SendDataToClient(const std::string& processed_response, bool should_keep_alive);
 
     bool ShouldCloseAfterResponse() const override;
 
     void Clear();
+
+    const std::string& GetName() const override;
 
 public:
     SharedPtr<ServerConfig> server_config;
@@ -78,4 +86,10 @@ void HttpSession<CoreModule>::Clear() {
     request->Clear();
     response.clear();
     state = ConnectionState::ReadRequest;
+}
+
+template<class CoreModule>
+const std::string& HttpSession<CoreModule>::GetName() const {
+    static std::string kName = "HttpSession";
+    return kName;
 }

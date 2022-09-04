@@ -24,6 +24,8 @@ public:
 
 
 private:
+    void ProcessHttpVersion();
+
     void ProcessHostHeader();
 
     void ProcessConnectionHeader();
@@ -53,6 +55,13 @@ const std::string& HttpProcessRequestEvent<CoreModule>::GetName() const {
 }
 
 template<class CoreModule>
+void HttpProcessRequestEvent<CoreModule>::ProcessHttpVersion() {
+    if (_http_session->request->http_version != HttpVersion(1, 1)) {
+        throw HttpVersionNotSupported("HTTP version not supported", _http_session->server_config);
+    }
+}
+
+template<class CoreModule>
 void HttpProcessRequestEvent<CoreModule>::ProcessHostHeader() {
     HeaderIterator it = _http_session->request->headers.find(HOST);
     if (it == _http_session->request->headers.end() || it->second.size() != 1) {
@@ -72,13 +81,15 @@ void HttpProcessRequestEvent<CoreModule>::ProcessConnectionHeader() {
             _http_session->keep_alive = false;
         }
     }
+    else {
+        _http_session->keep_alive = true; /// default http behavior
+    }
 }
 
 template<class CoreModule>
 void HttpProcessRequestEvent<CoreModule>::ProcessKeepAliveHeader() {
     HeaderIterator it = _http_session->request->headers.find(KEEP_ALIVE);
     if (it == _http_session->request->headers.end()) {
-        _http_session->keep_alive = true; /// default http behaviour
         return;
     }
 
@@ -199,6 +210,8 @@ void HttpProcessRequestEvent<CoreModule>::Process() {
     }
 
     try {
+        ProcessHttpVersion();
+
         std::string file_path;
         bool is_cgi = false;
         ProcessFilePath(file_path, is_cgi);

@@ -13,7 +13,7 @@ public:
                   Http::Code error_code,
                   const std::string& error_title,
                   bool keep_alive,
-                  const SharedPtr<ServerConfig>& server_instance_info);
+                  const SharedPtr<ServerConfig>& server_config);
 
     HttpException(const HttpException& other) _NOEXCEPT;
 
@@ -34,82 +34,88 @@ private:
 /// 400
 class BadRequest : public HttpException {
 public:
-    BadRequest(const std::string& message, const SharedPtr<ServerConfig>& server_instance_info);
+    BadRequest(const std::string& message, const SharedPtr<ServerConfig>& server_config);
 };
 
 class BadHttpVersion : public HttpException {
 public:
-    BadHttpVersion(const std::string& message, const SharedPtr<ServerConfig>& server_instance_info);
+    BadHttpVersion(const std::string& message, const SharedPtr<ServerConfig>& server_config);
 };
 
 class BadFirstLine : public HttpException {
 public:
-    BadFirstLine(const std::string& message, const SharedPtr<ServerConfig>& server_instance_info);
+    BadFirstLine(const std::string& message, const SharedPtr<ServerConfig>& server_config);
 };
 
 class BadHeader : public HttpException {
 public:
-    BadHeader(const std::string& message, const SharedPtr<ServerConfig>& server_instance_info);
+    BadHeader(const std::string& message, const SharedPtr<ServerConfig>& server_config);
 };
 
 class BadContentLength : public HttpException {
 public:
-    BadContentLength(const std::string& message, const SharedPtr<ServerConfig>& server_instance_info);
+    BadContentLength(const std::string& message, const SharedPtr<ServerConfig>& server_config);
 };
 
 class BadChunkSize : public HttpException {
 public:
-    BadChunkSize(const std::string& message, const SharedPtr<ServerConfig>& server_instance_info);
+    BadChunkSize(const std::string& message, const SharedPtr<ServerConfig>& server_config);
 };
 
 class BadChunkBody : public HttpException {
 public:
-    BadChunkBody(const std::string& message, const SharedPtr<ServerConfig>& server_instance_info);
+    BadChunkBody(const std::string& message, const SharedPtr<ServerConfig>& server_config);
 };
 
 
 /// 404
 class NotFound : public HttpException {
 public:
-    NotFound(const std::string& message, const SharedPtr<ServerConfig>& server_instance_info);
+    NotFound(const std::string& message, const SharedPtr<ServerConfig>& server_config);
 };
 
 
 /// 405
 class MethodNotAllowed : public HttpException {
 public:
-    MethodNotAllowed(const std::string& message, const SharedPtr<ServerConfig>& server_instance_info);
+    MethodNotAllowed(const std::string& message, const SharedPtr<ServerConfig>& server_config);
 };
 
 
 /// 411
 class LengthRequired : public HttpException {
 public:
-    LengthRequired(const std::string& message, const SharedPtr<ServerConfig>& server_instance_info);
+    LengthRequired(const std::string& message, const SharedPtr<ServerConfig>& server_config);
 };
 
 
 /// 413
 class PayloadTooLarge : public HttpException {
 public:
-    PayloadTooLarge(const std::string& message, const SharedPtr<ServerConfig>& server_instance_info);
+    PayloadTooLarge(const std::string& message, const SharedPtr<ServerConfig>& server_config);
 };
 
 
 /// 500
 class InternalServerError : public HttpException {
 public:
-    InternalServerError(const std::string& message, const SharedPtr<ServerConfig>& server_instance_info);
+    InternalServerError(const std::string& message, const SharedPtr<ServerConfig>& server_config);
 };
 
 
 /// 501
 class NotImplemented : public HttpException {
 public:
-    NotImplemented(const std::string& message, const SharedPtr<ServerConfig>& server_instance_info);
+    NotImplemented(const std::string& message, const SharedPtr<ServerConfig>& server_config);
 };
 
 class UnsupportedTransferEncoding : public HttpException {
 public:
-    UnsupportedTransferEncoding(const std::string& message, const SharedPtr<ServerConfig>& server_instance_info);
+    UnsupportedTransferEncoding(const std::string& message, const SharedPtr<ServerConfig>& server_config);
+};
+
+/// 505
+class HttpVersionNotSupported : public HttpException {
+public:
+    HttpVersionNotSupported(const std::string& message, const SharedPtr<ServerConfig>& server_config);
 };
