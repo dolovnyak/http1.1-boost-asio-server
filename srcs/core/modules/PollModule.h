@@ -14,7 +14,7 @@ class PollModule {
 public:
     PollModule(const SharedPtr<Config>& config,
                std::queue<SharedPtr<Event> >* event_queue,
-               std::unordered_map<int, SharedPtr<Session<PollModule> > >* sessions);
+               std::unordered_map<SocketFd, SharedPtr<Session<PollModule> > >* sessions);
 
     ~PollModule();
 
@@ -28,7 +28,7 @@ public:
 
     void CloseSocket(int poll_index);
 
-    int GetCoreModuleIndex() const;
+    int GetNextSessionIndex() const;
 
 private:
     void ProcessInnerRead(int poll_index);
@@ -42,11 +42,15 @@ private:
 private:
     SharedPtr<Config> _config;
     std::queue<SharedPtr<Event> >* _event_queue;
-    std::unordered_map<int, SharedPtr<Session<PollModule> > >* _sessions;
+    std::unordered_map<SocketFd, SharedPtr<Session<PollModule> > >* _sessions;
 
     int _poll_index;
+    int _poll_fds_size;
     struct pollfd* _poll_fds;
     bool _should_compress;
     size_t _read_buffer_size;
     char* _read_buffer;
 };
+
+typedef std::unordered_map<SocketFd, SharedPtr<Session<PollModule> > >::iterator SessionIterator;
+typedef SharedPtr<Session<PollModule> > SessionPtr;

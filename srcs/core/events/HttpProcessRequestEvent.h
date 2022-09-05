@@ -182,12 +182,11 @@ void HttpProcessRequestEvent<CoreModule>::RunFilePipeline(const std::string& fil
     }
 
     SharedPtr<Session<CoreModule> > file_session = MakeShared<Session<CoreModule> >(
-            new HttpFileSession<CoreModule>(_packaged_http_session->core_module->GetCoreModuleIndex(),
-                                            _packaged_http_session->core_module, fd,
+            new HttpFileSession<CoreModule>(_packaged_http_session->core_module->GetNextSessionIndex(),
+                                            _packaged_http_session->core_module, SocketFd(fd),
                                             _packaged_http_session));
 
-    _packaged_http_session->core_module->AddSession(fd,
-                                                    file_session);  // core_module will invoke read events for this file fd
+    _http_session->core_module->AddSession(fd, file_session);  // core_module will invoke read events for this file fd
     _http_session->state = ConnectionState::ProcessResource;
 }
 

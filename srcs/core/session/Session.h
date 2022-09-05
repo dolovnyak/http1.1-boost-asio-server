@@ -2,6 +2,7 @@
 
 #include "Event.h"
 #include "Logging.h"
+#include "core_helpers.h"
 
 #include <queue>
 
@@ -16,7 +17,7 @@ namespace SessionType {
 template<class CoreModule>
 class Session {
 public:
-    Session(int core_module_index, CoreModule* core_module, int socket)
+    Session(int core_module_index, CoreModule* core_module, SocketFd socket)
             : available(true),
               core_module_index(core_module_index),
               core_module(core_module),
@@ -39,7 +40,7 @@ public:
 public:
     int core_module_index;
     CoreModule* core_module;
-    int socket;
+    SocketFd socket;
 };
 
 template<class CoreModule>

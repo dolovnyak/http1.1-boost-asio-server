@@ -49,3 +49,13 @@ Core inner read event -> HttpReadRequestEvent -> HttpProcessRequestEvent ->
 Core inner read event -> HttpFileReadEvent -> Core inner read zero bytes event -> 
 FileReadZeroByteEvent -> Core inner write event (response to client) -> 
 Core inner after write event -> HttpAfterResponseEvent
+
+
+Нужно написать тест на ProcessCompress, так как при параллельных сессиях периодически все ломается и будто из-за него
+Написать и тест и сам ProcessCompress
+после чекнуть как себя ведет серв с одновременными подключениями через ab
+после добавить ивент, который убивает сессии по таймауту
+после написать cgi (нужно корректно прокинуть энвайронмент аргументы и тело реквеста, сделать execve и поместить stdout fd в poll)
+после cgi состояние сервера будет минимально рабочим
+поэтому после cgi убрать моки на парсер и подключить реальный парсер
+после заранить с школьными тестами и начать реализовывать неансы с методами и хедерами

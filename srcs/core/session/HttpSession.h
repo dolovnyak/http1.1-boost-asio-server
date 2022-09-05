@@ -21,7 +21,7 @@ namespace ConnectionState {
 template<class CoreModule>
 class HttpSession : public Session<CoreModule> {
 public:
-    HttpSession(int core_module_index, CoreModule* core_module, int socket,
+    HttpSession(int core_module_index, CoreModule* core_module, SocketFd socket,
                 SharedPtr<ServerConfig> server_config)
             : Session<CoreModule>(core_module_index, core_module, socket),
               server_config(server_config),
