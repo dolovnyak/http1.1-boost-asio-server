@@ -2,7 +2,6 @@
 
 #include "Config.h"
 #include "Event.h"
-#include "Logging.h"
 #include "ServerSession.h"
 #include "Http.h"
 
@@ -76,6 +75,7 @@ void WebServer<CoreModule>::ProcessEvents() {
     /// events which spawned by current events will processed in next iteration
     size_t event_queue_size = _event_queue.size();
     for (size_t i = 0; i < event_queue_size; ++i) {
+        LOG_INFO("Event \"", _event_queue.front()->GetName(), "\"", " is processing");
         _event_queue.front()->Process();
         _event_queue.pop();
     }

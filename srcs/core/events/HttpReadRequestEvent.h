@@ -51,7 +51,7 @@ void HttpReadRequestEvent<CoreModule>::Process() {
         return;
     }
 
-    if (_http_session->state != ConnectionState::ReadRequest) {
+    if (_http_session->state != HttpSessionState::ReadRequest) {
         LOG_INFO(GetName() + " on wrong connection state");
         return;
     }
@@ -61,7 +61,7 @@ void HttpReadRequestEvent<CoreModule>::Process() {
 
         switch (status) {
             case RequestHandleStatus::Finish:
-                _http_session->state = ConnectionState::ProcessRequest;
+                _http_session->state = HttpSessionState::ProcessRequest;
                 _event_queue->push(MakeShared<Event>(
                         new HttpProcessRequestEvent<CoreModule>(_packaged_http_session, _event_queue)));
 

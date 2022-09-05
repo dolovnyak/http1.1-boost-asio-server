@@ -34,12 +34,12 @@ void PollModule::ProcessEvents(int timeout) {
     }
 
     int current_size = _poll_index;
-    for (int index = 0; index < current_size; index++) {
+    for (int index = 0; index < current_size; ++index) {
 
         struct pollfd& poll_fd = _poll_fds[index];
 
         LOG_DEBUG("PollModule fd: ", poll_fd.fd, "; ",
-                  "PollModule event_system: ", poll_fd.events, "; ",
+                  "PollModule event: ", poll_fd.events, "; ",
                   "PollModule revents ", poll_fd.revents);
 
 
@@ -56,36 +56,37 @@ void PollModule::ProcessEvents(int timeout) {
         SessionIterator session_iterator = _sessions->find(SocketFd(poll_fd.fd));
         if (session_iterator == _sessions->end()) {
             LOG_WARNING("There is no session by fd: ", poll_fd.fd);
-            CloseSession(index);
+            CloseSocket(index);
             continue;
         }
 
-        if (session_iterator->second->GetType() == SessionType::Server) {
-            ServerSession<PollModule>* server_session = dynamic_cast<ServerSession<PollModule>*>(
-                    session_iterator->second.Get());
-            ProcessInnerNewHttpSessions(index, server_session->server_config);
-        }
-        else if (poll_fd.revents & ~(POLLIN | POLLOUT | POLLERR | POLLHUP | POLLNVAL)) {
+        if (poll_fd.revents & ~(POLLIN | POLLOUT | POLLERR | POLLHUP | POLLNVAL)) {
             LOG_WARNING("Unknown poll event: ", poll_fd.revents, " on fd: ", poll_fd.fd);
             CloseSession(index);
             continue;
         }
-        else if (poll_fd.revents & (POLLHUP | POLLNVAL)) {
-            if (session_iterator->second->GetType() == SessionType::Server) {
-                LOG_WARNING("PollModule: POLLHUP or POLLNVAL on Server session: ", poll_fd.fd);
-            } else {
-                LOG_WARNING("PollModule: POLLHUP or POLLNVAL on Client session: ", poll_fd.fd);
-                CloseSession(index);
-            }
+
+        if (poll_fd.revents & POLLNVAL) {
+            LOG_INFO("PollModule: POLLNVAL on Client session: ", poll_fd.fd);
+            CloseSession(index);
+            continue;
         }
-        else if (poll_fd.revents & POLLERR) {
+        if (poll_fd.revents & POLLHUP) {
+            LOG_INFO("PollModule: POLLHUP on Client session: ", poll_fd.fd);
+            CloseSession(index);
+            continue;
+        }
+
+        if (poll_fd.revents & POLLERR) {
             LOG_ERROR("PollModule: POLLERR on fd: ", poll_fd.fd);
-            return;
+            CloseSession(index);
+            continue;
         }
-        else if (poll_fd.revents & POLLIN) {
+
+        if (poll_fd.revents & POLLIN) {
             ProcessInnerRead(index);
         }
-        else if (poll_fd.revents & POLLOUT) {
+        if (poll_fd.revents & POLLOUT) {
             ProcessInnerWrite(index);
         }
 
@@ -154,6 +155,18 @@ void PollModule::CloseSocket(int poll_index) {
 
 void PollModule::ProcessInnerRead(int poll_index) {
     SharedPtr<Session<PollModule> > session = _sessions->at(SocketFd(_poll_fds[poll_index].fd));
+
+    if (session->GetType() == SessionType::Server) {
+        ServerSession<PollModule>* server_session = dynamic_cast<ServerSession<PollModule>*>(session.Get());
+        ProcessInnerNewHttpSessions(poll_index, server_session->server_config);
+        return;
+    }
+
+    if (session->GetType() == SessionType::Http) {
+        HttpSession<PollModule>* http_session = dynamic_cast<HttpSession<PollModule>*>(session.Get());
+        LOG_INFO("Http session read on state: ", HttpSessionState::ToString(http_session->state));
+    }
+
     LogSession(session, "Read processing");
 
     ssize_t bytes_read = read(_poll_fds[poll_index].fd, _read_buffer, _read_buffer_size);
@@ -185,6 +198,11 @@ void PollModule::ProcessInnerWrite(int poll_index) {
     SessionPtr session = session_it->second;
     LogSession(session, "Write processing");
 
+    if (session->GetType() == SessionType::Http) {
+        HttpSession<PollModule>* http_session = dynamic_cast<HttpSession<PollModule>*>(session.Get());
+        LOG_INFO("Http session write on state: ", HttpSessionState::ToString(http_session->state));
+    }
+
     /// TODO maybe it will be needed to make chunked write.
 
     std::string response = session->GetResponseData();
@@ -194,7 +212,8 @@ void PollModule::ProcessInnerWrite(int poll_index) {
         LOG_PERROR("Failed to send data");
     }
     else if (bytes_send == 0) {
-        LOG_WARNING("Zero bytes send");
+        LOG_WARNING("Zero bytes send, close session");
+        CloseSession(poll_index);
     }
     else if (static_cast<size_t>(bytes_send) < response.size()) {
         LOG_INFO("Bytes send: ", bytes_send);
@@ -215,37 +234,32 @@ void PollModule::ProcessCompress() {
     _should_compress = false;
     SessionIterator session_it;
 
-    LOG_START_TIMER("Compressing");
     LOG_INFO("Compressing...");
-    for (int i = 0; i < _poll_index; ++i) {
+    for (int i = 0; i < _poll_index;) {
         if (_poll_fds[i].fd == -1) {
-            for (int j = i; j < _poll_index - 1; ++j) {
+            int i_end = i;
+            while (_poll_fds[i_end].fd == -1 && i_end < _poll_index) {
+                ++i_end;
+            }
+            int skip_size = i_end - i;
 
-                if (j == _poll_index - 1) {
-                    _poll_fds[j].fd = -1;
-                }
-                else {
-                    _poll_fds[j].fd = _poll_fds[j + 1].fd;
-                }
-                _poll_fds[j].fd = _poll_fds[j + 1].fd;
+            int j_end = _poll_index - skip_size;
+            for (int j = i; j < j_end; ++j) {
+
+                _poll_fds[j] = _poll_fds[j + skip_size];
 
                 session_it = _sessions->find(SocketFd(_poll_fds[j].fd));
                 if (session_it != _sessions->end()) {
                     session_it->second->core_module_index = j;
                 }
             }
-            --i;
-            --_poll_index;
+            i = i_end;
+            _poll_index -= skip_size;
         }
-
-        std::cout << "poll_index: " << _poll_index << "; _poll_fds: ";
-        for (int k = 0; k < _poll_index; ++k) {
-            std::cout << _poll_fds[k].fd << " ";
+        else {
+            ++i;
         }
-        std::cout << std::endl;
-
     }
-    LOG_TIME();
 }
 
 void PollModule::SendDataToSocket(int poll_index) {

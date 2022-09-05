@@ -47,9 +47,9 @@ target_include_directories(${WS_LIB} PUBLIC
         )
 
 if (STANDARD98)
-    target_compile_definitions(${WS_LIB} PRIVATE -D_STANDARD98)
+    target_compile_definitions(${WS_LIB} PUBLIC -D_STANDARD98)
 else ()
-    target_compile_definitions(${WS_LIB} PRIVATE -D_TESTING)
+    target_compile_definitions(${WS_LIB} PUBLIC -D_DEBUG)
 endif ()
 
 ################################################################################

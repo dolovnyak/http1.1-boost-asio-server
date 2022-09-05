@@ -167,7 +167,7 @@ void HttpProcessRequestEvent<CoreModule>::ProcessMethod() {
 
 template<class CoreModule>
 void HttpProcessRequestEvent<CoreModule>::RunCgiPipeline(const std::string& file_path) {
-    _http_session->state = ConnectionState::ProcessResource;
+    _http_session->state = HttpSessionState::ProcessResource;
 }
 
 template<class CoreModule>
@@ -187,7 +187,7 @@ void HttpProcessRequestEvent<CoreModule>::RunFilePipeline(const std::string& fil
                                             _packaged_http_session));
 
     _http_session->core_module->AddSession(fd, file_session);  // core_module will invoke read events for this file fd
-    _http_session->state = ConnectionState::ProcessResource;
+    _http_session->state = HttpSessionState::ProcessResource;
 }
 
 template<class CoreModule>
@@ -203,7 +203,7 @@ void HttpProcessRequestEvent<CoreModule>::Process() {
         return;
     }
 
-    if (_http_session->state != ConnectionState::ProcessRequest) {
+    if (_http_session->state != HttpSessionState::ProcessRequest) {
         LOG_INFO(GetName(), " on wrong connection state");
         return;
     }

@@ -58,7 +58,7 @@ void HttpReadFileZeroBytesEvent<CoreModule>::Process() {
         return;
     }
 
-    if (_main_http_session->state != ConnectionState::ProcessResource) {
+    if (_main_http_session->state != HttpSessionState::ProcessResource) {
         LOG_INFO(GetName(), " on wrong connection state");
         return;
     }
