@@ -9,13 +9,28 @@
 #include <utility>
 #include <optional>
 
-namespace ConnectionState {
+namespace HttpSessionState {
     enum State {
         ReadRequest = 0,
         ProcessRequest,
         ProcessResource,
         ResponseToClient
     };
+
+    const std::string ToString(State state) {
+        switch (state) {
+            case ReadRequest:
+                return "ReadRequest";
+            case ProcessRequest:
+                return "ProcessRequest";
+            case ProcessResource:
+                return "ProcessResource";
+            case ResponseToClient:
+                return "ResponseToClient";
+            default:
+                return "Unknown";
+        }
+    }
 }
 
 template<class CoreModule>
@@ -29,7 +44,7 @@ public:
               keep_alive(true),
               keep_alive_timeout(server_config->default_keep_alive_timeout),
               started_time(time(nullptr)),
-              state(ConnectionState::ReadRequest) {}
+              state(HttpSessionState::ReadRequest) {}
 
     ~HttpSession() {}
 
@@ -60,14 +75,14 @@ public:
 
     time_t started_time;
 
-    ConnectionState::State state;
+    HttpSessionState::State state;
 };
 
 template<class CoreModule>
 void HttpSession<CoreModule>::SendDataToClient(const std::string& processed_response, bool should_keep_alive) {
     this->response = processed_response;
     this->keep_alive = should_keep_alive;
-    state = ConnectionState::ResponseToClient;
+    state = HttpSessionState::ResponseToClient;
     this->core_module->SendDataToSocket(this->core_module_index);
 }
 
@@ -85,7 +100,7 @@ template<class CoreModule>
 void HttpSession<CoreModule>::Clear() {
     request->Clear();
     response.clear();
-    state = ConnectionState::ReadRequest;
+    state = HttpSessionState::ReadRequest;
 }
 
 template<class CoreModule>

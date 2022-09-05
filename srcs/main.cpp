@@ -1,6 +1,5 @@
-#include "WebServer.h"
-#include "utilities/Logging.h"
 #include "PollModule.h"
+#include "WebServer.h"
 
 int main(int argc, char** argv) {
     if (argc != 2) {
