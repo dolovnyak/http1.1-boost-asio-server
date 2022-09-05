@@ -7,7 +7,7 @@
 template<class CoreModule>
 class ServerSession : public Session<CoreModule> {
 public:
-    ServerSession(int core_module_index, CoreModule* core_module, int socket,
+    ServerSession(int core_module_index, CoreModule* core_module, SocketFd socket,
                   const SharedPtr<ServerConfig>& server_config)
             : Session<CoreModule>(core_module_index, core_module, socket),
               server_config(server_config) {}

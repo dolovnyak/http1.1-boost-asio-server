@@ -49,7 +49,7 @@ target_include_directories(${WS_LIB} PUBLIC
 if (STANDARD98)
     target_compile_definitions(${WS_LIB} PRIVATE -D_STANDARD98)
 else ()
-    target_compile_definitions(${WS_LIB} PRIVATE -D_DEBUG)
+    target_compile_definitions(${WS_LIB} PRIVATE -D_TESTING)
 endif ()
 
 ################################################################################
@@ -75,6 +75,7 @@ if (NOT STANDARD98)
     add_executable(${WS_TESTS}
             tests/test_utilities.cpp
             tests/test_fsm_handle_request.cpp
+            tests/test_poll_module.cpp
             )
 
     target_link_libraries(${WS_TESTS}

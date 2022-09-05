@@ -40,7 +40,7 @@ bool Config::Load(const char* path) {
     }
     else if (std::string(path) == "2") {
         read_buffer_size = 1024;
-        max_sockets_number = 128;
+        max_sockets_number = 512;
         servers_configs = mock_2_server_configs();
         return true;
     }

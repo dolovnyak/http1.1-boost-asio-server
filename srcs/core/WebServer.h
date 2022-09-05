@@ -3,7 +3,8 @@
 #include "Config.h"
 #include "Event.h"
 #include "Logging.h"
-#include "Session.h"
+#include "ServerSession.h"
+#include "Http.h"
 
 #include <queue>
 #include <unordered_map>
@@ -23,14 +24,29 @@ private:
 private:
     SharedPtr<Config> _config;
     std::queue<SharedPtr<Event> > _event_queue;
-    std::unordered_map<int, SharedPtr<Session<CoreModule> > > _sessions;
+    std::unordered_map<SocketFd, SharedPtr<Session<CoreModule> > > _sessions;
     CoreModule _core_module;
 };
 
 template<class CoreModule>
 WebServer<CoreModule>::WebServer(const SharedPtr<Config>& config)
         : _config(config),
-          _core_module(config, &_event_queue, &_sessions) {}
+          _core_module(config, &_event_queue, &_sessions) {
+
+    for (size_t i = 0; i < _config->servers_configs.size(); ++i) {
+        int socket = Http::SetupSocket(_config->servers_configs[i], _config);
+
+        SharedPtr<Session<CoreModule> > server_session = MakeShared<Session<CoreModule> >(new ServerSession<CoreModule>(
+                _core_module.GetNextSessionIndex(), &_core_module, SocketFd(socket), _config->servers_configs[i]));
+
+        _core_module.AddSession(socket, server_session);
+    }
+
+    if (_sessions.empty()) {
+        throw std::runtime_error("No server sessions created");
+    }
+
+}
 
 template<class CoreModule>
 void WebServer<CoreModule>::Run() {
