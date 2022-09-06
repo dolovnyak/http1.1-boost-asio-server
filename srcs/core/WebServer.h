@@ -3,6 +3,7 @@
 #include "Config.h"
 #include "Event.h"
 #include "ServerSession.h"
+#include "SessionsKillerEvent.h"
 #include "Http.h"
 
 #include <queue>
@@ -25,12 +26,15 @@ private:
     std::queue<SharedPtr<Event> > _event_queue;
     std::unordered_map<SocketFd, SharedPtr<Session<CoreModule> > > _sessions;
     CoreModule _core_module;
+    SessionsKillerEvent<CoreModule> _sessions_killer_event;
 };
 
 template<class CoreModule>
 WebServer<CoreModule>::WebServer(const SharedPtr<Config>& config)
         : _config(config),
-          _core_module(config, &_event_queue, &_sessions) {
+          _core_module(config, &_event_queue, &_sessions),
+          _sessions_killer_event(
+                  SessionsKillerEvent<CoreModule>(&_sessions, &_event_queue, _config->sessions_killer_delay_s)) {
 
     for (size_t i = 0; i < _config->servers_configs.size(); ++i) {
         int socket = Http::SetupSocket(_config->servers_configs[i], _config);
@@ -44,7 +48,6 @@ WebServer<CoreModule>::WebServer(const SharedPtr<Config>& config)
     if (_sessions.empty()) {
         throw std::runtime_error("No server sessions created");
     }
-
 }
 
 template<class CoreModule>
@@ -53,6 +56,11 @@ void WebServer<CoreModule>::Run() {
         try {
             ProcessCoreEvents();
             ProcessEvents();
+
+            if (_sessions_killer_event.Ready()) {
+                LOG_INFO("Event \"", _sessions_killer_event.GetName(), "\"", " is processing");
+                _sessions_killer_event.Process();
+            }
         }
         catch (const std::exception& e) {
             LOG_ERROR("Exception in main loop: %s", e.what());
@@ -63,7 +71,7 @@ void WebServer<CoreModule>::Run() {
 template<class CoreModule>
 void WebServer<CoreModule>::ProcessCoreEvents() {
     if (_event_queue.empty()) {
-        _core_module.ProcessEvents(-1);
+        _core_module.ProcessEvents(_config->core_timeout_ms);
     }
     else {
         _core_module.ProcessEvents(0);

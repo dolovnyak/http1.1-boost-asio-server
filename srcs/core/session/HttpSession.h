@@ -17,33 +17,19 @@ namespace HttpSessionState {
         ResponseToClient
     };
 
-    const std::string ToString(State state) {
-        switch (state) {
-            case ReadRequest:
-                return "ReadRequest";
-            case ProcessRequest:
-                return "ProcessRequest";
-            case ProcessResource:
-                return "ProcessResource";
-            case ResponseToClient:
-                return "ResponseToClient";
-            default:
-                return "Unknown";
-        }
-    }
+    const std::string& ToString(State state);
 }
 
 template<class CoreModule>
 class HttpSession : public Session<CoreModule> {
 public:
     HttpSession(int core_module_index, CoreModule* core_module, SocketFd socket,
-                SharedPtr<ServerConfig> server_config)
+                const SharedPtr<ServerConfig>& server_config_in)
             : Session<CoreModule>(core_module_index, core_module, socket),
-              server_config(server_config),
+              server_config(server_config_in),
               request(MakeShared(new Request(server_config))),
-              keep_alive(true),
-              keep_alive_timeout(server_config->default_keep_alive_timeout),
-              started_time(time(nullptr)),
+              keep_alive(false),
+              keep_alive_timeout(server_config->default_keep_alive_timeout_s),
               state(HttpSessionState::ReadRequest) {}
 
     ~HttpSession() {}
@@ -72,8 +58,6 @@ public:
     bool keep_alive;
 
     int keep_alive_timeout;
-
-    time_t started_time;
 
     HttpSessionState::State state;
 };

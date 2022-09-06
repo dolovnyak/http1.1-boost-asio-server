@@ -53,7 +53,7 @@ void PollModule::ProcessEvents(int timeout) {
             continue;
         }
 
-        SessionIterator session_iterator = _sessions->find(SocketFd(poll_fd.fd));
+        Session<PollModule>::It session_iterator = _sessions->find(SocketFd(poll_fd.fd));
         if (session_iterator == _sessions->end()) {
             LOG_WARNING("There is no session by fd: ", poll_fd.fd);
             CloseSocket(index);
@@ -135,7 +135,7 @@ void PollModule::CloseSession(int poll_index) {
 
     CloseSocket(poll_index);
 
-    SessionIterator session_it = _sessions->find(socket);
+    Session<PollModule>::It session_it = _sessions->find(socket);
 
     if (session_it == _sessions->end()) {
         LOG_WARNING("Close session: session not found");
@@ -155,16 +155,12 @@ void PollModule::CloseSocket(int poll_index) {
 
 void PollModule::ProcessInnerRead(int poll_index) {
     SharedPtr<Session<PollModule> > session = _sessions->at(SocketFd(_poll_fds[poll_index].fd));
+    session->UpdateLastActivityTime();
 
     if (session->GetType() == SessionType::Server) {
         ServerSession<PollModule>* server_session = dynamic_cast<ServerSession<PollModule>*>(session.Get());
         ProcessInnerNewHttpSessions(poll_index, server_session->server_config);
         return;
-    }
-
-    if (session->GetType() == SessionType::Http) {
-        HttpSession<PollModule>* http_session = dynamic_cast<HttpSession<PollModule>*>(session.Get());
-        LOG_INFO("Http session read on state: ", HttpSessionState::ToString(http_session->state));
     }
 
     LogSession(session, "Read processing");
@@ -189,13 +185,14 @@ void PollModule::ProcessInnerRead(int poll_index) {
 }
 
 void PollModule::ProcessInnerWrite(int poll_index) {
-    SessionIterator session_it = _sessions->find(SocketFd(_poll_fds[poll_index].fd));
+    Session<PollModule>::It session_it = _sessions->find(SocketFd(_poll_fds[poll_index].fd));
     if (session_it == _sessions->end()) {
         LOG_WARNING("Write processing: session not found");
         return;
     }
 
-    SessionPtr session = session_it->second;
+    Session<PollModule>::Ptr session = session_it->second;
+    session->UpdateLastActivityTime();
     LogSession(session, "Write processing");
 
     if (session->GetType() == SessionType::Http) {
@@ -232,7 +229,7 @@ void PollModule::ProcessCompress() {
     if (!_should_compress)
         return;
     _should_compress = false;
-    SessionIterator session_it;
+    Session<PollModule>::It session_it;
 
     LOG_INFO("Compressing...");
     for (int i = 0; i < _poll_index;) {

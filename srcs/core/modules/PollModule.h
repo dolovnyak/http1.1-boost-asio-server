@@ -51,6 +51,3 @@ private:
     size_t _read_buffer_size;
     char* _read_buffer;
 };
-
-typedef std::unordered_map<SocketFd, SharedPtr<Session<PollModule> > >::iterator SessionIterator;
-typedef SharedPtr<Session<PollModule> > SessionPtr;
