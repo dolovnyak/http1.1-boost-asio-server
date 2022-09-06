@@ -120,18 +120,11 @@ void HttpProcessRequestEvent<CoreModule>::ProcessFilePath(std::string& file_path
 
     if (_http_session->server_config->cgi_file_extensions.find(_http_session->request->target.extension) !=
         _http_session->server_config->cgi_file_extensions.end()) {
-
-        if (access(file_path.c_str(), X_OK) == -1) {
-            throw NotFound("File not found or not available", _http_session->server_config);
-        }
         is_cgi = true;
     }
     else {
         if (file_path == directory_path) {
             file_path += _http_session->server_config->default_file_name;
-        }
-        if (access(file_path.c_str(), R_OK) == -1) {
-            throw NotFound("File not found or not available", _http_session->server_config);
         }
         is_cgi = false;
     }
@@ -167,6 +160,7 @@ void HttpProcessRequestEvent<CoreModule>::ProcessMethod() {
 
 template<class CoreModule>
 void HttpProcessRequestEvent<CoreModule>::RunCgiPipeline(const std::string& file_path) {
+
     _http_session->state = HttpSessionState::ProcessResource;
 }
 
@@ -174,7 +168,7 @@ template<class CoreModule>
 void HttpProcessRequestEvent<CoreModule>::RunFilePipeline(const std::string& file) {
     int fd = open(file.c_str(), O_RDONLY);
     if (fd == -1) {
-        throw std::runtime_error("FileProcessEvent::Process: open failed, but file was checked before");
+        throw NotFound("File not found or not available", _http_session->server_config);
     }
     if (!SetSocketNonBlocking(fd)) {
         close(fd);
@@ -186,7 +180,7 @@ void HttpProcessRequestEvent<CoreModule>::RunFilePipeline(const std::string& fil
                                             _packaged_http_session->core_module, SocketFd(fd),
                                             _packaged_http_session));
 
-    _http_session->core_module->AddSession(fd, file_session);  // core_module will invoke read events for this file fd
+    _http_session->core_module->AddSession(fd, file_session);  /// core_module will invoke read events for this file fd
     _http_session->state = HttpSessionState::ProcessResource;
 }
 
