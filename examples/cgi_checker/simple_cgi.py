@@ -1,9 +1,16 @@
+#!/usr/bin/env python3
+
 import cgi
-import cgitb; cgitb.enable() # Optional; for debugging only
+import cgitb
+import os
 
-print "Content-Type: text/html"
-print ""
+cgitb.enable()  # Optional; for debugging only
 
+print("aaaaaaa")
 arguments = cgi.FieldStorage()
 for i in arguments.keys():
- print arguments[i].value
+    print(arguments[i].value)
+
+print("bbbbbbb")
+for i in os.environ.keys():
+    print(i, os.environ[i])
