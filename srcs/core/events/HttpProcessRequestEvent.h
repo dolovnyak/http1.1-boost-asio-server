@@ -103,9 +103,9 @@ void HttpProcessRequestEvent<CoreModule>::ProcessKeepAliveHeader() {
         if (parameter_tokens.size() == 2) {
             if (ToLower(parameter_tokens[0]) == TIMEOUT && IsPositiveNumberString(parameter_tokens[1])) {
                 _http_session->keep_alive_timeout =
-                        std::min(_http_session->server_config->max_keep_alive_timeout,
+                        std::min(_http_session->server_config->max_keep_alive_timeout_s,
                                  std::max(ParsePositiveInt(parameter_tokens[1]),
-                                          _http_session->server_config->default_keep_alive_timeout));
+                                          _http_session->server_config->default_keep_alive_timeout_s));
             }
         }
         /// MAX parameter is outdated and not supported

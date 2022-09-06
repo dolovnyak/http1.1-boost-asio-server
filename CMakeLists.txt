@@ -29,6 +29,7 @@ add_library(${WS_LIB}
         srcs/http/Http.cpp
         srcs/utilities/utilities.cpp
         srcs/utilities/Logging.cpp
+        srcs/core/session/HttpSession.cpp
         )
 
 target_include_directories(${WS_LIB} PUBLIC

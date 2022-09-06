@@ -10,7 +10,7 @@ Response Response::MakeErrorResponse(Http::Code error, const std::string& error_
     headers.push_back(Http::Header("Content-Type", "text/html"));
     headers.push_back(Http::Header("Content-Length", std::to_string(body.size())));
     headers.push_back(Http::Header("Server", server_config->name));
-    headers.push_back(Http::Header("Date", GetCurrentDateTime()));
+    headers.push_back(Http::Header("Date", GetCurrentDateTimeString()));
     headers.push_back(Http::Header("Connection", "close"));
     return Response(error, error_title, headers, body);
 }
@@ -20,7 +20,7 @@ Response Response::MakeOkResponse(const std::string& body, SharedPtr<ServerConfi
     headers.push_back(Http::Header("Content-Type", "text/html"));
     headers.push_back(Http::Header("Content-Length", std::to_string(body.size())));
     headers.push_back(Http::Header("Server", server_config->name));
-    headers.push_back(Http::Header("Date", GetCurrentDateTime()));
+    headers.push_back(Http::Header("Date", GetCurrentDateTimeString()));
 
     keep_alive ? headers.push_back(Http::Header("Connection", "keep-alive"))
                : headers.push_back(Http::Header("Connection", "close"));

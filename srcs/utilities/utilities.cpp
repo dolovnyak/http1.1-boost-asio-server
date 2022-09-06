@@ -59,7 +59,7 @@ std::string ToLower(const std::string& str) {
     return result;
 }
 
-std::string GetCurrentDateTime() {
+std::string GetCurrentDateTimeString() {
     time_t rawtime;
     time(&rawtime);
     struct tm* timeinfo = localtime(&rawtime);
