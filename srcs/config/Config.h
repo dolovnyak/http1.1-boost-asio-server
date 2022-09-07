@@ -44,3 +44,4 @@ struct Config {
 
     std::vector<SharedPtr<ServerConfig> > servers_configs;
 };
+
