@@ -25,46 +25,12 @@ bool Config::Load(const char* path) {
             throw std::runtime_error("core_timeout should be <= sessions_killer_delay");
         }
         return true;
+        str.push_back(jtoc_get_string(tmp));
+        tmp = tmp->right;
     }
-    else {
-        /// TODO(Jeka) fill servers_configs from json
-    }
-        threads_number = 8;
-        max_sockets_number = 256;
-        timeout = 1000;
-        servers_configs = mock_1_server_config();
-        return true;
-    }
-    else if (std::string(path) == "2") {
-        threads_number = 8;
-        max_sockets_number = 128;
-        timeout = 1000;
-        servers_configs = mock_2_server_configs();
-        return true;
-    }
-    else {
-        /// Olga updateeeed =0
-        Config config;
-
-        ws_jtoc_setup(config, "conf/default_config.json");
-        std::cout << config.threads_number << std::endl;
-        std::cout << config.max_sockets_number << std::endl;
-        std::cout << config.timeout << std::endl;
-        LOG_INFO("name: ", config.servers_configs[0].name);
-        std::cout << config.servers_configs[0].port << std::endl;
-        LOG_INFO("root_path: ", config.servers_configs[0].root_path);
-        std::cout << config.servers_configs[0].cgi_directory_paths[0] << std::endl;
-        std::cout << config.servers_configs[0].cgi_directory_paths[1] << std::endl;
-        std::cout << config.servers_configs[0].max_connection_number<< std::endl;
-        std::cout << config.servers_configs[1].name << std::endl;
-        std::cout << config.servers_configs[1].port << std::endl;
-        std::cout << config.servers_configs[1].root_path << std::endl;
-        std::cout << config.servers_configs[1].cgi_directory_paths[0] << std::endl;
-        std::cout << config.servers_configs[1].cgi_directory_paths[1] << std::endl;
-        std::cout << config.servers_configs[1].max_connection_number<< std::endl;
-    }
-    return false;
+    return(FUNCTION_SUCCESS);
 }
+
 
 ServerConfig::ServerConfig(int port, const std::string& name, const std::string& root_path,
                            const std::unordered_set<std::string>& cgi_file_extensions,
