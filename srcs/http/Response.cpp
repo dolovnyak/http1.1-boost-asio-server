@@ -7,7 +7,7 @@ Response Response::MakeErrorResponse(Http::Code error, const std::string& error_
                                      SharedPtr<ServerConfig> server_config) {
     std::string body = GetHttpErrorPageByCode(error);
     std::vector<Http::Header> headers;
-    headers.push_back(Http::Header("Content-Type", "text/html"));
+    headers.push_back(Http::Header("Content-Type", "text/html, charset=utf-8"));
     headers.push_back(Http::Header("Content-Length", std::to_string(body.size())));
     headers.push_back(Http::Header("Server", server_config->name));
     headers.push_back(Http::Header("Date", GetCurrentDateTimeString()));
@@ -17,7 +17,7 @@ Response Response::MakeErrorResponse(Http::Code error, const std::string& error_
 
 Response Response::MakeOkResponse(const std::string& body, SharedPtr<ServerConfig> server_config, bool keep_alive) {
     std::vector<Http::Header> headers;
-    headers.push_back(Http::Header("Content-Type", "text/html"));
+    headers.push_back(Http::Header("Content-Type", "text/html, charset=utf-8"));
     headers.push_back(Http::Header("Content-Length", std::to_string(body.size())));
     headers.push_back(Http::Header("Server", server_config->name));
     headers.push_back(Http::Header("Date", GetCurrentDateTimeString()));

@@ -340,11 +340,6 @@ void Request::ProcessFilePath() {
 
     if (server_config->cgi_file_extensions.find(target.extension) !=
         server_config->cgi_file_extensions.end()) {
-
-        if (target.full_path == target.directory_path) { /// there is no default cgi file
-            throw NotFound("File not found", server_config);
-        }
-
         is_cgi = true;
     }
     else {
@@ -392,7 +387,6 @@ void Request::ProcessHostHeader() {
     if (!IsIpv4(host) && !IsRegName(host)) {
         throw BadRequest("Host header incorrect", server_config);
     }
-
 }
 
 void Request::ProcessConnectionHeader() {
@@ -444,6 +438,30 @@ void Request::ProcessKeepAliveHeader() {
     }
 }
 
+void Request::ProcessAcceptHeader() {
+    /// Not using by server, may be used by cgi.
+}
+
+void Request::ProcessAcceptEncodingHeader() {
+    /// Not using by server, may be used by cgi.
+}
+
+void Request::ProcessContentTypeHeader() {
+    /// Not using by server, may be used by cgi. By default response return "Content-Type: text/html"
+}
+
+void Request::ProcessContentLengthHeader() {
+    /// No need to process, because content length is already parsed
+}
+
+void Request::ProcessCookiesHeader() {
+    /// TODO cookies
+}
+
+void Request::ProcessAuthorizationHeader() {
+    /// TODO authorization
+}
+
 void Request::ProcessMethod() {
     method = Http::GetMethod(raw_method);
     switch (method) {
@@ -485,9 +503,14 @@ void Request::Process() {
     /// never change order of these methods
     ProcessHttpVersion();
     ProcessFilePath();
+    ProcessContentTypeHeader();
+    ProcessContentLengthHeader();
     ProcessHostHeader();
     ProcessConnectionHeader();
     ProcessKeepAliveHeader();
+    ProcessAcceptHeader();
+    ProcessAcceptEncodingHeader();
+    ProcessCookiesHeader();
     ProcessMethod();
 }
 
