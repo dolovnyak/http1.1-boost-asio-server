@@ -3,7 +3,6 @@
   "SessionKillerDelay_s": 2,
   "CoreTimeout_s": 1,
   "ReadBufferSize": 1024,
-
   "ServerInstances": [
     {
       "Port": 80,

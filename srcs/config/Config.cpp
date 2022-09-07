@@ -3,27 +3,17 @@
 bool Config::Load(const char* path) {
     /// TODO delete
     if (std::string(path) == "1") {
-        read_buffer_size = 1024;
+        threads_number = 8;
         max_sockets_number = 256;
+        timeout = 1000;
         servers_configs = mock_1_server_config();
-        sessions_killer_delay_s = 2;
-        core_timeout_ms = 1000;
-
-        if (sessions_killer_delay_s * 1000 < core_timeout_ms) {
-            throw std::runtime_error("core_timeout should be <= sessions_killer_delay");
-        }
         return true;
     }
     else if (std::string(path) == "2") {
-        read_buffer_size = 1024;
-        max_sockets_number = 512;
+        threads_number = 8;
+        max_sockets_number = 128;
+        timeout = 1000;
         servers_configs = mock_2_server_configs();
-        sessions_killer_delay_s = 2;
-        core_timeout_ms = 1000;
-
-        if (sessions_killer_delay_s * 1000 < core_timeout_ms) {
-            throw std::runtime_error("core_timeout should be <= sessions_killer_delay");
-        }
         return true;
         str.push_back(jtoc_get_string(tmp));
         tmp = tmp->right;
@@ -31,6 +21,31 @@ bool Config::Load(const char* path) {
     return(FUNCTION_SUCCESS);
 }
 
+    else {
+        /// Olga updateeeed =0
+        Config config;
+
+        if(ws_jtoc_setup(config, "conf/default_config.json") == FUNCTION_SUCCESS) { // change 2 arg to path
+            LOG_INFO("threads_number: ", config.threads_number);
+            LOG_INFO("max sockets_number: ", config.max_sockets_number);
+            LOG_INFO("timeout: ", config.timeout);
+            LOG_INFO("servers_configs_0 name: ", config.servers_configs[0].name);
+            LOG_INFO("servers_configs_0 port: ", config.servers_configs[0].port);
+            LOG_INFO("servers_configs_0 root_path: ", config.servers_configs[0].root_path);
+            LOG_INFO("servers_configs_0 cgi_directory_paths_0: ", config.servers_configs[0].cgi_directory_paths[0]);
+            LOG_INFO("servers_configs_0 cgi_directory_paths_1: ", config.servers_configs[0].cgi_directory_paths[1]);
+            LOG_INFO("servers_configs_0 cgi_directory_paths_2: ", config.servers_configs[0].cgi_directory_paths[2]);
+            LOG_INFO("servers_configs_0 max_connection_number: ", config.servers_configs[0].max_connection_number);
+            LOG_INFO("servers_configs_1 name: ", config.servers_configs[1].name);
+            LOG_INFO("servers_configs_1 port: ", config.servers_configs[1].port);
+            LOG_INFO("servers_configs_1 root_path: ", config.servers_configs[1].root_path);
+            LOG_INFO("servers_configs_1 cgi_directory_paths_0: ", config.servers_configs[1].cgi_directory_paths[0]);
+            LOG_INFO("servers_configs_1 cgi_directory_paths_1: ", config.servers_configs[1].cgi_directory_paths[1]);
+            LOG_INFO("servers_configs_1 max_connection_number: ", config.servers_configs[1].max_connection_number);
+        }  
+    }
+    return false;
+}
 
 ServerConfig::ServerConfig(int port, const std::string& name, const std::string& root_path,
                            const std::unordered_set<std::string>& cgi_file_extensions,
