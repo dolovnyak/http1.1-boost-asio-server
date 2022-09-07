@@ -1,35 +1,5 @@
 #include "Config.h"
 
-#include <utility>
-
-namespace {
-/// TODO delete when parse will finish
-    std::vector<SharedPtr<ServerConfig> > mock_1_server_config() {
-        std::vector<SharedPtr<ServerConfig> > configs;
-
-        ServerConfig config(2222, "Kabun", "examples/aaaa/", std::unordered_set<std::string>(), "index.html", 10, 300, 10);
-        configs.push_back(MakeShared(config));
-        return configs;
-    }
-
-/// TODO delete
-    std::vector<SharedPtr<ServerConfig> > mock_2_server_configs() {
-        std::vector<SharedPtr<ServerConfig> > configs;
-
-        ServerConfig config1(1337, "HelloWorld", "/Users/sbecker/Desktop/projects/webserver-42/", std::unordered_set<std::string>(), "index.html", 60, 300, 20);
-        configs.push_back(MakeShared(config1));
-
-        std::unordered_set<std::string> cgi_extensions;
-        cgi_extensions.insert(".py");
-        cgi_extensions.insert(".php");
-        ServerConfig config2(1488, "CgiChecker", "examples/cgi_checker/", cgi_extensions, "index.html", 60, 300, 20);
-
-        configs.push_back(MakeShared(config2));
-        return configs;
-    }
-}
-
-
 bool Config::Load(const char* path) {
     /// TODO delete
     if (std::string(path) == "1") {
@@ -59,7 +29,40 @@ bool Config::Load(const char* path) {
     else {
         /// TODO(Jeka) fill servers_configs from json
     }
+        threads_number = 8;
+        max_sockets_number = 256;
+        timeout = 1000;
+        servers_configs = mock_1_server_config();
+        return true;
+    }
+    else if (std::string(path) == "2") {
+        threads_number = 8;
+        max_sockets_number = 128;
+        timeout = 1000;
+        servers_configs = mock_2_server_configs();
+        return true;
+    }
+    else {
+        /// Olga updateeeed =0
+        Config config;
 
+        ws_jtoc_setup(config, "conf/default_config.json");
+        std::cout << config.threads_number << std::endl;
+        std::cout << config.max_sockets_number << std::endl;
+        std::cout << config.timeout << std::endl;
+        LOG_INFO("name: ", config.servers_configs[0].name);
+        std::cout << config.servers_configs[0].port << std::endl;
+        LOG_INFO("root_path: ", config.servers_configs[0].root_path);
+        std::cout << config.servers_configs[0].cgi_directory_paths[0] << std::endl;
+        std::cout << config.servers_configs[0].cgi_directory_paths[1] << std::endl;
+        std::cout << config.servers_configs[0].max_connection_number<< std::endl;
+        std::cout << config.servers_configs[1].name << std::endl;
+        std::cout << config.servers_configs[1].port << std::endl;
+        std::cout << config.servers_configs[1].root_path << std::endl;
+        std::cout << config.servers_configs[1].cgi_directory_paths[0] << std::endl;
+        std::cout << config.servers_configs[1].cgi_directory_paths[1] << std::endl;
+        std::cout << config.servers_configs[1].max_connection_number<< std::endl;
+    }
     return false;
 }
 

@@ -35,7 +35,6 @@ void PollModule::ProcessEvents(int timeout) {
 
     int current_size = _poll_index;
     for (int index = 0; index < current_size; ++index) {
-
         struct pollfd& poll_fd = _poll_fds[index];
 
         LOG_DEBUG("PollModule fd: ", poll_fd.fd, "; ",
