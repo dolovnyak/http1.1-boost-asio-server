@@ -70,31 +70,20 @@ public:
 
     RequestHandleStatus::Status Handle(SharedPtr<std::string> raw_request_part);
 
+    void Process();
+
     void AddHeader(const std::string& key, const std::string& value);
 
     void Clear();
-
-private:
-    RequestHandleState::State ParseFirstLineHandler();
-
-    RequestHandleState::State ParseHeaderHandler();
-
-    RequestHandleState::State ParseChunkSizeHandler();
-
-    RequestHandleState::State ParseChunkBodyHandler();
-
-    RequestHandleState::State ParseChunkTrailerPartHandler();
-
-    RequestHandleState::State ParseBodyByContentLengthHandler();
-
-    RequestHandleState::State AnalyzeHeadersBeforeParseBodyHandler();
 
 public:
     std::string raw_method;
 
     Http::Method method;
 
-    HttpVersion http_version;
+    HttpVersion raw_http_version;
+
+    Http::Version http_version;
 
     std::string body;
 
@@ -109,10 +98,46 @@ public:
 
     Optional<size_t> content_length;
 
+    bool is_cgi;
+
+    bool keep_alive;
+
+    int keep_alive_timeout;
+
+
 private: /// handle helpers
+    RequestHandleState::State ParseFirstLineHandler();
+
+    RequestHandleState::State ParseHeaderHandler();
+
+    RequestHandleState::State ParseChunkSizeHandler();
+
+    RequestHandleState::State ParseChunkBodyHandler();
+
+    RequestHandleState::State ParseChunkTrailerPartHandler();
+
+    RequestHandleState::State ParseBodyByContentLengthHandler();
+
+    RequestHandleState::State AnalyzeHeadersBeforeParseBodyHandler();
+
+
     RequestHandleState::State _handle_state;
 
     size_t _handled_size;
 
     size_t _chunk_body_size;
+
+
+private: /// process helpers
+    void ProcessHttpVersion();
+
+    void ProcessHostHeader();
+
+    void ProcessConnectionHeader();
+
+    void ProcessKeepAliveHeader();
+
+    void ProcessFilePath();
+
+    void ProcessMethod();
 };

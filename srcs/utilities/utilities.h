@@ -35,6 +35,8 @@ bool IsSubDelimiter(char c);
 
 bool IsHexDigit(char c);
 
+bool IsHexDigitString(const std::string& str);
+
 bool IsPcharString(const std::string& str);
 
 bool IsAbsolutePath(const std::string& str);
@@ -44,5 +46,9 @@ bool IsQueryString(const std::string& str);
 bool IsFieldContent(const std::string& str);
 
 bool IsPositiveNumberString(const std::string& str);
+
+bool IsRegName(const std::string& str);
+
+bool IsIpv4(const std::string& str);
 
 bool SetSocketNonBlocking(int socket);

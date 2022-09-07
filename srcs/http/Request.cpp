@@ -26,14 +26,17 @@ namespace {
         }
         else {
             request_target.full_path = raw_request_target.substr(0, path_end);
-            request_target.directory_path = request_target.full_path.substr(0, request_target.full_path.find_last_of('/') + 1);
+            request_target.directory_path = request_target.full_path.substr(0,
+                                                                            request_target.full_path.find_last_of('/') +
+                                                                            1);
             request_target.query_string = raw_request_target.substr(path_end + 1);
         }
 
         if (request_target.full_path != request_target.directory_path) {
             request_target.file_name = request_target.full_path.substr(request_target.full_path.find_last_of('/') + 1);
             if (request_target.file_name.find('.') != std::string::npos) {
-                request_target.extension = request_target.file_name.substr(request_target.file_name.find_last_of('.') + 1);
+                request_target.extension = request_target.file_name.substr(
+                        request_target.file_name.find_last_of('.') + 1);
             }
         }
         else {
@@ -79,7 +82,8 @@ namespace {
 
 Request::Request(const SharedPtr<ServerConfig>& server_config)
         : server_config(server_config),
-          content_length(),
+          content_length(), /// it should be empty cause it's optional
+          is_cgi(false),
           _handle_state(RequestHandleState::HandleFirstLine),
           _handled_size(0),
           _chunk_body_size(0) {}
@@ -105,7 +109,7 @@ RequestHandleState::State Request::ParseFirstLineHandler() {
 
     target = ParseRequestTarget(tokens[1], server_config);
 
-    http_version = ParseHttpVersion(tokens[2], server_config);
+    raw_http_version = ParseHttpVersion(tokens[2], server_config);
 
     _handled_size = first_line_end + CRLF_LEN;
 
@@ -318,6 +322,175 @@ RequestHandleStatus::Status Request::Handle(SharedPtr<std::string> raw_request_p
     }
 }
 
+void Request::ProcessHttpVersion() {
+    if (raw_http_version.major == 1 && raw_http_version.minor == 0) {
+        http_version = Http::Http1_0;
+    }
+    else if (raw_http_version.major == 1 && raw_http_version.minor == 1) {
+        http_version = Http::Http1_1;
+    }
+    else {
+        throw HttpVersionNotSupported("HTTP version not supported", server_config);
+    }
+}
+
+void Request::ProcessFilePath() {
+    target.full_path = server_config->root_path + target.full_path;
+    target.directory_path = server_config->root_path + target.directory_path;
+
+    if (server_config->cgi_file_extensions.find(target.extension) !=
+        server_config->cgi_file_extensions.end()) {
+
+        if (target.full_path == target.directory_path) { /// there is no default cgi file
+            throw NotFound("File not found", server_config);
+        }
+
+        is_cgi = true;
+    }
+    else {
+        if (target.full_path == target.directory_path) {
+            target.full_path += server_config->default_file_name;
+        }
+        is_cgi = false;
+    }
+}
+
+
+void Request::ProcessHostHeader() {
+    HeaderIterator it = headers.find(HOST);
+
+    if (it == headers.end()) {
+        switch (http_version) {
+            case Http::Http1_0:
+                break;
+            case Http::Http1_1:
+                throw BadRequest("Host header is required", server_config);
+        }
+    }
+
+    const std::string& host_port = it->second.back();
+    if (host_port.empty()) {
+        throw BadRequest("Host header incorrect", server_config);
+    }
+
+    /// Only ipv4 supported
+
+    size_t port_delimiter_pos = host_port.find(':');
+
+    if (port_delimiter_pos != std::string::npos) {
+        std::string port = host_port.substr(host_port.find(':') + 1);
+        if (!IsPositiveNumberString(port)) {
+            throw BadRequest("Host header incorrect", server_config);
+        }
+    }
+    else {
+        port_delimiter_pos = host_port.size();
+    }
+
+    std::string host = host_port.substr(0, port_delimiter_pos);
+
+    if (!IsIpv4(host) && !IsRegName(host)) {
+        throw BadRequest("Host header incorrect", server_config);
+    }
+
+}
+
+void Request::ProcessConnectionHeader() {
+    HeaderIterator it = headers.find(CONNECTION);
+
+    if (it != headers.end()) {
+        if (ToLower(it->second.back()) == KEEP_ALIVE) {
+            keep_alive = true;
+        }
+        else if (ToLower(it->second.back()) == CLOSE) {
+            keep_alive = false;
+        }
+        return;
+    }
+
+    switch (http_version) {
+        case Http::Http1_0:
+            keep_alive = false;
+            break;
+        case Http::Http1_1:
+            keep_alive = true;
+            break;
+    }
+}
+
+void Request::ProcessKeepAliveHeader() {
+    keep_alive_timeout = server_config->default_keep_alive_timeout_s;  /// default value
+
+    HeaderIterator it = headers.find(KEEP_ALIVE);
+    if (it == headers.end()) {
+        return;
+    }
+
+    const std::string& value = it->second.back();
+
+    std::vector<std::string> tokens = SplitString(value, ",");
+
+    for (size_t i = 0; i < tokens.size(); ++i) {
+        std::string parameter = StripString(tokens[i]);
+        std::vector<std::string> parameter_tokens = SplitString(parameter, "=");
+
+        if (parameter_tokens.size() == 2) {
+            if (ToLower(parameter_tokens[0]) == TIMEOUT && IsPositiveNumberString(parameter_tokens[1])) {
+                keep_alive_timeout = std::min(server_config->max_keep_alive_timeout_s,
+                                              ParsePositiveInt(parameter_tokens[1]));
+            }
+        }
+        /// MAX parameter is outdated and not supported
+    }
+}
+
+void Request::ProcessMethod() {
+    method = Http::GetMethod(raw_method);
+    switch (method) {
+        case Http::Method::GET:
+        case Http::Method::HEAD:
+            break;
+
+
+        case Http::Method::POST: {
+            if (!content_length.HasValue()) {
+                throw LengthRequired("Length required", server_config);
+            }
+            if (!is_cgi) {
+                throw MethodNotAllowed("Method not allowed", server_config);
+            }
+            break;
+        }
+
+        case Http::Method::DELETE: {
+            if (!is_cgi) {
+                throw MethodNotAllowed("Method not allowed", server_config);
+            }
+        }
+
+        case Http::Method::PUT:
+        case Http::Method::OPTIONS:
+        case Http::Method::CONNECT:
+        case Http::Method::TRACE:
+        case Http::Method::PATCH:
+            throw NotImplemented("Method " + raw_method + " is not implemented", server_config);
+
+        case Http::Method::UNKNOWN:
+            throw MethodNotAllowed("Method not allowed", server_config);
+    }
+}
+
+
+void Request::Process() {
+    /// never change order of these methods
+    ProcessHttpVersion();
+    ProcessFilePath();
+    ProcessHostHeader();
+    ProcessConnectionHeader();
+    ProcessKeepAliveHeader();
+    ProcessMethod();
+}
+
 void Request::AddHeader(const std::string& key, const std::string& value) {
     std::string lower_key = ToLower(key);
     HeaderIterator it = headers.find(lower_key);
@@ -330,7 +503,7 @@ void Request::AddHeader(const std::string& key, const std::string& value) {
 void Request::Clear() {
     raw_method.clear();
     method = Http::Method::UNKNOWN;
-    http_version = HttpVersion();
+    raw_http_version = HttpVersion();
     body.clear();
     raw.clear();
     headers.clear();

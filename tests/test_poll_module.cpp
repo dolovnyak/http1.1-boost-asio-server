@@ -87,7 +87,7 @@ TEST(Poll_Module, Process_Compress_Correct_Update_Sessions) {
     ASSERT_EQ(poll_module._poll_index, 21);
 
     for (int i = 0; i < 5; ++i) {
-        SessionIterator session_it = sessions.find(SocketFd(i + 30));
+        Session<PollModule>::It session_it = sessions.find(SocketFd(i + 30));
 
         session_it->second->available = false;
         sessions.erase(session_it);

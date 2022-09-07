@@ -37,7 +37,7 @@ WebServer<CoreModule>::WebServer(const SharedPtr<Config>& config)
                   SessionsKillerEvent<CoreModule>(&_sessions, &_event_queue, _config->sessions_killer_delay_s)) {
 
     for (size_t i = 0; i < _config->servers_configs.size(); ++i) {
-        int socket = Http::SetupSocket(_config->servers_configs[i], _config);
+        int socket = SetupServerSocket(_config->servers_configs[i], _config);
 
         SharedPtr<Session<CoreModule> > server_session = MakeShared<Session<CoreModule> >(new ServerSession<CoreModule>(
                 _core_module.GetNextSessionIndex(), &_core_module, SocketFd(socket), _config->servers_configs[i]));
