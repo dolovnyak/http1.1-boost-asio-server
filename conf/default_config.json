@@ -3,6 +3,7 @@
   "SessionKillerDelay_s": 2,
   "CoreTimeout_s": 1,
   "ReadBufferSize": 1024,
+
   "ServerInstances": [
     {
       "Port": 80,
@@ -21,28 +22,21 @@
           ]
         },
         {
-            "Path": "/",
-            "Methods": [
-                "GET",
-                "POST"
-            ]
+          "Path": "/",
+          "Methods": [
+            "GET",
+            "POST"
+          ]
         },
         {
           "Path": "/cgi-bin/",
-            "Methods": [
-                "GET",
-                "POST",
-                "DELETE"
-            ]
+          "Methods": [
+            "GET",
+            "POST",
+            "DELETE"
+          ]
         }
-      ],
-      "DefaultFileName": "index.html",
-      "DefaultKeepAliveTimeout_s": 60,
-      "MaxKeepAliveTimeout_s": 1800,
-      "HangSessionTimeout_s": 10,
-      "MaxBodySize": 2048,
-      "MaxHeaderSize": 512,
-      "MaxRawRequestSize": 8096
+      ]
     }
   ]
 }
