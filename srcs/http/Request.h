@@ -133,11 +133,23 @@ private: /// process helpers
 
     void ProcessHostHeader();
 
+    void ProcessContentTypeHeader();
+
+    void ProcessContentLengthHeader();
+
     void ProcessConnectionHeader();
 
     void ProcessKeepAliveHeader();
 
+    void ProcessAcceptHeader();
+
+    void ProcessAcceptEncodingHeader();
+
+    void ProcessCookiesHeader();
+
     void ProcessFilePath();
+
+    void ProcessAuthorizationHeader();
 
     void ProcessMethod();
 };

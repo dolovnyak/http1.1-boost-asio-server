@@ -14,11 +14,16 @@
 
 #define TRANSFER_ENCODING "transfer-encoding"
 #define CHUNKED "chunked"
+
 #define HOST "host"
+
 #define CONNECTION "connection"
 #define KEEP_ALIVE "keep-alive"
+
 #define CLOSE "close"
 #define TIMEOUT "timeout"
+
+#define COOKIE "cookie"
 
 namespace Http {
 
