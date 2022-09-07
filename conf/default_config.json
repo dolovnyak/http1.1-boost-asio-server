@@ -1,25 +1,48 @@
 {
-  "ThreadsNumber": 1,
   "MaxSocketsNumber": 1024,
-  "Timeout": 1000,
+  "SessionKillerDelay_s": 2,
+  "CoreTimeout_s": 1,
+  "ReadBufferSize": 1024,
   "ServerInstances": [
     {
-      "Name": "kabun",
       "Port": 80,
-      "Root": "./",
-      "CgiDirectories": [
-        "./cgi-bin",
-        "./cgi-bin2/"
-      ]
-    },
-    {
-      "Name": "kabun2",
-      "Port": 1337,
-      "Root": "./",
-      "CgiDirectories": [
-        "./cgi-bin",
-        "./cgi-bin2/"
-      ]
+      "Name": "kabun",
+      "Root": "/Users/sbecker/Desktop/projects/webserver-42/examples/cgi_checker",
+      "CgiExtensions": [
+        ".py",
+        ".php"
+      ],
+      "Locations": [
+        {
+          "Location": "/index.html",
+          "Methods": [
+            "GET",
+            "POST"
+          ]
+        },
+        {
+            "Path": "/",
+            "Methods": [
+                "GET",
+                "POST"
+            ]
+        },
+        {
+          "Path": "/cgi-bin/",
+            "Methods": [
+                "GET",
+                "POST",
+                "DELETE"
+            ]
+        }
+      ],
+      "DefaultFileName": "index.html",
+      "DefaultKeepAliveTimeout_s": 60,
+      "MaxKeepAliveTimeout_s": 1800,
+      "HangSessionTimeout_s": 10,
+      "MaxBodySize": 2048,
+      "MaxHeaderSize": 512,
+      "MaxRawRequestSize": 8096
     }
   ]
 }

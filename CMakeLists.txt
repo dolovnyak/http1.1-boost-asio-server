@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 project(web-server)
 
-#set(STANDARD98 1)
-
 if (STANDARD98)
     set(CMAKE_CXX_STANDARD 98)
 else ()
@@ -33,6 +31,8 @@ add_library(${WS_LIB}
         srcs/utilities/Logging.cpp
         )
 
+add_subdirectory(libjtoc)
+
 target_include_directories(${WS_LIB} PUBLIC
         srcs
         srcs/config
@@ -46,7 +46,10 @@ target_include_directories(${WS_LIB} PUBLIC
         srcs/http
         srcs/http/errors
         srcs/http/resource_handlers
+        libjtoc/include
         )
+
+target_link_libraries(${WS_LIB} PUBLIC jtoc)
 
 if (STANDARD98)
     target_compile_definitions(${WS_LIB} PUBLIC -D_STANDARD98)
@@ -59,7 +62,7 @@ endif ()
 ################################################################################
 add_executable(${PROJECT_NAME}
         srcs/main.cpp
-        )
+        srcs/config/parse_config.cpp srcs/config/parse_config.h)
 target_link_libraries(${PROJECT_NAME} PUBLIC ${WS_LIB})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
