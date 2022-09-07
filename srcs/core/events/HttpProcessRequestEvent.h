@@ -24,21 +24,9 @@ public:
 
 
 private:
-    void ProcessHttpVersion();
+    void RunCgiPipeline();
 
-    void ProcessHostHeader();
-
-    void ProcessConnectionHeader();
-
-    void ProcessKeepAliveHeader();
-
-    void ProcessFilePath(std::string& file, bool& cgi);
-
-    void ProcessMethod();
-
-    void RunCgiPipeline(const std::string& file);
-
-    void RunFilePipeline(const std::string& file);
+    void RunFilePipeline();
 
     SharedPtr<Session<CoreModule> > _packaged_http_session;
 
@@ -55,118 +43,65 @@ const std::string& HttpProcessRequestEvent<CoreModule>::GetName() const {
 }
 
 template<class CoreModule>
-void HttpProcessRequestEvent<CoreModule>::ProcessHttpVersion() {
-    if (_http_session->request->http_version != HttpVersion(1, 1)) {
-        throw HttpVersionNotSupported("HTTP version not supported", _http_session->server_config);
+void HttpProcessRequestEvent<CoreModule>::RunCgiPipeline() {
+    int fds[2];
+    int err = pipe(fds);
+
+    if (err == - 1) {
+        throw InternalServerError("Pipe error", _http_session->server_config);
     }
-}
 
-template<class CoreModule>
-void HttpProcessRequestEvent<CoreModule>::ProcessHostHeader() {
-    HeaderIterator it = _http_session->request->headers.find(HOST);
-    if (it == _http_session->request->headers.end() || it->second.size() != 1) {
-        throw BadRequest("Host header incorrect", _http_session->server_config);
+    ssize_t write_res = write(fds[1], _http_session->request->body.c_str(), _http_session->request->body.size());
+    if (write_res == - 1) {
+        throw InternalServerError("Error write to pipe", _http_session->server_config);
     }
-}
 
-template<class CoreModule>
-void HttpProcessRequestEvent<CoreModule>::ProcessConnectionHeader() {
-    HeaderIterator it = _http_session->request->headers.find(CONNECTION);
+    int fork_id = fork();
 
-    if (it != _http_session->request->headers.end()) {
-        if (ToLower(it->second.back()) == KEEP_ALIVE) {
-            _http_session->keep_alive = true;
+    if (fork_id == - 1) {
+        throw InternalServerError("Fork error", _http_session->server_config);
+    }
+    else if (fork_id == 0) {
+        char** env = new char*[_http_session->request->headers.size() + 1];
+
+        err = dup2(fds[0], 0);
+        if (err == - 1) {
+            std::cout << "dup2 read error" << std::endl;
         }
-        else if (ToLower(it->second.back()) == CLOSE) {
-            _http_session->keep_alive = false;
+        err = dup2(fds[1], 1);
+        if (err == - 1) {
+            std::cout << "dup2 write error" << std::endl;
         }
+
+        env[0] = strdup("AUTH_TYPE=kabun");
+        env[1] = NULL;
+
+        char * const * nll = NULL;
+        err = execve("/Users/sbecker/Desktop/projects/webserver-42/examples/cgi_checker/simple_cgi.py", nll, env);
+        std::cout << "error: " << err << std::endl;
     }
     else {
-        _http_session->keep_alive = true; /// default http behavior
+        // parent process
+        int status;
+        waitpid(fork_id, &status, 0);
+        std::cout << "status: " << status << std::endl;
+        char buf[1024];
+        ssize_t read_res = read(fds[0], buf, 1024);
+        std::cout << "read_res: " << read_res << std::endl;
+        std::cout << "buf: " << buf << std::endl;
     }
-}
+    /// нужно создать пайп. я получу дескриптор для записи и для чтения
+    /// в дескриптор для записи нужно записать тело. и в мейн процессе забыть про него
+    /// дескриптор для чтения нужно кинуть в пол и ждать из него ивенты на чтение
 
-template<class CoreModule>
-void HttpProcessRequestEvent<CoreModule>::ProcessKeepAliveHeader() {
-    HeaderIterator it = _http_session->request->headers.find(KEEP_ALIVE);
-    if (it == _http_session->request->headers.end()) {
-        return;
-    }
-
-    const std::string& value = it->second.back();
-
-    std::vector<std::string> tokens = SplitString(value, ",");
-    for (size_t i = 0; i < tokens.size(); ++i) {
-        std::string parameter = StripString(tokens[i]);
-        std::vector<std::string> parameter_tokens = SplitString(parameter, "=");
-
-        if (parameter_tokens.size() == 2) {
-            if (ToLower(parameter_tokens[0]) == TIMEOUT && IsPositiveNumberString(parameter_tokens[1])) {
-                _http_session->keep_alive_timeout =
-                        std::min(_http_session->server_config->max_keep_alive_timeout_s,
-                                 std::max(ParsePositiveInt(parameter_tokens[1]),
-                                          _http_session->server_config->default_keep_alive_timeout_s));
-            }
-        }
-        /// MAX parameter is outdated and not supported
-    }
-}
-
-template<class CoreModule>
-void HttpProcessRequestEvent<CoreModule>::ProcessFilePath(std::string& file_path, bool& is_cgi) {
-    file_path = _http_session->server_config->root_path + _http_session->request->target.full_path;
-    std::string directory_path =
-            _http_session->server_config->root_path + _http_session->request->target.directory_path;
-
-    if (_http_session->server_config->cgi_file_extensions.find(_http_session->request->target.extension) !=
-        _http_session->server_config->cgi_file_extensions.end()) {
-        is_cgi = true;
-    }
-    else {
-        if (file_path == directory_path) {
-            file_path += _http_session->server_config->default_file_name;
-        }
-        is_cgi = false;
-    }
-}
-
-template<class CoreModule>
-void HttpProcessRequestEvent<CoreModule>::ProcessMethod() {
-    _http_session->request->method = Http::GetMethod(_http_session->request->raw_method);
-    switch (_http_session->request->method) {
-        case Http::Method::GET:
-        case Http::Method::DELETE:
-        case Http::Method::HEAD:
-            break;
-
-        case Http::Method::POST:
-            if (!_http_session->request->content_length.HasValue()) {
-                throw LengthRequired("Length required", _http_session->server_config);
-            }
-            break;
-
-        case Http::Method::PUT:
-        case Http::Method::OPTIONS:
-        case Http::Method::CONNECT:
-        case Http::Method::TRACE:
-        case Http::Method::PATCH:
-            throw NotImplemented("Method " + _http_session->request->raw_method + " is not implemented",
-                                 _http_session->server_config);
-
-        case Http::Method::UNKNOWN:
-            throw MethodNotAllowed("Method not allowed", _http_session->server_config);
-    }
-}
-
-template<class CoreModule>
-void HttpProcessRequestEvent<CoreModule>::RunCgiPipeline(const std::string& file_path) {
-
+    /// нужно форкнуться и подменить стандартные потоки на дескрипторы пайпа
+    /// нужно запустить cgi скрипт
     _http_session->state = HttpSessionState::ProcessResource;
 }
 
 template<class CoreModule>
-void HttpProcessRequestEvent<CoreModule>::RunFilePipeline(const std::string& file) {
-    int fd = open(file.c_str(), O_RDONLY);
+void HttpProcessRequestEvent<CoreModule>::RunFilePipeline() {
+    int fd = open(_http_session->request->target.full_path.c_str(), O_RDONLY);
     if (fd == -1) {
         throw NotFound("File not found or not available", _http_session->server_config);
     }
@@ -203,22 +138,16 @@ void HttpProcessRequestEvent<CoreModule>::Process() {
     }
 
     try {
-        ProcessHttpVersion();
+        _http_session->request->Process();
 
-        std::string file_path;
-        bool is_cgi = false;
-        ProcessFilePath(file_path, is_cgi);
+        _http_session->keep_alive = _http_session->request->keep_alive;
+        _http_session->keep_alive_timeout = _http_session->request->keep_alive_timeout;
 
-        ProcessHostHeader();
-        ProcessConnectionHeader();
-        ProcessKeepAliveHeader();
-        ProcessMethod();
-
-        if (is_cgi) {
-            RunCgiPipeline(file_path);
+        if (_http_session->request->is_cgi) {
+            RunCgiPipeline();
         }
         else {
-            RunFilePipeline(file_path);
+            RunFilePipeline();
         }
     }
     catch (const HttpException& e) {

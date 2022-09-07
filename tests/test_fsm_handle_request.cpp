@@ -6,7 +6,7 @@
 #include "SharedPtr.h"
 #include "Http.h"
 
-SharedPtr<ServerConfig> default_server_config = MakeShared(ServerConfig({8080, "kabun", "/", {}, "index.html", 0, 0}));
+SharedPtr<ServerConfig> default_server_config = MakeShared(ServerConfig({8080, "kabun", "/", {}, "index.html", 0, 0, 0}));
 
 TEST(Request, Check_Init) {
     Request request(default_server_config);
@@ -19,8 +19,8 @@ TEST(Request, Check_Init) {
     ASSERT_EQ(request.raw_method, "");
     ASSERT_EQ(request.target.full_path, "");
     ASSERT_EQ(request.target.query_string, "");
-    ASSERT_EQ(request.http_version.major, 0);
-    ASSERT_EQ(request.http_version.minor, 0);
+    ASSERT_EQ(request.raw_http_version.major, 0);
+    ASSERT_EQ(request.raw_http_version.minor, 0);
 }
 
 TEST(Request, Handle_FSM_First_Line) {
@@ -43,8 +43,8 @@ TEST(Request, Handle_FSM_First_Line) {
         ASSERT_EQ(request.target.file_name, "");
         ASSERT_EQ(request.target.extension, "");
         ASSERT_EQ(request.target.query_string, "");
-        ASSERT_EQ(request.http_version.major, 1);
-        ASSERT_EQ(request.http_version.minor, 1);
+        ASSERT_EQ(request.raw_http_version.major, 1);
+        ASSERT_EQ(request.raw_http_version.minor, 1);
         ASSERT_EQ(request.headers.size(), 0);
     }
 
@@ -60,8 +60,8 @@ TEST(Request, Handle_FSM_First_Line) {
     ASSERT_EQ(request.raw, full_raw_request);
     ASSERT_EQ(request.raw_method, "");
     ASSERT_EQ(request.target.full_path, "");
-    ASSERT_EQ(request.http_version.major, 0);
-    ASSERT_EQ(request.http_version.minor, 0);
+    ASSERT_EQ(request.raw_http_version.major, 0);
+    ASSERT_EQ(request.raw_http_version.minor, 0);
     ASSERT_EQ(request.headers.size(), 0);
 
 
@@ -80,8 +80,8 @@ TEST(Request, Handle_FSM_First_Line) {
     ASSERT_EQ(request.target.file_name, "a.lua"); /// TODO add test which will check dot behavior
     ASSERT_EQ(request.target.extension, "lua");
     ASSERT_EQ(request.target.query_string, "?\?\?////a=asd//\?\?/??");
-    ASSERT_EQ(request.http_version.major, 1);
-    ASSERT_EQ(request.http_version.minor, 1);
+    ASSERT_EQ(request.raw_http_version.major, 1);
+    ASSERT_EQ(request.raw_http_version.minor, 1);
     ASSERT_EQ(request.headers.size(), 0);
 }
 
@@ -298,7 +298,7 @@ TEST(Request, Request_Target_Parse) {
     ASSERT_EQ(request.raw_method, "GET");
     ASSERT_EQ(request.target.full_path, "/");
     ASSERT_EQ(request.target.query_string, "");
-    ASSERT_EQ(request.http_version.major, 1);
-    ASSERT_EQ(request.http_version.minor, 2);
+    ASSERT_EQ(request.raw_http_version.major, 1);
+    ASSERT_EQ(request.raw_http_version.minor, 2);
     ASSERT_EQ(request.headers.size(), 0);
 }

@@ -115,6 +115,16 @@ bool IsHexDigit(char c) {
     return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
 }
 
+bool IsHexDigitString(const std::string& str) {
+    for (size_t i = 0; i < str.size(); ++i) {
+        if (!IsHexDigit(str[i])) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 // unreserved / pct-encoded / sub-delims / ":" / "@"
 bool IsPcharString(const std::string& str) {
 
@@ -195,6 +205,57 @@ bool IsPositiveNumberString(const std::string& str) {
         if (!isdigit(str[i])) {
             return false;
         }
+    }
+    return true;
+}
+
+bool IsRegName(const std::string& str) {
+    for (size_t start = 0; start < str.size();) {
+
+        if (str.size() - start >= 3 && str[start] == '%' && IsHexDigit(str[start + 1]) && IsHexDigit(str[start + 2])) {
+            start += 3;
+            continue;
+        }
+
+        if (!IsUnreserved(str[start]) && !IsSubDelimiter(str[start])) {
+            return false;
+        }
+        ++start;
+    }
+    return true;
+}
+
+bool IsIpv4(const std::string& str) {
+    size_t prev_dot_pos = 0;
+    size_t i = str.find('.', 0);
+    for (size_t dots = 0; dots < 3; ++dots) {
+        if (i == std::string::npos) {
+            return false;
+        }
+        size_t distance = i - prev_dot_pos;
+        if (distance == 0 || distance > 3) {
+            return false;
+        }
+        if (!IsPositiveNumberString(str.substr(prev_dot_pos, distance))) {
+            return false;
+        }
+        int num = ParseInt(str.substr(prev_dot_pos, distance), 10);
+        if (num < 0 || num > 255) {
+            return false;
+        }
+        prev_dot_pos = i + 1;
+        i = str.find('.', prev_dot_pos);
+    }
+    size_t distance = str.size() - prev_dot_pos;
+    if (distance == 0 || distance > 3) {
+        return false;
+    }
+    if (!IsPositiveNumberString(str.substr(prev_dot_pos, distance))) {
+        return false;
+    }
+    int num = ParseInt(str.substr(prev_dot_pos, distance), 10);
+    if (num < 0 || num > 255) {
+        return false;
     }
     return true;
 }

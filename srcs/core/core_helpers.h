@@ -1,3 +1,5 @@
+#include "Config.h"
+
 #include <unordered_map>
 
 struct SocketFd {
@@ -17,3 +19,5 @@ struct std::hash<SocketFd> {
         return std::hash<int>()(socket);
     }
 };
+
+int SetupServerSocket(SharedPtr<ServerConfig> server_config, SharedPtr<Config> config);

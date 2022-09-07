@@ -44,6 +44,11 @@ namespace Http {
         PATCH
     };
 
+    enum Version {
+        Http1_0 = 0,
+        Http1_1,
+    };
+
     enum Code {
         OK = 200,
         BadRequest = 400,
@@ -57,6 +62,4 @@ namespace Http {
     };
 
     Method GetMethod(const std::string& method);
-
-    int SetupSocket(SharedPtr<ServerConfig> server_config, SharedPtr<Config> config);
 }

@@ -39,3 +39,5 @@ cmake-build-release-docker/
 web-server
 
 *.DS_Store
+
+build

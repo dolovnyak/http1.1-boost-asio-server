@@ -22,6 +22,8 @@ set(WS_LIB ${PROJECT_NAME}-lib)
 add_library(${WS_LIB}
         srcs/config/Config.cpp
         srcs/core/modules/PollModule.cpp
+        srcs/core/sessions/HttpSession.cpp
+        srcs/core/core_helpers.cpp
         srcs/http/Request.cpp
         srcs/http/Response.cpp
         srcs/http/errors/HttpErrorPages.cpp
@@ -29,7 +31,6 @@ add_library(${WS_LIB}
         srcs/http/Http.cpp
         srcs/utilities/utilities.cpp
         srcs/utilities/Logging.cpp
-        srcs/core/session/HttpSession.cpp
         )
 
 target_include_directories(${WS_LIB} PUBLIC
@@ -41,7 +42,7 @@ target_include_directories(${WS_LIB} PUBLIC
         srcs/core
         srcs/core/events
         srcs/core/modules
-        srcs/core/session
+        srcs/core/sessions
         srcs/http
         srcs/http/errors
         srcs/http/resource_handlers

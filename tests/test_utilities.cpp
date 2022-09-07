@@ -73,3 +73,26 @@ TEST(Utilities, To_Lower_Empty) {
     std::string str = ToLower("");
     ASSERT_EQ("", str);
 }
+
+TEST(Utilities, Is_Ip_V4_Address) {
+    std::string str = "1.2.3.4";
+    ASSERT_TRUE(IsIpv4(str));
+
+    str = "111.22.255.1";
+    ASSERT_TRUE(IsIpv4(str));
+
+    str = "111.256.1.2";
+    ASSERT_FALSE(IsIpv4(str));
+
+    str = "111.225.1.";
+    ASSERT_FALSE(IsIpv4(str));
+
+    str = ".111.225.1";
+    ASSERT_FALSE(IsIpv4(str));
+
+    str = "";
+    ASSERT_FALSE(IsIpv4(str));
+
+    str = "...";
+    ASSERT_FALSE(IsIpv4(str));
+}
