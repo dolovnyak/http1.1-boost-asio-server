@@ -49,3 +49,20 @@ Core inner after write event -> HttpAfterResponseEvent
 после cgi состояние сервера будет минимально рабочим
 поэтому после cgi убрать моки на парсер и подключить реальный парсер
 после заранить с школьными тестами и начать реализовывать нюансы с методами и хедерами
+
+Парсер:
+* autoindex по умолчанию выключен.
+* Если autoindex включен и задан index.html, то игнорируется autoindex и отдается index.html.
+* Для каждого сервера прописывается его рут директория в абсолютном пути.
+* Для каждого location прописывается его рут директория в относительном пути от рут дирректории сервера.
+* Для каждой default_error_page прописывается путь к файлу в относительном пути от рут дирректории сервера.
+* SessionsKillDelay должен быть больше или равен CoreTimeout. (так как в ином случае он будет вызываться по времени CoreTimeout, а не SessionsKillDelay)
+* AvailableMethods - если на задано, то ограничений нет.
+
+Есть locations:
+Может быть location /bin
+Может быть location /bin/upload
+Может быть location /bin/upload/statistics.py
+Среди всех этих locations должен быть подобран самый оптимальный.
+То есть для /bin/upload/statistics.py должен быть выбран location /bin/upload/statistics.py.
+а для /bin/upload/"что угодно кроме statistics.py" должен быть выбран location /bin/upload.

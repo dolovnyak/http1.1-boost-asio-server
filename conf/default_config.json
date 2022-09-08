@@ -1,6 +1,6 @@
 {
   "MaxSocketsNumber": 1024,
-  "SessionKillerDelay_s": 2,
+  "SessionsKillerDelay_s": 2,
   "CoreTimeout_s": 1,
   "ReadBufferSize": 1024,
   "ServerInstances": [
@@ -8,32 +8,44 @@
       "Port": 80,
       "Name": "kabun",
       "Root": "/Users/sbecker/Desktop/projects/webserver-42/examples/cgi_checker",
+      "MaxBodySize": 8096,
+      "MaxHeaderSize": 1024,
+      "MaxRawRequestSize": 16384,
+      "DefaultKeepAliveTimeout_s": 30,
+      "MaxKeepAliveTimeout_s": 1800,
+      "HangSessionTimeout_s": 10,
+      "DefaultErrorPages": {
+        "404": "/error_pages/404.html",
+        "405": "/error_pages/405.html",
+        "500": "/error_pages/500.html"
+      },
       "CgiExtensions": [
         ".py",
         ".php"
       ],
       "Locations": [
         {
-          "Location": "/index.html",
-          "Methods": [
+          "Location": "/",
+          "Root": "/",
+          "Autoindex": false,
+          "Index": "index.html",
+          "AvailableMethods": [
             "GET",
             "POST"
           ]
         },
         {
-          "Path": "/",
-          "Methods": [
-            "GET",
-            "POST"
-          ]
-        },
-        {
-          "Path": "/cgi-bin/",
-          "Methods": [
+          "Location": "/upload",
+          "Root": "/cgi-bin/upload.py",
+          "AvailableMethods": [
             "GET",
             "POST",
             "DELETE"
           ]
+        },
+        {
+          "Location": "/images/kitty.jpg",
+          "Redirect": "/images/kitty2.jpg"
         }
       ]
     }
