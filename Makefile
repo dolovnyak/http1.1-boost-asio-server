@@ -57,10 +57,10 @@ RM = /opt/homebrew/Cellar/cmake/3.24.0/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/olgaborisova/Desktop/git_webserv
+CMAKE_SOURCE_DIR = /Users/olgaborisova/Desktop/webserver-42
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/olgaborisova/Desktop/git_webserv
+CMAKE_BINARY_DIR = /Users/olgaborisova/Desktop/webserver-42
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,9 +87,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/olgaborisova/Desktop/git_webserv/CMakeFiles /Users/olgaborisova/Desktop/git_webserv//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/olgaborisova/Desktop/webserver-42/CMakeFiles /Users/olgaborisova/Desktop/webserver-42//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/olgaborisova/Desktop/git_webserv/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/olgaborisova/Desktop/webserver-42/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -117,6 +117,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named web-server-lib
+
+# Build rule for target.
+web-server-lib: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 web-server-lib
+.PHONY : web-server-lib
+
+# fast build rule for target.
+web-server-lib/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/build
+.PHONY : web-server-lib/fast
+
+#=============================================================================
 # Target rules for targets named web-server
 
 # Build rule for target.
@@ -129,36 +142,727 @@ web-server/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/build
 .PHONY : web-server/fast
 
-srcs/cgi/SingleCgiHandler.o: srcs/cgi/SingleCgiHandler.cpp.o
-.PHONY : srcs/cgi/SingleCgiHandler.o
+#=============================================================================
+# Target rules for targets named jtoc
+
+# Build rule for target.
+jtoc: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 jtoc
+.PHONY : jtoc
+
+# fast build rule for target.
+jtoc/fast:
+	$(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/build
+.PHONY : jtoc/fast
+
+libjtoc/src/ft_atoi.o: libjtoc/src/ft_atoi.cpp.o
+.PHONY : libjtoc/src/ft_atoi.o
 
 # target to build an object file
-srcs/cgi/SingleCgiHandler.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/cgi/SingleCgiHandler.cpp.o
-.PHONY : srcs/cgi/SingleCgiHandler.cpp.o
+libjtoc/src/ft_atoi.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_atoi.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_atoi.cpp.o
+.PHONY : libjtoc/src/ft_atoi.cpp.o
 
-srcs/cgi/SingleCgiHandler.i: srcs/cgi/SingleCgiHandler.cpp.i
-.PHONY : srcs/cgi/SingleCgiHandler.i
+libjtoc/src/ft_atoi.i: libjtoc/src/ft_atoi.cpp.i
+.PHONY : libjtoc/src/ft_atoi.i
 
 # target to preprocess a source file
-srcs/cgi/SingleCgiHandler.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/cgi/SingleCgiHandler.cpp.i
-.PHONY : srcs/cgi/SingleCgiHandler.cpp.i
+libjtoc/src/ft_atoi.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_atoi.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_atoi.cpp.i
+.PHONY : libjtoc/src/ft_atoi.cpp.i
 
-srcs/cgi/SingleCgiHandler.s: srcs/cgi/SingleCgiHandler.cpp.s
-.PHONY : srcs/cgi/SingleCgiHandler.s
+libjtoc/src/ft_atoi.s: libjtoc/src/ft_atoi.cpp.s
+.PHONY : libjtoc/src/ft_atoi.s
 
 # target to generate assembly for a file
-srcs/cgi/SingleCgiHandler.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/cgi/SingleCgiHandler.cpp.s
-.PHONY : srcs/cgi/SingleCgiHandler.cpp.s
+libjtoc/src/ft_atoi.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_atoi.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_atoi.cpp.s
+.PHONY : libjtoc/src/ft_atoi.cpp.s
+
+libjtoc/src/ft_bzero.o: libjtoc/src/ft_bzero.cpp.o
+.PHONY : libjtoc/src/ft_bzero.o
+
+# target to build an object file
+libjtoc/src/ft_bzero.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_bzero.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_bzero.cpp.o
+.PHONY : libjtoc/src/ft_bzero.cpp.o
+
+libjtoc/src/ft_bzero.i: libjtoc/src/ft_bzero.cpp.i
+.PHONY : libjtoc/src/ft_bzero.i
+
+# target to preprocess a source file
+libjtoc/src/ft_bzero.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_bzero.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_bzero.cpp.i
+.PHONY : libjtoc/src/ft_bzero.cpp.i
+
+libjtoc/src/ft_bzero.s: libjtoc/src/ft_bzero.cpp.s
+.PHONY : libjtoc/src/ft_bzero.s
+
+# target to generate assembly for a file
+libjtoc/src/ft_bzero.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_bzero.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_bzero.cpp.s
+.PHONY : libjtoc/src/ft_bzero.cpp.s
+
+libjtoc/src/ft_isdigit.o: libjtoc/src/ft_isdigit.cpp.o
+.PHONY : libjtoc/src/ft_isdigit.o
+
+# target to build an object file
+libjtoc/src/ft_isdigit.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_isdigit.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_isdigit.cpp.o
+.PHONY : libjtoc/src/ft_isdigit.cpp.o
+
+libjtoc/src/ft_isdigit.i: libjtoc/src/ft_isdigit.cpp.i
+.PHONY : libjtoc/src/ft_isdigit.i
+
+# target to preprocess a source file
+libjtoc/src/ft_isdigit.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_isdigit.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_isdigit.cpp.i
+.PHONY : libjtoc/src/ft_isdigit.cpp.i
+
+libjtoc/src/ft_isdigit.s: libjtoc/src/ft_isdigit.cpp.s
+.PHONY : libjtoc/src/ft_isdigit.s
+
+# target to generate assembly for a file
+libjtoc/src/ft_isdigit.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_isdigit.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_isdigit.cpp.s
+.PHONY : libjtoc/src/ft_isdigit.cpp.s
+
+libjtoc/src/ft_itoa.o: libjtoc/src/ft_itoa.cpp.o
+.PHONY : libjtoc/src/ft_itoa.o
+
+# target to build an object file
+libjtoc/src/ft_itoa.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_itoa.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_itoa.cpp.o
+.PHONY : libjtoc/src/ft_itoa.cpp.o
+
+libjtoc/src/ft_itoa.i: libjtoc/src/ft_itoa.cpp.i
+.PHONY : libjtoc/src/ft_itoa.i
+
+# target to preprocess a source file
+libjtoc/src/ft_itoa.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_itoa.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_itoa.cpp.i
+.PHONY : libjtoc/src/ft_itoa.cpp.i
+
+libjtoc/src/ft_itoa.s: libjtoc/src/ft_itoa.cpp.s
+.PHONY : libjtoc/src/ft_itoa.s
+
+# target to generate assembly for a file
+libjtoc/src/ft_itoa.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_itoa.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_itoa.cpp.s
+.PHONY : libjtoc/src/ft_itoa.cpp.s
+
+libjtoc/src/ft_memalloc.o: libjtoc/src/ft_memalloc.cpp.o
+.PHONY : libjtoc/src/ft_memalloc.o
+
+# target to build an object file
+libjtoc/src/ft_memalloc.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_memalloc.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_memalloc.cpp.o
+.PHONY : libjtoc/src/ft_memalloc.cpp.o
+
+libjtoc/src/ft_memalloc.i: libjtoc/src/ft_memalloc.cpp.i
+.PHONY : libjtoc/src/ft_memalloc.i
+
+# target to preprocess a source file
+libjtoc/src/ft_memalloc.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_memalloc.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_memalloc.cpp.i
+.PHONY : libjtoc/src/ft_memalloc.cpp.i
+
+libjtoc/src/ft_memalloc.s: libjtoc/src/ft_memalloc.cpp.s
+.PHONY : libjtoc/src/ft_memalloc.s
+
+# target to generate assembly for a file
+libjtoc/src/ft_memalloc.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_memalloc.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_memalloc.cpp.s
+.PHONY : libjtoc/src/ft_memalloc.cpp.s
+
+libjtoc/src/ft_memcpy.o: libjtoc/src/ft_memcpy.cpp.o
+.PHONY : libjtoc/src/ft_memcpy.o
+
+# target to build an object file
+libjtoc/src/ft_memcpy.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_memcpy.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_memcpy.cpp.o
+.PHONY : libjtoc/src/ft_memcpy.cpp.o
+
+libjtoc/src/ft_memcpy.i: libjtoc/src/ft_memcpy.cpp.i
+.PHONY : libjtoc/src/ft_memcpy.i
+
+# target to preprocess a source file
+libjtoc/src/ft_memcpy.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_memcpy.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_memcpy.cpp.i
+.PHONY : libjtoc/src/ft_memcpy.cpp.i
+
+libjtoc/src/ft_memcpy.s: libjtoc/src/ft_memcpy.cpp.s
+.PHONY : libjtoc/src/ft_memcpy.s
+
+# target to generate assembly for a file
+libjtoc/src/ft_memcpy.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_memcpy.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_memcpy.cpp.s
+.PHONY : libjtoc/src/ft_memcpy.cpp.s
+
+libjtoc/src/ft_strcpy.o: libjtoc/src/ft_strcpy.cpp.o
+.PHONY : libjtoc/src/ft_strcpy.o
+
+# target to build an object file
+libjtoc/src/ft_strcpy.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_strcpy.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_strcpy.cpp.o
+.PHONY : libjtoc/src/ft_strcpy.cpp.o
+
+libjtoc/src/ft_strcpy.i: libjtoc/src/ft_strcpy.cpp.i
+.PHONY : libjtoc/src/ft_strcpy.i
+
+# target to preprocess a source file
+libjtoc/src/ft_strcpy.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_strcpy.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_strcpy.cpp.i
+.PHONY : libjtoc/src/ft_strcpy.cpp.i
+
+libjtoc/src/ft_strcpy.s: libjtoc/src/ft_strcpy.cpp.s
+.PHONY : libjtoc/src/ft_strcpy.s
+
+# target to generate assembly for a file
+libjtoc/src/ft_strcpy.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_strcpy.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_strcpy.cpp.s
+.PHONY : libjtoc/src/ft_strcpy.cpp.s
+
+libjtoc/src/ft_strdup.o: libjtoc/src/ft_strdup.cpp.o
+.PHONY : libjtoc/src/ft_strdup.o
+
+# target to build an object file
+libjtoc/src/ft_strdup.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_strdup.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_strdup.cpp.o
+.PHONY : libjtoc/src/ft_strdup.cpp.o
+
+libjtoc/src/ft_strdup.i: libjtoc/src/ft_strdup.cpp.i
+.PHONY : libjtoc/src/ft_strdup.i
+
+# target to preprocess a source file
+libjtoc/src/ft_strdup.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_strdup.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_strdup.cpp.i
+.PHONY : libjtoc/src/ft_strdup.cpp.i
+
+libjtoc/src/ft_strdup.s: libjtoc/src/ft_strdup.cpp.s
+.PHONY : libjtoc/src/ft_strdup.s
+
+# target to generate assembly for a file
+libjtoc/src/ft_strdup.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_strdup.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_strdup.cpp.s
+.PHONY : libjtoc/src/ft_strdup.cpp.s
+
+libjtoc/src/ft_strhash.o: libjtoc/src/ft_strhash.cpp.o
+.PHONY : libjtoc/src/ft_strhash.o
+
+# target to build an object file
+libjtoc/src/ft_strhash.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_strhash.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_strhash.cpp.o
+.PHONY : libjtoc/src/ft_strhash.cpp.o
+
+libjtoc/src/ft_strhash.i: libjtoc/src/ft_strhash.cpp.i
+.PHONY : libjtoc/src/ft_strhash.i
+
+# target to preprocess a source file
+libjtoc/src/ft_strhash.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_strhash.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_strhash.cpp.i
+.PHONY : libjtoc/src/ft_strhash.cpp.i
+
+libjtoc/src/ft_strhash.s: libjtoc/src/ft_strhash.cpp.s
+.PHONY : libjtoc/src/ft_strhash.s
+
+# target to generate assembly for a file
+libjtoc/src/ft_strhash.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_strhash.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_strhash.cpp.s
+.PHONY : libjtoc/src/ft_strhash.cpp.s
+
+libjtoc/src/ft_strlen.o: libjtoc/src/ft_strlen.cpp.o
+.PHONY : libjtoc/src/ft_strlen.o
+
+# target to build an object file
+libjtoc/src/ft_strlen.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_strlen.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_strlen.cpp.o
+.PHONY : libjtoc/src/ft_strlen.cpp.o
+
+libjtoc/src/ft_strlen.i: libjtoc/src/ft_strlen.cpp.i
+.PHONY : libjtoc/src/ft_strlen.i
+
+# target to preprocess a source file
+libjtoc/src/ft_strlen.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_strlen.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_strlen.cpp.i
+.PHONY : libjtoc/src/ft_strlen.cpp.i
+
+libjtoc/src/ft_strlen.s: libjtoc/src/ft_strlen.cpp.s
+.PHONY : libjtoc/src/ft_strlen.s
+
+# target to generate assembly for a file
+libjtoc/src/ft_strlen.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_strlen.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_strlen.cpp.s
+.PHONY : libjtoc/src/ft_strlen.cpp.s
+
+libjtoc/src/ft_strncmp.o: libjtoc/src/ft_strncmp.cpp.o
+.PHONY : libjtoc/src/ft_strncmp.o
+
+# target to build an object file
+libjtoc/src/ft_strncmp.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_strncmp.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_strncmp.cpp.o
+.PHONY : libjtoc/src/ft_strncmp.cpp.o
+
+libjtoc/src/ft_strncmp.i: libjtoc/src/ft_strncmp.cpp.i
+.PHONY : libjtoc/src/ft_strncmp.i
+
+# target to preprocess a source file
+libjtoc/src/ft_strncmp.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_strncmp.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_strncmp.cpp.i
+.PHONY : libjtoc/src/ft_strncmp.cpp.i
+
+libjtoc/src/ft_strncmp.s: libjtoc/src/ft_strncmp.cpp.s
+.PHONY : libjtoc/src/ft_strncmp.s
+
+# target to generate assembly for a file
+libjtoc/src/ft_strncmp.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_strncmp.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_strncmp.cpp.s
+.PHONY : libjtoc/src/ft_strncmp.cpp.s
+
+libjtoc/src/ft_strnew.o: libjtoc/src/ft_strnew.cpp.o
+.PHONY : libjtoc/src/ft_strnew.o
+
+# target to build an object file
+libjtoc/src/ft_strnew.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_strnew.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_strnew.cpp.o
+.PHONY : libjtoc/src/ft_strnew.cpp.o
+
+libjtoc/src/ft_strnew.i: libjtoc/src/ft_strnew.cpp.i
+.PHONY : libjtoc/src/ft_strnew.i
+
+# target to preprocess a source file
+libjtoc/src/ft_strnew.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_strnew.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_strnew.cpp.i
+.PHONY : libjtoc/src/ft_strnew.cpp.i
+
+libjtoc/src/ft_strnew.s: libjtoc/src/ft_strnew.cpp.s
+.PHONY : libjtoc/src/ft_strnew.s
+
+# target to generate assembly for a file
+libjtoc/src/ft_strnew.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_strnew.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_strnew.cpp.s
+.PHONY : libjtoc/src/ft_strnew.cpp.s
+
+libjtoc/src/ft_strsub.o: libjtoc/src/ft_strsub.cpp.o
+.PHONY : libjtoc/src/ft_strsub.o
+
+# target to build an object file
+libjtoc/src/ft_strsub.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_strsub.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_strsub.cpp.o
+.PHONY : libjtoc/src/ft_strsub.cpp.o
+
+libjtoc/src/ft_strsub.i: libjtoc/src/ft_strsub.cpp.i
+.PHONY : libjtoc/src/ft_strsub.i
+
+# target to preprocess a source file
+libjtoc/src/ft_strsub.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_strsub.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_strsub.cpp.i
+.PHONY : libjtoc/src/ft_strsub.cpp.i
+
+libjtoc/src/ft_strsub.s: libjtoc/src/ft_strsub.cpp.s
+.PHONY : libjtoc/src/ft_strsub.s
+
+# target to generate assembly for a file
+libjtoc/src/ft_strsub.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/ft_strsub.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/ft_strsub.cpp.s
+.PHONY : libjtoc/src/ft_strsub.cpp.s
+
+libjtoc/src/jtoc_get.o: libjtoc/src/jtoc_get.cpp.o
+.PHONY : libjtoc/src/jtoc_get.o
+
+# target to build an object file
+libjtoc/src/jtoc_get.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_get.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_get.cpp.o
+.PHONY : libjtoc/src/jtoc_get.cpp.o
+
+libjtoc/src/jtoc_get.i: libjtoc/src/jtoc_get.cpp.i
+.PHONY : libjtoc/src/jtoc_get.i
+
+# target to preprocess a source file
+libjtoc/src/jtoc_get.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_get.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_get.cpp.i
+.PHONY : libjtoc/src/jtoc_get.cpp.i
+
+libjtoc/src/jtoc_get.s: libjtoc/src/jtoc_get.cpp.s
+.PHONY : libjtoc/src/jtoc_get.s
+
+# target to generate assembly for a file
+libjtoc/src/jtoc_get.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_get.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_get.cpp.s
+.PHONY : libjtoc/src/jtoc_get.cpp.s
+
+libjtoc/src/jtoc_get_raw_data.o: libjtoc/src/jtoc_get_raw_data.cpp.o
+.PHONY : libjtoc/src/jtoc_get_raw_data.o
+
+# target to build an object file
+libjtoc/src/jtoc_get_raw_data.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_get_raw_data.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_get_raw_data.cpp.o
+.PHONY : libjtoc/src/jtoc_get_raw_data.cpp.o
+
+libjtoc/src/jtoc_get_raw_data.i: libjtoc/src/jtoc_get_raw_data.cpp.i
+.PHONY : libjtoc/src/jtoc_get_raw_data.i
+
+# target to preprocess a source file
+libjtoc/src/jtoc_get_raw_data.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_get_raw_data.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_get_raw_data.cpp.i
+.PHONY : libjtoc/src/jtoc_get_raw_data.cpp.i
+
+libjtoc/src/jtoc_get_raw_data.s: libjtoc/src/jtoc_get_raw_data.cpp.s
+.PHONY : libjtoc/src/jtoc_get_raw_data.s
+
+# target to generate assembly for a file
+libjtoc/src/jtoc_get_raw_data.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_get_raw_data.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_get_raw_data.cpp.s
+.PHONY : libjtoc/src/jtoc_get_raw_data.cpp.s
+
+libjtoc/src/jtoc_node.o: libjtoc/src/jtoc_node.cpp.o
+.PHONY : libjtoc/src/jtoc_node.o
+
+# target to build an object file
+libjtoc/src/jtoc_node.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_node.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_node.cpp.o
+.PHONY : libjtoc/src/jtoc_node.cpp.o
+
+libjtoc/src/jtoc_node.i: libjtoc/src/jtoc_node.cpp.i
+.PHONY : libjtoc/src/jtoc_node.i
+
+# target to preprocess a source file
+libjtoc/src/jtoc_node.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_node.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_node.cpp.i
+.PHONY : libjtoc/src/jtoc_node.cpp.i
+
+libjtoc/src/jtoc_node.s: libjtoc/src/jtoc_node.cpp.s
+.PHONY : libjtoc/src/jtoc_node.s
+
+# target to generate assembly for a file
+libjtoc/src/jtoc_node.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_node.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_node.cpp.s
+.PHONY : libjtoc/src/jtoc_node.cpp.s
+
+libjtoc/src/jtoc_parse.o: libjtoc/src/jtoc_parse.cpp.o
+.PHONY : libjtoc/src/jtoc_parse.o
+
+# target to build an object file
+libjtoc/src/jtoc_parse.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_parse.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_parse.cpp.o
+.PHONY : libjtoc/src/jtoc_parse.cpp.o
+
+libjtoc/src/jtoc_parse.i: libjtoc/src/jtoc_parse.cpp.i
+.PHONY : libjtoc/src/jtoc_parse.i
+
+# target to preprocess a source file
+libjtoc/src/jtoc_parse.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_parse.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_parse.cpp.i
+.PHONY : libjtoc/src/jtoc_parse.cpp.i
+
+libjtoc/src/jtoc_parse.s: libjtoc/src/jtoc_parse.cpp.s
+.PHONY : libjtoc/src/jtoc_parse.s
+
+# target to generate assembly for a file
+libjtoc/src/jtoc_parse.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_parse.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_parse.cpp.s
+.PHONY : libjtoc/src/jtoc_parse.cpp.s
+
+libjtoc/src/jtoc_parse_number.o: libjtoc/src/jtoc_parse_number.cpp.o
+.PHONY : libjtoc/src/jtoc_parse_number.o
+
+# target to build an object file
+libjtoc/src/jtoc_parse_number.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_parse_number.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_parse_number.cpp.o
+.PHONY : libjtoc/src/jtoc_parse_number.cpp.o
+
+libjtoc/src/jtoc_parse_number.i: libjtoc/src/jtoc_parse_number.cpp.i
+.PHONY : libjtoc/src/jtoc_parse_number.i
+
+# target to preprocess a source file
+libjtoc/src/jtoc_parse_number.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_parse_number.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_parse_number.cpp.i
+.PHONY : libjtoc/src/jtoc_parse_number.cpp.i
+
+libjtoc/src/jtoc_parse_number.s: libjtoc/src/jtoc_parse_number.cpp.s
+.PHONY : libjtoc/src/jtoc_parse_number.s
+
+# target to generate assembly for a file
+libjtoc/src/jtoc_parse_number.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_parse_number.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_parse_number.cpp.s
+.PHONY : libjtoc/src/jtoc_parse_number.cpp.s
+
+libjtoc/src/jtoc_parse_value.o: libjtoc/src/jtoc_parse_value.cpp.o
+.PHONY : libjtoc/src/jtoc_parse_value.o
+
+# target to build an object file
+libjtoc/src/jtoc_parse_value.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_parse_value.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_parse_value.cpp.o
+.PHONY : libjtoc/src/jtoc_parse_value.cpp.o
+
+libjtoc/src/jtoc_parse_value.i: libjtoc/src/jtoc_parse_value.cpp.i
+.PHONY : libjtoc/src/jtoc_parse_value.i
+
+# target to preprocess a source file
+libjtoc/src/jtoc_parse_value.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_parse_value.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_parse_value.cpp.i
+.PHONY : libjtoc/src/jtoc_parse_value.cpp.i
+
+libjtoc/src/jtoc_parse_value.s: libjtoc/src/jtoc_parse_value.cpp.s
+.PHONY : libjtoc/src/jtoc_parse_value.s
+
+# target to generate assembly for a file
+libjtoc/src/jtoc_parse_value.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_parse_value.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_parse_value.cpp.s
+.PHONY : libjtoc/src/jtoc_parse_value.cpp.s
+
+libjtoc/src/jtoc_read.o: libjtoc/src/jtoc_read.cpp.o
+.PHONY : libjtoc/src/jtoc_read.o
+
+# target to build an object file
+libjtoc/src/jtoc_read.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_read.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_read.cpp.o
+.PHONY : libjtoc/src/jtoc_read.cpp.o
+
+libjtoc/src/jtoc_read.i: libjtoc/src/jtoc_read.cpp.i
+.PHONY : libjtoc/src/jtoc_read.i
+
+# target to preprocess a source file
+libjtoc/src/jtoc_read.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_read.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_read.cpp.i
+.PHONY : libjtoc/src/jtoc_read.cpp.i
+
+libjtoc/src/jtoc_read.s: libjtoc/src/jtoc_read.cpp.s
+.PHONY : libjtoc/src/jtoc_read.s
+
+# target to generate assembly for a file
+libjtoc/src/jtoc_read.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_read.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_read.cpp.s
+.PHONY : libjtoc/src/jtoc_read.cpp.s
+
+libjtoc/src/jtoc_read_file.o: libjtoc/src/jtoc_read_file.cpp.o
+.PHONY : libjtoc/src/jtoc_read_file.o
+
+# target to build an object file
+libjtoc/src/jtoc_read_file.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_read_file.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_read_file.cpp.o
+.PHONY : libjtoc/src/jtoc_read_file.cpp.o
+
+libjtoc/src/jtoc_read_file.i: libjtoc/src/jtoc_read_file.cpp.i
+.PHONY : libjtoc/src/jtoc_read_file.i
+
+# target to preprocess a source file
+libjtoc/src/jtoc_read_file.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_read_file.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_read_file.cpp.i
+.PHONY : libjtoc/src/jtoc_read_file.cpp.i
+
+libjtoc/src/jtoc_read_file.s: libjtoc/src/jtoc_read_file.cpp.s
+.PHONY : libjtoc/src/jtoc_read_file.s
+
+# target to generate assembly for a file
+libjtoc/src/jtoc_read_file.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_read_file.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_read_file.cpp.s
+.PHONY : libjtoc/src/jtoc_read_file.cpp.s
+
+libjtoc/src/jtoc_utils.o: libjtoc/src/jtoc_utils.cpp.o
+.PHONY : libjtoc/src/jtoc_utils.o
+
+# target to build an object file
+libjtoc/src/jtoc_utils.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_utils.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_utils.cpp.o
+.PHONY : libjtoc/src/jtoc_utils.cpp.o
+
+libjtoc/src/jtoc_utils.i: libjtoc/src/jtoc_utils.cpp.i
+.PHONY : libjtoc/src/jtoc_utils.i
+
+# target to preprocess a source file
+libjtoc/src/jtoc_utils.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_utils.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_utils.cpp.i
+.PHONY : libjtoc/src/jtoc_utils.cpp.i
+
+libjtoc/src/jtoc_utils.s: libjtoc/src/jtoc_utils.cpp.s
+.PHONY : libjtoc/src/jtoc_utils.s
+
+# target to generate assembly for a file
+libjtoc/src/jtoc_utils.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_utils.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_utils.cpp.s
+.PHONY : libjtoc/src/jtoc_utils.cpp.s
+
+libjtoc/src/jtoc_utils2.o: libjtoc/src/jtoc_utils2.cpp.o
+.PHONY : libjtoc/src/jtoc_utils2.o
+
+# target to build an object file
+libjtoc/src/jtoc_utils2.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_utils2.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_utils2.cpp.o
+.PHONY : libjtoc/src/jtoc_utils2.cpp.o
+
+libjtoc/src/jtoc_utils2.i: libjtoc/src/jtoc_utils2.cpp.i
+.PHONY : libjtoc/src/jtoc_utils2.i
+
+# target to preprocess a source file
+libjtoc/src/jtoc_utils2.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_utils2.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_utils2.cpp.i
+.PHONY : libjtoc/src/jtoc_utils2.cpp.i
+
+libjtoc/src/jtoc_utils2.s: libjtoc/src/jtoc_utils2.cpp.s
+.PHONY : libjtoc/src/jtoc_utils2.s
+
+# target to generate assembly for a file
+libjtoc/src/jtoc_utils2.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_utils2.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_utils2.cpp.s
+.PHONY : libjtoc/src/jtoc_utils2.cpp.s
+
+libjtoc/src/jtoc_validate.o: libjtoc/src/jtoc_validate.cpp.o
+.PHONY : libjtoc/src/jtoc_validate.o
+
+# target to build an object file
+libjtoc/src/jtoc_validate.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_validate.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_validate.cpp.o
+.PHONY : libjtoc/src/jtoc_validate.cpp.o
+
+libjtoc/src/jtoc_validate.i: libjtoc/src/jtoc_validate.cpp.i
+.PHONY : libjtoc/src/jtoc_validate.i
+
+# target to preprocess a source file
+libjtoc/src/jtoc_validate.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_validate.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_validate.cpp.i
+.PHONY : libjtoc/src/jtoc_validate.cpp.i
+
+libjtoc/src/jtoc_validate.s: libjtoc/src/jtoc_validate.cpp.s
+.PHONY : libjtoc/src/jtoc_validate.s
+
+# target to generate assembly for a file
+libjtoc/src/jtoc_validate.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_validate.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_validate.cpp.s
+.PHONY : libjtoc/src/jtoc_validate.cpp.s
+
+libjtoc/src/jtoc_validate_value.o: libjtoc/src/jtoc_validate_value.cpp.o
+.PHONY : libjtoc/src/jtoc_validate_value.o
+
+# target to build an object file
+libjtoc/src/jtoc_validate_value.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_validate_value.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_validate_value.cpp.o
+.PHONY : libjtoc/src/jtoc_validate_value.cpp.o
+
+libjtoc/src/jtoc_validate_value.i: libjtoc/src/jtoc_validate_value.cpp.i
+.PHONY : libjtoc/src/jtoc_validate_value.i
+
+# target to preprocess a source file
+libjtoc/src/jtoc_validate_value.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_validate_value.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_validate_value.cpp.i
+.PHONY : libjtoc/src/jtoc_validate_value.cpp.i
+
+libjtoc/src/jtoc_validate_value.s: libjtoc/src/jtoc_validate_value.cpp.s
+.PHONY : libjtoc/src/jtoc_validate_value.s
+
+# target to generate assembly for a file
+libjtoc/src/jtoc_validate_value.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_validate_value.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_validate_value.cpp.s
+.PHONY : libjtoc/src/jtoc_validate_value.cpp.s
+
+libjtoc/src/jtoc_write.o: libjtoc/src/jtoc_write.cpp.o
+.PHONY : libjtoc/src/jtoc_write.o
+
+# target to build an object file
+libjtoc/src/jtoc_write.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_write.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_write.cpp.o
+.PHONY : libjtoc/src/jtoc_write.cpp.o
+
+libjtoc/src/jtoc_write.i: libjtoc/src/jtoc_write.cpp.i
+.PHONY : libjtoc/src/jtoc_write.i
+
+# target to preprocess a source file
+libjtoc/src/jtoc_write.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_write.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_write.cpp.i
+.PHONY : libjtoc/src/jtoc_write.cpp.i
+
+libjtoc/src/jtoc_write.s: libjtoc/src/jtoc_write.cpp.s
+.PHONY : libjtoc/src/jtoc_write.s
+
+# target to generate assembly for a file
+libjtoc/src/jtoc_write.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/libjtoc/src/jtoc_write.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/libjtoc/src/jtoc_write.cpp.s
+.PHONY : libjtoc/src/jtoc_write.cpp.s
 
 srcs/config/Config.o: srcs/config/Config.cpp.o
 .PHONY : srcs/config/Config.o
 
 # target to build an object file
 srcs/config/Config.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/config/Config.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/config/Config.cpp.o
 .PHONY : srcs/config/Config.cpp.o
 
 srcs/config/Config.i: srcs/config/Config.cpp.i
@@ -166,7 +870,7 @@ srcs/config/Config.i: srcs/config/Config.cpp.i
 
 # target to preprocess a source file
 srcs/config/Config.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/config/Config.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/config/Config.cpp.i
 .PHONY : srcs/config/Config.cpp.i
 
 srcs/config/Config.s: srcs/config/Config.cpp.s
@@ -174,87 +878,63 @@ srcs/config/Config.s: srcs/config/Config.cpp.s
 
 # target to generate assembly for a file
 srcs/config/Config.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/config/Config.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/config/Config.cpp.s
 .PHONY : srcs/config/Config.cpp.s
 
-srcs/core/events/Event.o: srcs/core/events/Event.cpp.o
-.PHONY : srcs/core/events/Event.o
+srcs/config/parse_config.o: srcs/config/parse_config.cpp.o
+.PHONY : srcs/config/parse_config.o
 
 # target to build an object file
-srcs/core/events/Event.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/core/events/Event.cpp.o
-.PHONY : srcs/core/events/Event.cpp.o
+srcs/config/parse_config.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/config/parse_config.cpp.o
+.PHONY : srcs/config/parse_config.cpp.o
 
-srcs/core/events/Event.i: srcs/core/events/Event.cpp.i
-.PHONY : srcs/core/events/Event.i
+srcs/config/parse_config.i: srcs/config/parse_config.cpp.i
+.PHONY : srcs/config/parse_config.i
 
 # target to preprocess a source file
-srcs/core/events/Event.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/core/events/Event.cpp.i
-.PHONY : srcs/core/events/Event.cpp.i
+srcs/config/parse_config.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/config/parse_config.cpp.i
+.PHONY : srcs/config/parse_config.cpp.i
 
-srcs/core/events/Event.s: srcs/core/events/Event.cpp.s
-.PHONY : srcs/core/events/Event.s
+srcs/config/parse_config.s: srcs/config/parse_config.cpp.s
+.PHONY : srcs/config/parse_config.s
 
 # target to generate assembly for a file
-srcs/core/events/Event.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/core/events/Event.cpp.s
-.PHONY : srcs/core/events/Event.cpp.s
+srcs/config/parse_config.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/config/parse_config.cpp.s
+.PHONY : srcs/config/parse_config.cpp.s
 
-srcs/core/events/EventPresets.o: srcs/core/events/EventPresets.cpp.o
-.PHONY : srcs/core/events/EventPresets.o
+srcs/core/core_helpers.o: srcs/core/core_helpers.cpp.o
+.PHONY : srcs/core/core_helpers.o
 
 # target to build an object file
-srcs/core/events/EventPresets.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/core/events/EventPresets.cpp.o
-.PHONY : srcs/core/events/EventPresets.cpp.o
+srcs/core/core_helpers.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/core/core_helpers.cpp.o
+.PHONY : srcs/core/core_helpers.cpp.o
 
-srcs/core/events/EventPresets.i: srcs/core/events/EventPresets.cpp.i
-.PHONY : srcs/core/events/EventPresets.i
-
-# target to preprocess a source file
-srcs/core/events/EventPresets.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/core/events/EventPresets.cpp.i
-.PHONY : srcs/core/events/EventPresets.cpp.i
-
-srcs/core/events/EventPresets.s: srcs/core/events/EventPresets.cpp.s
-.PHONY : srcs/core/events/EventPresets.s
-
-# target to generate assembly for a file
-srcs/core/events/EventPresets.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/core/events/EventPresets.cpp.s
-.PHONY : srcs/core/events/EventPresets.cpp.s
-
-srcs/core/modules/EpollModule.o: srcs/core/modules/EpollModule.cpp.o
-.PHONY : srcs/core/modules/EpollModule.o
-
-# target to build an object file
-srcs/core/modules/EpollModule.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/core/modules/EpollModule.cpp.o
-.PHONY : srcs/core/modules/EpollModule.cpp.o
-
-srcs/core/modules/EpollModule.i: srcs/core/modules/EpollModule.cpp.i
-.PHONY : srcs/core/modules/EpollModule.i
+srcs/core/core_helpers.i: srcs/core/core_helpers.cpp.i
+.PHONY : srcs/core/core_helpers.i
 
 # target to preprocess a source file
-srcs/core/modules/EpollModule.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/core/modules/EpollModule.cpp.i
-.PHONY : srcs/core/modules/EpollModule.cpp.i
+srcs/core/core_helpers.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/core/core_helpers.cpp.i
+.PHONY : srcs/core/core_helpers.cpp.i
 
-srcs/core/modules/EpollModule.s: srcs/core/modules/EpollModule.cpp.s
-.PHONY : srcs/core/modules/EpollModule.s
+srcs/core/core_helpers.s: srcs/core/core_helpers.cpp.s
+.PHONY : srcs/core/core_helpers.s
 
 # target to generate assembly for a file
-srcs/core/modules/EpollModule.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/core/modules/EpollModule.cpp.s
-.PHONY : srcs/core/modules/EpollModule.cpp.s
+srcs/core/core_helpers.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/core/core_helpers.cpp.s
+.PHONY : srcs/core/core_helpers.cpp.s
 
 srcs/core/modules/PollModule.o: srcs/core/modules/PollModule.cpp.o
 .PHONY : srcs/core/modules/PollModule.o
 
 # target to build an object file
 srcs/core/modules/PollModule.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/core/modules/PollModule.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/core/modules/PollModule.cpp.o
 .PHONY : srcs/core/modules/PollModule.cpp.o
 
 srcs/core/modules/PollModule.i: srcs/core/modules/PollModule.cpp.i
@@ -262,7 +942,7 @@ srcs/core/modules/PollModule.i: srcs/core/modules/PollModule.cpp.i
 
 # target to preprocess a source file
 srcs/core/modules/PollModule.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/core/modules/PollModule.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/core/modules/PollModule.cpp.i
 .PHONY : srcs/core/modules/PollModule.cpp.i
 
 srcs/core/modules/PollModule.s: srcs/core/modules/PollModule.cpp.s
@@ -270,39 +950,63 @@ srcs/core/modules/PollModule.s: srcs/core/modules/PollModule.cpp.s
 
 # target to generate assembly for a file
 srcs/core/modules/PollModule.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/core/modules/PollModule.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/core/modules/PollModule.cpp.s
 .PHONY : srcs/core/modules/PollModule.cpp.s
 
-srcs/http/HttpModule.o: srcs/http/HttpModule.cpp.o
-.PHONY : srcs/http/HttpModule.o
+srcs/core/sessions/HttpSession.o: srcs/core/sessions/HttpSession.cpp.o
+.PHONY : srcs/core/sessions/HttpSession.o
 
 # target to build an object file
-srcs/http/HttpModule.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/http/HttpModule.cpp.o
-.PHONY : srcs/http/HttpModule.cpp.o
+srcs/core/sessions/HttpSession.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/core/sessions/HttpSession.cpp.o
+.PHONY : srcs/core/sessions/HttpSession.cpp.o
 
-srcs/http/HttpModule.i: srcs/http/HttpModule.cpp.i
-.PHONY : srcs/http/HttpModule.i
+srcs/core/sessions/HttpSession.i: srcs/core/sessions/HttpSession.cpp.i
+.PHONY : srcs/core/sessions/HttpSession.i
 
 # target to preprocess a source file
-srcs/http/HttpModule.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/http/HttpModule.cpp.i
-.PHONY : srcs/http/HttpModule.cpp.i
+srcs/core/sessions/HttpSession.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/core/sessions/HttpSession.cpp.i
+.PHONY : srcs/core/sessions/HttpSession.cpp.i
 
-srcs/http/HttpModule.s: srcs/http/HttpModule.cpp.s
-.PHONY : srcs/http/HttpModule.s
+srcs/core/sessions/HttpSession.s: srcs/core/sessions/HttpSession.cpp.s
+.PHONY : srcs/core/sessions/HttpSession.s
 
 # target to generate assembly for a file
-srcs/http/HttpModule.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/http/HttpModule.cpp.s
-.PHONY : srcs/http/HttpModule.cpp.s
+srcs/core/sessions/HttpSession.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/core/sessions/HttpSession.cpp.s
+.PHONY : srcs/core/sessions/HttpSession.cpp.s
+
+srcs/http/Http.o: srcs/http/Http.cpp.o
+.PHONY : srcs/http/Http.o
+
+# target to build an object file
+srcs/http/Http.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/http/Http.cpp.o
+.PHONY : srcs/http/Http.cpp.o
+
+srcs/http/Http.i: srcs/http/Http.cpp.i
+.PHONY : srcs/http/Http.i
+
+# target to preprocess a source file
+srcs/http/Http.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/http/Http.cpp.i
+.PHONY : srcs/http/Http.cpp.i
+
+srcs/http/Http.s: srcs/http/Http.cpp.s
+.PHONY : srcs/http/Http.s
+
+# target to generate assembly for a file
+srcs/http/Http.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/http/Http.cpp.s
+.PHONY : srcs/http/Http.cpp.s
 
 srcs/http/Request.o: srcs/http/Request.cpp.o
 .PHONY : srcs/http/Request.o
 
 # target to build an object file
 srcs/http/Request.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/http/Request.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/http/Request.cpp.o
 .PHONY : srcs/http/Request.cpp.o
 
 srcs/http/Request.i: srcs/http/Request.cpp.i
@@ -310,7 +1014,7 @@ srcs/http/Request.i: srcs/http/Request.cpp.i
 
 # target to preprocess a source file
 srcs/http/Request.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/http/Request.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/http/Request.cpp.i
 .PHONY : srcs/http/Request.cpp.i
 
 srcs/http/Request.s: srcs/http/Request.cpp.s
@@ -318,7 +1022,7 @@ srcs/http/Request.s: srcs/http/Request.cpp.s
 
 # target to generate assembly for a file
 srcs/http/Request.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/http/Request.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/http/Request.cpp.s
 .PHONY : srcs/http/Request.cpp.s
 
 srcs/http/Response.o: srcs/http/Response.cpp.o
@@ -326,7 +1030,7 @@ srcs/http/Response.o: srcs/http/Response.cpp.o
 
 # target to build an object file
 srcs/http/Response.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/http/Response.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/http/Response.cpp.o
 .PHONY : srcs/http/Response.cpp.o
 
 srcs/http/Response.i: srcs/http/Response.cpp.i
@@ -334,7 +1038,7 @@ srcs/http/Response.i: srcs/http/Response.cpp.i
 
 # target to preprocess a source file
 srcs/http/Response.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/http/Response.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/http/Response.cpp.i
 .PHONY : srcs/http/Response.cpp.i
 
 srcs/http/Response.s: srcs/http/Response.cpp.s
@@ -342,632 +1046,56 @@ srcs/http/Response.s: srcs/http/Response.cpp.s
 
 # target to generate assembly for a file
 srcs/http/Response.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/http/Response.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/http/Response.cpp.s
 .PHONY : srcs/http/Response.cpp.s
 
-srcs/libjtoc/src/ft_atoi.o: srcs/libjtoc/src/ft_atoi.cpp.o
-.PHONY : srcs/libjtoc/src/ft_atoi.o
+srcs/http/errors/HttpErrorPages.o: srcs/http/errors/HttpErrorPages.cpp.o
+.PHONY : srcs/http/errors/HttpErrorPages.o
 
 # target to build an object file
-srcs/libjtoc/src/ft_atoi.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_atoi.cpp.o
-.PHONY : srcs/libjtoc/src/ft_atoi.cpp.o
+srcs/http/errors/HttpErrorPages.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/http/errors/HttpErrorPages.cpp.o
+.PHONY : srcs/http/errors/HttpErrorPages.cpp.o
 
-srcs/libjtoc/src/ft_atoi.i: srcs/libjtoc/src/ft_atoi.cpp.i
-.PHONY : srcs/libjtoc/src/ft_atoi.i
+srcs/http/errors/HttpErrorPages.i: srcs/http/errors/HttpErrorPages.cpp.i
+.PHONY : srcs/http/errors/HttpErrorPages.i
 
 # target to preprocess a source file
-srcs/libjtoc/src/ft_atoi.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_atoi.cpp.i
-.PHONY : srcs/libjtoc/src/ft_atoi.cpp.i
+srcs/http/errors/HttpErrorPages.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/http/errors/HttpErrorPages.cpp.i
+.PHONY : srcs/http/errors/HttpErrorPages.cpp.i
 
-srcs/libjtoc/src/ft_atoi.s: srcs/libjtoc/src/ft_atoi.cpp.s
-.PHONY : srcs/libjtoc/src/ft_atoi.s
+srcs/http/errors/HttpErrorPages.s: srcs/http/errors/HttpErrorPages.cpp.s
+.PHONY : srcs/http/errors/HttpErrorPages.s
 
 # target to generate assembly for a file
-srcs/libjtoc/src/ft_atoi.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_atoi.cpp.s
-.PHONY : srcs/libjtoc/src/ft_atoi.cpp.s
+srcs/http/errors/HttpErrorPages.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/http/errors/HttpErrorPages.cpp.s
+.PHONY : srcs/http/errors/HttpErrorPages.cpp.s
 
-srcs/libjtoc/src/ft_bzero.o: srcs/libjtoc/src/ft_bzero.cpp.o
-.PHONY : srcs/libjtoc/src/ft_bzero.o
+srcs/http/errors/HttpException.o: srcs/http/errors/HttpException.cpp.o
+.PHONY : srcs/http/errors/HttpException.o
 
 # target to build an object file
-srcs/libjtoc/src/ft_bzero.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_bzero.cpp.o
-.PHONY : srcs/libjtoc/src/ft_bzero.cpp.o
+srcs/http/errors/HttpException.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/http/errors/HttpException.cpp.o
+.PHONY : srcs/http/errors/HttpException.cpp.o
 
-srcs/libjtoc/src/ft_bzero.i: srcs/libjtoc/src/ft_bzero.cpp.i
-.PHONY : srcs/libjtoc/src/ft_bzero.i
-
-# target to preprocess a source file
-srcs/libjtoc/src/ft_bzero.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_bzero.cpp.i
-.PHONY : srcs/libjtoc/src/ft_bzero.cpp.i
-
-srcs/libjtoc/src/ft_bzero.s: srcs/libjtoc/src/ft_bzero.cpp.s
-.PHONY : srcs/libjtoc/src/ft_bzero.s
-
-# target to generate assembly for a file
-srcs/libjtoc/src/ft_bzero.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_bzero.cpp.s
-.PHONY : srcs/libjtoc/src/ft_bzero.cpp.s
-
-srcs/libjtoc/src/ft_isdigit.o: srcs/libjtoc/src/ft_isdigit.cpp.o
-.PHONY : srcs/libjtoc/src/ft_isdigit.o
-
-# target to build an object file
-srcs/libjtoc/src/ft_isdigit.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_isdigit.cpp.o
-.PHONY : srcs/libjtoc/src/ft_isdigit.cpp.o
-
-srcs/libjtoc/src/ft_isdigit.i: srcs/libjtoc/src/ft_isdigit.cpp.i
-.PHONY : srcs/libjtoc/src/ft_isdigit.i
+srcs/http/errors/HttpException.i: srcs/http/errors/HttpException.cpp.i
+.PHONY : srcs/http/errors/HttpException.i
 
 # target to preprocess a source file
-srcs/libjtoc/src/ft_isdigit.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_isdigit.cpp.i
-.PHONY : srcs/libjtoc/src/ft_isdigit.cpp.i
+srcs/http/errors/HttpException.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/http/errors/HttpException.cpp.i
+.PHONY : srcs/http/errors/HttpException.cpp.i
 
-srcs/libjtoc/src/ft_isdigit.s: srcs/libjtoc/src/ft_isdigit.cpp.s
-.PHONY : srcs/libjtoc/src/ft_isdigit.s
-
-# target to generate assembly for a file
-srcs/libjtoc/src/ft_isdigit.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_isdigit.cpp.s
-.PHONY : srcs/libjtoc/src/ft_isdigit.cpp.s
-
-srcs/libjtoc/src/ft_itoa.o: srcs/libjtoc/src/ft_itoa.cpp.o
-.PHONY : srcs/libjtoc/src/ft_itoa.o
-
-# target to build an object file
-srcs/libjtoc/src/ft_itoa.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_itoa.cpp.o
-.PHONY : srcs/libjtoc/src/ft_itoa.cpp.o
-
-srcs/libjtoc/src/ft_itoa.i: srcs/libjtoc/src/ft_itoa.cpp.i
-.PHONY : srcs/libjtoc/src/ft_itoa.i
-
-# target to preprocess a source file
-srcs/libjtoc/src/ft_itoa.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_itoa.cpp.i
-.PHONY : srcs/libjtoc/src/ft_itoa.cpp.i
-
-srcs/libjtoc/src/ft_itoa.s: srcs/libjtoc/src/ft_itoa.cpp.s
-.PHONY : srcs/libjtoc/src/ft_itoa.s
+srcs/http/errors/HttpException.s: srcs/http/errors/HttpException.cpp.s
+.PHONY : srcs/http/errors/HttpException.s
 
 # target to generate assembly for a file
-srcs/libjtoc/src/ft_itoa.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_itoa.cpp.s
-.PHONY : srcs/libjtoc/src/ft_itoa.cpp.s
-
-srcs/libjtoc/src/ft_memalloc.o: srcs/libjtoc/src/ft_memalloc.cpp.o
-.PHONY : srcs/libjtoc/src/ft_memalloc.o
-
-# target to build an object file
-srcs/libjtoc/src/ft_memalloc.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_memalloc.cpp.o
-.PHONY : srcs/libjtoc/src/ft_memalloc.cpp.o
-
-srcs/libjtoc/src/ft_memalloc.i: srcs/libjtoc/src/ft_memalloc.cpp.i
-.PHONY : srcs/libjtoc/src/ft_memalloc.i
-
-# target to preprocess a source file
-srcs/libjtoc/src/ft_memalloc.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_memalloc.cpp.i
-.PHONY : srcs/libjtoc/src/ft_memalloc.cpp.i
-
-srcs/libjtoc/src/ft_memalloc.s: srcs/libjtoc/src/ft_memalloc.cpp.s
-.PHONY : srcs/libjtoc/src/ft_memalloc.s
-
-# target to generate assembly for a file
-srcs/libjtoc/src/ft_memalloc.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_memalloc.cpp.s
-.PHONY : srcs/libjtoc/src/ft_memalloc.cpp.s
-
-srcs/libjtoc/src/ft_memcpy.o: srcs/libjtoc/src/ft_memcpy.cpp.o
-.PHONY : srcs/libjtoc/src/ft_memcpy.o
-
-# target to build an object file
-srcs/libjtoc/src/ft_memcpy.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_memcpy.cpp.o
-.PHONY : srcs/libjtoc/src/ft_memcpy.cpp.o
-
-srcs/libjtoc/src/ft_memcpy.i: srcs/libjtoc/src/ft_memcpy.cpp.i
-.PHONY : srcs/libjtoc/src/ft_memcpy.i
-
-# target to preprocess a source file
-srcs/libjtoc/src/ft_memcpy.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_memcpy.cpp.i
-.PHONY : srcs/libjtoc/src/ft_memcpy.cpp.i
-
-srcs/libjtoc/src/ft_memcpy.s: srcs/libjtoc/src/ft_memcpy.cpp.s
-.PHONY : srcs/libjtoc/src/ft_memcpy.s
-
-# target to generate assembly for a file
-srcs/libjtoc/src/ft_memcpy.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_memcpy.cpp.s
-.PHONY : srcs/libjtoc/src/ft_memcpy.cpp.s
-
-srcs/libjtoc/src/ft_strcpy.o: srcs/libjtoc/src/ft_strcpy.cpp.o
-.PHONY : srcs/libjtoc/src/ft_strcpy.o
-
-# target to build an object file
-srcs/libjtoc/src/ft_strcpy.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_strcpy.cpp.o
-.PHONY : srcs/libjtoc/src/ft_strcpy.cpp.o
-
-srcs/libjtoc/src/ft_strcpy.i: srcs/libjtoc/src/ft_strcpy.cpp.i
-.PHONY : srcs/libjtoc/src/ft_strcpy.i
-
-# target to preprocess a source file
-srcs/libjtoc/src/ft_strcpy.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_strcpy.cpp.i
-.PHONY : srcs/libjtoc/src/ft_strcpy.cpp.i
-
-srcs/libjtoc/src/ft_strcpy.s: srcs/libjtoc/src/ft_strcpy.cpp.s
-.PHONY : srcs/libjtoc/src/ft_strcpy.s
-
-# target to generate assembly for a file
-srcs/libjtoc/src/ft_strcpy.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_strcpy.cpp.s
-.PHONY : srcs/libjtoc/src/ft_strcpy.cpp.s
-
-srcs/libjtoc/src/ft_strdup.o: srcs/libjtoc/src/ft_strdup.cpp.o
-.PHONY : srcs/libjtoc/src/ft_strdup.o
-
-# target to build an object file
-srcs/libjtoc/src/ft_strdup.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_strdup.cpp.o
-.PHONY : srcs/libjtoc/src/ft_strdup.cpp.o
-
-srcs/libjtoc/src/ft_strdup.i: srcs/libjtoc/src/ft_strdup.cpp.i
-.PHONY : srcs/libjtoc/src/ft_strdup.i
-
-# target to preprocess a source file
-srcs/libjtoc/src/ft_strdup.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_strdup.cpp.i
-.PHONY : srcs/libjtoc/src/ft_strdup.cpp.i
-
-srcs/libjtoc/src/ft_strdup.s: srcs/libjtoc/src/ft_strdup.cpp.s
-.PHONY : srcs/libjtoc/src/ft_strdup.s
-
-# target to generate assembly for a file
-srcs/libjtoc/src/ft_strdup.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_strdup.cpp.s
-.PHONY : srcs/libjtoc/src/ft_strdup.cpp.s
-
-srcs/libjtoc/src/ft_strhash.o: srcs/libjtoc/src/ft_strhash.cpp.o
-.PHONY : srcs/libjtoc/src/ft_strhash.o
-
-# target to build an object file
-srcs/libjtoc/src/ft_strhash.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_strhash.cpp.o
-.PHONY : srcs/libjtoc/src/ft_strhash.cpp.o
-
-srcs/libjtoc/src/ft_strhash.i: srcs/libjtoc/src/ft_strhash.cpp.i
-.PHONY : srcs/libjtoc/src/ft_strhash.i
-
-# target to preprocess a source file
-srcs/libjtoc/src/ft_strhash.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_strhash.cpp.i
-.PHONY : srcs/libjtoc/src/ft_strhash.cpp.i
-
-srcs/libjtoc/src/ft_strhash.s: srcs/libjtoc/src/ft_strhash.cpp.s
-.PHONY : srcs/libjtoc/src/ft_strhash.s
-
-# target to generate assembly for a file
-srcs/libjtoc/src/ft_strhash.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_strhash.cpp.s
-.PHONY : srcs/libjtoc/src/ft_strhash.cpp.s
-
-srcs/libjtoc/src/ft_strlen.o: srcs/libjtoc/src/ft_strlen.cpp.o
-.PHONY : srcs/libjtoc/src/ft_strlen.o
-
-# target to build an object file
-srcs/libjtoc/src/ft_strlen.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_strlen.cpp.o
-.PHONY : srcs/libjtoc/src/ft_strlen.cpp.o
-
-srcs/libjtoc/src/ft_strlen.i: srcs/libjtoc/src/ft_strlen.cpp.i
-.PHONY : srcs/libjtoc/src/ft_strlen.i
-
-# target to preprocess a source file
-srcs/libjtoc/src/ft_strlen.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_strlen.cpp.i
-.PHONY : srcs/libjtoc/src/ft_strlen.cpp.i
-
-srcs/libjtoc/src/ft_strlen.s: srcs/libjtoc/src/ft_strlen.cpp.s
-.PHONY : srcs/libjtoc/src/ft_strlen.s
-
-# target to generate assembly for a file
-srcs/libjtoc/src/ft_strlen.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_strlen.cpp.s
-.PHONY : srcs/libjtoc/src/ft_strlen.cpp.s
-
-srcs/libjtoc/src/ft_strncmp.o: srcs/libjtoc/src/ft_strncmp.cpp.o
-.PHONY : srcs/libjtoc/src/ft_strncmp.o
-
-# target to build an object file
-srcs/libjtoc/src/ft_strncmp.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_strncmp.cpp.o
-.PHONY : srcs/libjtoc/src/ft_strncmp.cpp.o
-
-srcs/libjtoc/src/ft_strncmp.i: srcs/libjtoc/src/ft_strncmp.cpp.i
-.PHONY : srcs/libjtoc/src/ft_strncmp.i
-
-# target to preprocess a source file
-srcs/libjtoc/src/ft_strncmp.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_strncmp.cpp.i
-.PHONY : srcs/libjtoc/src/ft_strncmp.cpp.i
-
-srcs/libjtoc/src/ft_strncmp.s: srcs/libjtoc/src/ft_strncmp.cpp.s
-.PHONY : srcs/libjtoc/src/ft_strncmp.s
-
-# target to generate assembly for a file
-srcs/libjtoc/src/ft_strncmp.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_strncmp.cpp.s
-.PHONY : srcs/libjtoc/src/ft_strncmp.cpp.s
-
-srcs/libjtoc/src/ft_strnew.o: srcs/libjtoc/src/ft_strnew.cpp.o
-.PHONY : srcs/libjtoc/src/ft_strnew.o
-
-# target to build an object file
-srcs/libjtoc/src/ft_strnew.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_strnew.cpp.o
-.PHONY : srcs/libjtoc/src/ft_strnew.cpp.o
-
-srcs/libjtoc/src/ft_strnew.i: srcs/libjtoc/src/ft_strnew.cpp.i
-.PHONY : srcs/libjtoc/src/ft_strnew.i
-
-# target to preprocess a source file
-srcs/libjtoc/src/ft_strnew.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_strnew.cpp.i
-.PHONY : srcs/libjtoc/src/ft_strnew.cpp.i
-
-srcs/libjtoc/src/ft_strnew.s: srcs/libjtoc/src/ft_strnew.cpp.s
-.PHONY : srcs/libjtoc/src/ft_strnew.s
-
-# target to generate assembly for a file
-srcs/libjtoc/src/ft_strnew.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_strnew.cpp.s
-.PHONY : srcs/libjtoc/src/ft_strnew.cpp.s
-
-srcs/libjtoc/src/ft_strsub.o: srcs/libjtoc/src/ft_strsub.cpp.o
-.PHONY : srcs/libjtoc/src/ft_strsub.o
-
-# target to build an object file
-srcs/libjtoc/src/ft_strsub.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_strsub.cpp.o
-.PHONY : srcs/libjtoc/src/ft_strsub.cpp.o
-
-srcs/libjtoc/src/ft_strsub.i: srcs/libjtoc/src/ft_strsub.cpp.i
-.PHONY : srcs/libjtoc/src/ft_strsub.i
-
-# target to preprocess a source file
-srcs/libjtoc/src/ft_strsub.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_strsub.cpp.i
-.PHONY : srcs/libjtoc/src/ft_strsub.cpp.i
-
-srcs/libjtoc/src/ft_strsub.s: srcs/libjtoc/src/ft_strsub.cpp.s
-.PHONY : srcs/libjtoc/src/ft_strsub.s
-
-# target to generate assembly for a file
-srcs/libjtoc/src/ft_strsub.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/ft_strsub.cpp.s
-.PHONY : srcs/libjtoc/src/ft_strsub.cpp.s
-
-srcs/libjtoc/src/jtoc_get.o: srcs/libjtoc/src/jtoc_get.cpp.o
-.PHONY : srcs/libjtoc/src/jtoc_get.o
-
-# target to build an object file
-srcs/libjtoc/src/jtoc_get.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_get.cpp.o
-.PHONY : srcs/libjtoc/src/jtoc_get.cpp.o
-
-srcs/libjtoc/src/jtoc_get.i: srcs/libjtoc/src/jtoc_get.cpp.i
-.PHONY : srcs/libjtoc/src/jtoc_get.i
-
-# target to preprocess a source file
-srcs/libjtoc/src/jtoc_get.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_get.cpp.i
-.PHONY : srcs/libjtoc/src/jtoc_get.cpp.i
-
-srcs/libjtoc/src/jtoc_get.s: srcs/libjtoc/src/jtoc_get.cpp.s
-.PHONY : srcs/libjtoc/src/jtoc_get.s
-
-# target to generate assembly for a file
-srcs/libjtoc/src/jtoc_get.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_get.cpp.s
-.PHONY : srcs/libjtoc/src/jtoc_get.cpp.s
-
-srcs/libjtoc/src/jtoc_get_raw_data.o: srcs/libjtoc/src/jtoc_get_raw_data.cpp.o
-.PHONY : srcs/libjtoc/src/jtoc_get_raw_data.o
-
-# target to build an object file
-srcs/libjtoc/src/jtoc_get_raw_data.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_get_raw_data.cpp.o
-.PHONY : srcs/libjtoc/src/jtoc_get_raw_data.cpp.o
-
-srcs/libjtoc/src/jtoc_get_raw_data.i: srcs/libjtoc/src/jtoc_get_raw_data.cpp.i
-.PHONY : srcs/libjtoc/src/jtoc_get_raw_data.i
-
-# target to preprocess a source file
-srcs/libjtoc/src/jtoc_get_raw_data.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_get_raw_data.cpp.i
-.PHONY : srcs/libjtoc/src/jtoc_get_raw_data.cpp.i
-
-srcs/libjtoc/src/jtoc_get_raw_data.s: srcs/libjtoc/src/jtoc_get_raw_data.cpp.s
-.PHONY : srcs/libjtoc/src/jtoc_get_raw_data.s
-
-# target to generate assembly for a file
-srcs/libjtoc/src/jtoc_get_raw_data.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_get_raw_data.cpp.s
-.PHONY : srcs/libjtoc/src/jtoc_get_raw_data.cpp.s
-
-srcs/libjtoc/src/jtoc_node.o: srcs/libjtoc/src/jtoc_node.cpp.o
-.PHONY : srcs/libjtoc/src/jtoc_node.o
-
-# target to build an object file
-srcs/libjtoc/src/jtoc_node.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_node.cpp.o
-.PHONY : srcs/libjtoc/src/jtoc_node.cpp.o
-
-srcs/libjtoc/src/jtoc_node.i: srcs/libjtoc/src/jtoc_node.cpp.i
-.PHONY : srcs/libjtoc/src/jtoc_node.i
-
-# target to preprocess a source file
-srcs/libjtoc/src/jtoc_node.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_node.cpp.i
-.PHONY : srcs/libjtoc/src/jtoc_node.cpp.i
-
-srcs/libjtoc/src/jtoc_node.s: srcs/libjtoc/src/jtoc_node.cpp.s
-.PHONY : srcs/libjtoc/src/jtoc_node.s
-
-# target to generate assembly for a file
-srcs/libjtoc/src/jtoc_node.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_node.cpp.s
-.PHONY : srcs/libjtoc/src/jtoc_node.cpp.s
-
-srcs/libjtoc/src/jtoc_parse.o: srcs/libjtoc/src/jtoc_parse.cpp.o
-.PHONY : srcs/libjtoc/src/jtoc_parse.o
-
-# target to build an object file
-srcs/libjtoc/src/jtoc_parse.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_parse.cpp.o
-.PHONY : srcs/libjtoc/src/jtoc_parse.cpp.o
-
-srcs/libjtoc/src/jtoc_parse.i: srcs/libjtoc/src/jtoc_parse.cpp.i
-.PHONY : srcs/libjtoc/src/jtoc_parse.i
-
-# target to preprocess a source file
-srcs/libjtoc/src/jtoc_parse.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_parse.cpp.i
-.PHONY : srcs/libjtoc/src/jtoc_parse.cpp.i
-
-srcs/libjtoc/src/jtoc_parse.s: srcs/libjtoc/src/jtoc_parse.cpp.s
-.PHONY : srcs/libjtoc/src/jtoc_parse.s
-
-# target to generate assembly for a file
-srcs/libjtoc/src/jtoc_parse.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_parse.cpp.s
-.PHONY : srcs/libjtoc/src/jtoc_parse.cpp.s
-
-srcs/libjtoc/src/jtoc_parse_number.o: srcs/libjtoc/src/jtoc_parse_number.cpp.o
-.PHONY : srcs/libjtoc/src/jtoc_parse_number.o
-
-# target to build an object file
-srcs/libjtoc/src/jtoc_parse_number.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_parse_number.cpp.o
-.PHONY : srcs/libjtoc/src/jtoc_parse_number.cpp.o
-
-srcs/libjtoc/src/jtoc_parse_number.i: srcs/libjtoc/src/jtoc_parse_number.cpp.i
-.PHONY : srcs/libjtoc/src/jtoc_parse_number.i
-
-# target to preprocess a source file
-srcs/libjtoc/src/jtoc_parse_number.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_parse_number.cpp.i
-.PHONY : srcs/libjtoc/src/jtoc_parse_number.cpp.i
-
-srcs/libjtoc/src/jtoc_parse_number.s: srcs/libjtoc/src/jtoc_parse_number.cpp.s
-.PHONY : srcs/libjtoc/src/jtoc_parse_number.s
-
-# target to generate assembly for a file
-srcs/libjtoc/src/jtoc_parse_number.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_parse_number.cpp.s
-.PHONY : srcs/libjtoc/src/jtoc_parse_number.cpp.s
-
-srcs/libjtoc/src/jtoc_parse_value.o: srcs/libjtoc/src/jtoc_parse_value.cpp.o
-.PHONY : srcs/libjtoc/src/jtoc_parse_value.o
-
-# target to build an object file
-srcs/libjtoc/src/jtoc_parse_value.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_parse_value.cpp.o
-.PHONY : srcs/libjtoc/src/jtoc_parse_value.cpp.o
-
-srcs/libjtoc/src/jtoc_parse_value.i: srcs/libjtoc/src/jtoc_parse_value.cpp.i
-.PHONY : srcs/libjtoc/src/jtoc_parse_value.i
-
-# target to preprocess a source file
-srcs/libjtoc/src/jtoc_parse_value.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_parse_value.cpp.i
-.PHONY : srcs/libjtoc/src/jtoc_parse_value.cpp.i
-
-srcs/libjtoc/src/jtoc_parse_value.s: srcs/libjtoc/src/jtoc_parse_value.cpp.s
-.PHONY : srcs/libjtoc/src/jtoc_parse_value.s
-
-# target to generate assembly for a file
-srcs/libjtoc/src/jtoc_parse_value.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_parse_value.cpp.s
-.PHONY : srcs/libjtoc/src/jtoc_parse_value.cpp.s
-
-srcs/libjtoc/src/jtoc_read.o: srcs/libjtoc/src/jtoc_read.cpp.o
-.PHONY : srcs/libjtoc/src/jtoc_read.o
-
-# target to build an object file
-srcs/libjtoc/src/jtoc_read.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_read.cpp.o
-.PHONY : srcs/libjtoc/src/jtoc_read.cpp.o
-
-srcs/libjtoc/src/jtoc_read.i: srcs/libjtoc/src/jtoc_read.cpp.i
-.PHONY : srcs/libjtoc/src/jtoc_read.i
-
-# target to preprocess a source file
-srcs/libjtoc/src/jtoc_read.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_read.cpp.i
-.PHONY : srcs/libjtoc/src/jtoc_read.cpp.i
-
-srcs/libjtoc/src/jtoc_read.s: srcs/libjtoc/src/jtoc_read.cpp.s
-.PHONY : srcs/libjtoc/src/jtoc_read.s
-
-# target to generate assembly for a file
-srcs/libjtoc/src/jtoc_read.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_read.cpp.s
-.PHONY : srcs/libjtoc/src/jtoc_read.cpp.s
-
-srcs/libjtoc/src/jtoc_read_file.o: srcs/libjtoc/src/jtoc_read_file.cpp.o
-.PHONY : srcs/libjtoc/src/jtoc_read_file.o
-
-# target to build an object file
-srcs/libjtoc/src/jtoc_read_file.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_read_file.cpp.o
-.PHONY : srcs/libjtoc/src/jtoc_read_file.cpp.o
-
-srcs/libjtoc/src/jtoc_read_file.i: srcs/libjtoc/src/jtoc_read_file.cpp.i
-.PHONY : srcs/libjtoc/src/jtoc_read_file.i
-
-# target to preprocess a source file
-srcs/libjtoc/src/jtoc_read_file.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_read_file.cpp.i
-.PHONY : srcs/libjtoc/src/jtoc_read_file.cpp.i
-
-srcs/libjtoc/src/jtoc_read_file.s: srcs/libjtoc/src/jtoc_read_file.cpp.s
-.PHONY : srcs/libjtoc/src/jtoc_read_file.s
-
-# target to generate assembly for a file
-srcs/libjtoc/src/jtoc_read_file.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_read_file.cpp.s
-.PHONY : srcs/libjtoc/src/jtoc_read_file.cpp.s
-
-srcs/libjtoc/src/jtoc_utils.o: srcs/libjtoc/src/jtoc_utils.cpp.o
-.PHONY : srcs/libjtoc/src/jtoc_utils.o
-
-# target to build an object file
-srcs/libjtoc/src/jtoc_utils.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_utils.cpp.o
-.PHONY : srcs/libjtoc/src/jtoc_utils.cpp.o
-
-srcs/libjtoc/src/jtoc_utils.i: srcs/libjtoc/src/jtoc_utils.cpp.i
-.PHONY : srcs/libjtoc/src/jtoc_utils.i
-
-# target to preprocess a source file
-srcs/libjtoc/src/jtoc_utils.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_utils.cpp.i
-.PHONY : srcs/libjtoc/src/jtoc_utils.cpp.i
-
-srcs/libjtoc/src/jtoc_utils.s: srcs/libjtoc/src/jtoc_utils.cpp.s
-.PHONY : srcs/libjtoc/src/jtoc_utils.s
-
-# target to generate assembly for a file
-srcs/libjtoc/src/jtoc_utils.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_utils.cpp.s
-.PHONY : srcs/libjtoc/src/jtoc_utils.cpp.s
-
-srcs/libjtoc/src/jtoc_utils2.o: srcs/libjtoc/src/jtoc_utils2.cpp.o
-.PHONY : srcs/libjtoc/src/jtoc_utils2.o
-
-# target to build an object file
-srcs/libjtoc/src/jtoc_utils2.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_utils2.cpp.o
-.PHONY : srcs/libjtoc/src/jtoc_utils2.cpp.o
-
-srcs/libjtoc/src/jtoc_utils2.i: srcs/libjtoc/src/jtoc_utils2.cpp.i
-.PHONY : srcs/libjtoc/src/jtoc_utils2.i
-
-# target to preprocess a source file
-srcs/libjtoc/src/jtoc_utils2.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_utils2.cpp.i
-.PHONY : srcs/libjtoc/src/jtoc_utils2.cpp.i
-
-srcs/libjtoc/src/jtoc_utils2.s: srcs/libjtoc/src/jtoc_utils2.cpp.s
-.PHONY : srcs/libjtoc/src/jtoc_utils2.s
-
-# target to generate assembly for a file
-srcs/libjtoc/src/jtoc_utils2.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_utils2.cpp.s
-.PHONY : srcs/libjtoc/src/jtoc_utils2.cpp.s
-
-srcs/libjtoc/src/jtoc_validate.o: srcs/libjtoc/src/jtoc_validate.cpp.o
-.PHONY : srcs/libjtoc/src/jtoc_validate.o
-
-# target to build an object file
-srcs/libjtoc/src/jtoc_validate.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_validate.cpp.o
-.PHONY : srcs/libjtoc/src/jtoc_validate.cpp.o
-
-srcs/libjtoc/src/jtoc_validate.i: srcs/libjtoc/src/jtoc_validate.cpp.i
-.PHONY : srcs/libjtoc/src/jtoc_validate.i
-
-# target to preprocess a source file
-srcs/libjtoc/src/jtoc_validate.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_validate.cpp.i
-.PHONY : srcs/libjtoc/src/jtoc_validate.cpp.i
-
-srcs/libjtoc/src/jtoc_validate.s: srcs/libjtoc/src/jtoc_validate.cpp.s
-.PHONY : srcs/libjtoc/src/jtoc_validate.s
-
-# target to generate assembly for a file
-srcs/libjtoc/src/jtoc_validate.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_validate.cpp.s
-.PHONY : srcs/libjtoc/src/jtoc_validate.cpp.s
-
-srcs/libjtoc/src/jtoc_validate_value.o: srcs/libjtoc/src/jtoc_validate_value.cpp.o
-.PHONY : srcs/libjtoc/src/jtoc_validate_value.o
-
-# target to build an object file
-srcs/libjtoc/src/jtoc_validate_value.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_validate_value.cpp.o
-.PHONY : srcs/libjtoc/src/jtoc_validate_value.cpp.o
-
-srcs/libjtoc/src/jtoc_validate_value.i: srcs/libjtoc/src/jtoc_validate_value.cpp.i
-.PHONY : srcs/libjtoc/src/jtoc_validate_value.i
-
-# target to preprocess a source file
-srcs/libjtoc/src/jtoc_validate_value.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_validate_value.cpp.i
-.PHONY : srcs/libjtoc/src/jtoc_validate_value.cpp.i
-
-srcs/libjtoc/src/jtoc_validate_value.s: srcs/libjtoc/src/jtoc_validate_value.cpp.s
-.PHONY : srcs/libjtoc/src/jtoc_validate_value.s
-
-# target to generate assembly for a file
-srcs/libjtoc/src/jtoc_validate_value.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_validate_value.cpp.s
-.PHONY : srcs/libjtoc/src/jtoc_validate_value.cpp.s
-
-srcs/libjtoc/src/jtoc_write.o: srcs/libjtoc/src/jtoc_write.cpp.o
-.PHONY : srcs/libjtoc/src/jtoc_write.o
-
-# target to build an object file
-srcs/libjtoc/src/jtoc_write.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_write.cpp.o
-.PHONY : srcs/libjtoc/src/jtoc_write.cpp.o
-
-srcs/libjtoc/src/jtoc_write.i: srcs/libjtoc/src/jtoc_write.cpp.i
-.PHONY : srcs/libjtoc/src/jtoc_write.i
-
-# target to preprocess a source file
-srcs/libjtoc/src/jtoc_write.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_write.cpp.i
-.PHONY : srcs/libjtoc/src/jtoc_write.cpp.i
-
-srcs/libjtoc/src/jtoc_write.s: srcs/libjtoc/src/jtoc_write.cpp.s
-.PHONY : srcs/libjtoc/src/jtoc_write.s
-
-# target to generate assembly for a file
-srcs/libjtoc/src/jtoc_write.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/libjtoc/src/jtoc_write.cpp.s
-.PHONY : srcs/libjtoc/src/jtoc_write.cpp.s
+srcs/http/errors/HttpException.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/http/errors/HttpException.cpp.s
+.PHONY : srcs/http/errors/HttpException.cpp.s
 
 srcs/main.o: srcs/main.cpp.o
 .PHONY : srcs/main.o
@@ -993,6 +1121,54 @@ srcs/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server.dir/build.make CMakeFiles/web-server.dir/srcs/main.cpp.s
 .PHONY : srcs/main.cpp.s
 
+srcs/utilities/Logging.o: srcs/utilities/Logging.cpp.o
+.PHONY : srcs/utilities/Logging.o
+
+# target to build an object file
+srcs/utilities/Logging.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/utilities/Logging.cpp.o
+.PHONY : srcs/utilities/Logging.cpp.o
+
+srcs/utilities/Logging.i: srcs/utilities/Logging.cpp.i
+.PHONY : srcs/utilities/Logging.i
+
+# target to preprocess a source file
+srcs/utilities/Logging.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/utilities/Logging.cpp.i
+.PHONY : srcs/utilities/Logging.cpp.i
+
+srcs/utilities/Logging.s: srcs/utilities/Logging.cpp.s
+.PHONY : srcs/utilities/Logging.s
+
+# target to generate assembly for a file
+srcs/utilities/Logging.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/utilities/Logging.cpp.s
+.PHONY : srcs/utilities/Logging.cpp.s
+
+srcs/utilities/utilities.o: srcs/utilities/utilities.cpp.o
+.PHONY : srcs/utilities/utilities.o
+
+# target to build an object file
+srcs/utilities/utilities.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/utilities/utilities.cpp.o
+.PHONY : srcs/utilities/utilities.cpp.o
+
+srcs/utilities/utilities.i: srcs/utilities/utilities.cpp.i
+.PHONY : srcs/utilities/utilities.i
+
+# target to preprocess a source file
+srcs/utilities/utilities.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/utilities/utilities.cpp.i
+.PHONY : srcs/utilities/utilities.cpp.i
+
+srcs/utilities/utilities.s: srcs/utilities/utilities.cpp.s
+.PHONY : srcs/utilities/utilities.s
+
+# target to generate assembly for a file
+srcs/utilities/utilities.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/web-server-lib.dir/build.make CMakeFiles/web-server-lib.dir/srcs/utilities/utilities.cpp.s
+.PHONY : srcs/utilities/utilities.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -1001,115 +1177,126 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... jtoc"
 	@echo "... web-server"
-	@echo "... srcs/cgi/SingleCgiHandler.o"
-	@echo "... srcs/cgi/SingleCgiHandler.i"
-	@echo "... srcs/cgi/SingleCgiHandler.s"
+	@echo "... web-server-lib"
+	@echo "... libjtoc/src/ft_atoi.o"
+	@echo "... libjtoc/src/ft_atoi.i"
+	@echo "... libjtoc/src/ft_atoi.s"
+	@echo "... libjtoc/src/ft_bzero.o"
+	@echo "... libjtoc/src/ft_bzero.i"
+	@echo "... libjtoc/src/ft_bzero.s"
+	@echo "... libjtoc/src/ft_isdigit.o"
+	@echo "... libjtoc/src/ft_isdigit.i"
+	@echo "... libjtoc/src/ft_isdigit.s"
+	@echo "... libjtoc/src/ft_itoa.o"
+	@echo "... libjtoc/src/ft_itoa.i"
+	@echo "... libjtoc/src/ft_itoa.s"
+	@echo "... libjtoc/src/ft_memalloc.o"
+	@echo "... libjtoc/src/ft_memalloc.i"
+	@echo "... libjtoc/src/ft_memalloc.s"
+	@echo "... libjtoc/src/ft_memcpy.o"
+	@echo "... libjtoc/src/ft_memcpy.i"
+	@echo "... libjtoc/src/ft_memcpy.s"
+	@echo "... libjtoc/src/ft_strcpy.o"
+	@echo "... libjtoc/src/ft_strcpy.i"
+	@echo "... libjtoc/src/ft_strcpy.s"
+	@echo "... libjtoc/src/ft_strdup.o"
+	@echo "... libjtoc/src/ft_strdup.i"
+	@echo "... libjtoc/src/ft_strdup.s"
+	@echo "... libjtoc/src/ft_strhash.o"
+	@echo "... libjtoc/src/ft_strhash.i"
+	@echo "... libjtoc/src/ft_strhash.s"
+	@echo "... libjtoc/src/ft_strlen.o"
+	@echo "... libjtoc/src/ft_strlen.i"
+	@echo "... libjtoc/src/ft_strlen.s"
+	@echo "... libjtoc/src/ft_strncmp.o"
+	@echo "... libjtoc/src/ft_strncmp.i"
+	@echo "... libjtoc/src/ft_strncmp.s"
+	@echo "... libjtoc/src/ft_strnew.o"
+	@echo "... libjtoc/src/ft_strnew.i"
+	@echo "... libjtoc/src/ft_strnew.s"
+	@echo "... libjtoc/src/ft_strsub.o"
+	@echo "... libjtoc/src/ft_strsub.i"
+	@echo "... libjtoc/src/ft_strsub.s"
+	@echo "... libjtoc/src/jtoc_get.o"
+	@echo "... libjtoc/src/jtoc_get.i"
+	@echo "... libjtoc/src/jtoc_get.s"
+	@echo "... libjtoc/src/jtoc_get_raw_data.o"
+	@echo "... libjtoc/src/jtoc_get_raw_data.i"
+	@echo "... libjtoc/src/jtoc_get_raw_data.s"
+	@echo "... libjtoc/src/jtoc_node.o"
+	@echo "... libjtoc/src/jtoc_node.i"
+	@echo "... libjtoc/src/jtoc_node.s"
+	@echo "... libjtoc/src/jtoc_parse.o"
+	@echo "... libjtoc/src/jtoc_parse.i"
+	@echo "... libjtoc/src/jtoc_parse.s"
+	@echo "... libjtoc/src/jtoc_parse_number.o"
+	@echo "... libjtoc/src/jtoc_parse_number.i"
+	@echo "... libjtoc/src/jtoc_parse_number.s"
+	@echo "... libjtoc/src/jtoc_parse_value.o"
+	@echo "... libjtoc/src/jtoc_parse_value.i"
+	@echo "... libjtoc/src/jtoc_parse_value.s"
+	@echo "... libjtoc/src/jtoc_read.o"
+	@echo "... libjtoc/src/jtoc_read.i"
+	@echo "... libjtoc/src/jtoc_read.s"
+	@echo "... libjtoc/src/jtoc_read_file.o"
+	@echo "... libjtoc/src/jtoc_read_file.i"
+	@echo "... libjtoc/src/jtoc_read_file.s"
+	@echo "... libjtoc/src/jtoc_utils.o"
+	@echo "... libjtoc/src/jtoc_utils.i"
+	@echo "... libjtoc/src/jtoc_utils.s"
+	@echo "... libjtoc/src/jtoc_utils2.o"
+	@echo "... libjtoc/src/jtoc_utils2.i"
+	@echo "... libjtoc/src/jtoc_utils2.s"
+	@echo "... libjtoc/src/jtoc_validate.o"
+	@echo "... libjtoc/src/jtoc_validate.i"
+	@echo "... libjtoc/src/jtoc_validate.s"
+	@echo "... libjtoc/src/jtoc_validate_value.o"
+	@echo "... libjtoc/src/jtoc_validate_value.i"
+	@echo "... libjtoc/src/jtoc_validate_value.s"
+	@echo "... libjtoc/src/jtoc_write.o"
+	@echo "... libjtoc/src/jtoc_write.i"
+	@echo "... libjtoc/src/jtoc_write.s"
 	@echo "... srcs/config/Config.o"
 	@echo "... srcs/config/Config.i"
 	@echo "... srcs/config/Config.s"
-	@echo "... srcs/core/events/Event.o"
-	@echo "... srcs/core/events/Event.i"
-	@echo "... srcs/core/events/Event.s"
-	@echo "... srcs/core/events/EventPresets.o"
-	@echo "... srcs/core/events/EventPresets.i"
-	@echo "... srcs/core/events/EventPresets.s"
-	@echo "... srcs/core/modules/EpollModule.o"
-	@echo "... srcs/core/modules/EpollModule.i"
-	@echo "... srcs/core/modules/EpollModule.s"
+	@echo "... srcs/config/parse_config.o"
+	@echo "... srcs/config/parse_config.i"
+	@echo "... srcs/config/parse_config.s"
+	@echo "... srcs/core/core_helpers.o"
+	@echo "... srcs/core/core_helpers.i"
+	@echo "... srcs/core/core_helpers.s"
 	@echo "... srcs/core/modules/PollModule.o"
 	@echo "... srcs/core/modules/PollModule.i"
 	@echo "... srcs/core/modules/PollModule.s"
-	@echo "... srcs/http/HttpModule.o"
-	@echo "... srcs/http/HttpModule.i"
-	@echo "... srcs/http/HttpModule.s"
+	@echo "... srcs/core/sessions/HttpSession.o"
+	@echo "... srcs/core/sessions/HttpSession.i"
+	@echo "... srcs/core/sessions/HttpSession.s"
+	@echo "... srcs/http/Http.o"
+	@echo "... srcs/http/Http.i"
+	@echo "... srcs/http/Http.s"
 	@echo "... srcs/http/Request.o"
 	@echo "... srcs/http/Request.i"
 	@echo "... srcs/http/Request.s"
 	@echo "... srcs/http/Response.o"
 	@echo "... srcs/http/Response.i"
 	@echo "... srcs/http/Response.s"
-	@echo "... srcs/libjtoc/src/ft_atoi.o"
-	@echo "... srcs/libjtoc/src/ft_atoi.i"
-	@echo "... srcs/libjtoc/src/ft_atoi.s"
-	@echo "... srcs/libjtoc/src/ft_bzero.o"
-	@echo "... srcs/libjtoc/src/ft_bzero.i"
-	@echo "... srcs/libjtoc/src/ft_bzero.s"
-	@echo "... srcs/libjtoc/src/ft_isdigit.o"
-	@echo "... srcs/libjtoc/src/ft_isdigit.i"
-	@echo "... srcs/libjtoc/src/ft_isdigit.s"
-	@echo "... srcs/libjtoc/src/ft_itoa.o"
-	@echo "... srcs/libjtoc/src/ft_itoa.i"
-	@echo "... srcs/libjtoc/src/ft_itoa.s"
-	@echo "... srcs/libjtoc/src/ft_memalloc.o"
-	@echo "... srcs/libjtoc/src/ft_memalloc.i"
-	@echo "... srcs/libjtoc/src/ft_memalloc.s"
-	@echo "... srcs/libjtoc/src/ft_memcpy.o"
-	@echo "... srcs/libjtoc/src/ft_memcpy.i"
-	@echo "... srcs/libjtoc/src/ft_memcpy.s"
-	@echo "... srcs/libjtoc/src/ft_strcpy.o"
-	@echo "... srcs/libjtoc/src/ft_strcpy.i"
-	@echo "... srcs/libjtoc/src/ft_strcpy.s"
-	@echo "... srcs/libjtoc/src/ft_strdup.o"
-	@echo "... srcs/libjtoc/src/ft_strdup.i"
-	@echo "... srcs/libjtoc/src/ft_strdup.s"
-	@echo "... srcs/libjtoc/src/ft_strhash.o"
-	@echo "... srcs/libjtoc/src/ft_strhash.i"
-	@echo "... srcs/libjtoc/src/ft_strhash.s"
-	@echo "... srcs/libjtoc/src/ft_strlen.o"
-	@echo "... srcs/libjtoc/src/ft_strlen.i"
-	@echo "... srcs/libjtoc/src/ft_strlen.s"
-	@echo "... srcs/libjtoc/src/ft_strncmp.o"
-	@echo "... srcs/libjtoc/src/ft_strncmp.i"
-	@echo "... srcs/libjtoc/src/ft_strncmp.s"
-	@echo "... srcs/libjtoc/src/ft_strnew.o"
-	@echo "... srcs/libjtoc/src/ft_strnew.i"
-	@echo "... srcs/libjtoc/src/ft_strnew.s"
-	@echo "... srcs/libjtoc/src/ft_strsub.o"
-	@echo "... srcs/libjtoc/src/ft_strsub.i"
-	@echo "... srcs/libjtoc/src/ft_strsub.s"
-	@echo "... srcs/libjtoc/src/jtoc_get.o"
-	@echo "... srcs/libjtoc/src/jtoc_get.i"
-	@echo "... srcs/libjtoc/src/jtoc_get.s"
-	@echo "... srcs/libjtoc/src/jtoc_get_raw_data.o"
-	@echo "... srcs/libjtoc/src/jtoc_get_raw_data.i"
-	@echo "... srcs/libjtoc/src/jtoc_get_raw_data.s"
-	@echo "... srcs/libjtoc/src/jtoc_node.o"
-	@echo "... srcs/libjtoc/src/jtoc_node.i"
-	@echo "... srcs/libjtoc/src/jtoc_node.s"
-	@echo "... srcs/libjtoc/src/jtoc_parse.o"
-	@echo "... srcs/libjtoc/src/jtoc_parse.i"
-	@echo "... srcs/libjtoc/src/jtoc_parse.s"
-	@echo "... srcs/libjtoc/src/jtoc_parse_number.o"
-	@echo "... srcs/libjtoc/src/jtoc_parse_number.i"
-	@echo "... srcs/libjtoc/src/jtoc_parse_number.s"
-	@echo "... srcs/libjtoc/src/jtoc_parse_value.o"
-	@echo "... srcs/libjtoc/src/jtoc_parse_value.i"
-	@echo "... srcs/libjtoc/src/jtoc_parse_value.s"
-	@echo "... srcs/libjtoc/src/jtoc_read.o"
-	@echo "... srcs/libjtoc/src/jtoc_read.i"
-	@echo "... srcs/libjtoc/src/jtoc_read.s"
-	@echo "... srcs/libjtoc/src/jtoc_read_file.o"
-	@echo "... srcs/libjtoc/src/jtoc_read_file.i"
-	@echo "... srcs/libjtoc/src/jtoc_read_file.s"
-	@echo "... srcs/libjtoc/src/jtoc_utils.o"
-	@echo "... srcs/libjtoc/src/jtoc_utils.i"
-	@echo "... srcs/libjtoc/src/jtoc_utils.s"
-	@echo "... srcs/libjtoc/src/jtoc_utils2.o"
-	@echo "... srcs/libjtoc/src/jtoc_utils2.i"
-	@echo "... srcs/libjtoc/src/jtoc_utils2.s"
-	@echo "... srcs/libjtoc/src/jtoc_validate.o"
-	@echo "... srcs/libjtoc/src/jtoc_validate.i"
-	@echo "... srcs/libjtoc/src/jtoc_validate.s"
-	@echo "... srcs/libjtoc/src/jtoc_validate_value.o"
-	@echo "... srcs/libjtoc/src/jtoc_validate_value.i"
-	@echo "... srcs/libjtoc/src/jtoc_validate_value.s"
-	@echo "... srcs/libjtoc/src/jtoc_write.o"
-	@echo "... srcs/libjtoc/src/jtoc_write.i"
-	@echo "... srcs/libjtoc/src/jtoc_write.s"
+	@echo "... srcs/http/errors/HttpErrorPages.o"
+	@echo "... srcs/http/errors/HttpErrorPages.i"
+	@echo "... srcs/http/errors/HttpErrorPages.s"
+	@echo "... srcs/http/errors/HttpException.o"
+	@echo "... srcs/http/errors/HttpException.i"
+	@echo "... srcs/http/errors/HttpException.s"
 	@echo "... srcs/main.o"
 	@echo "... srcs/main.i"
 	@echo "... srcs/main.s"
+	@echo "... srcs/utilities/Logging.o"
+	@echo "... srcs/utilities/Logging.i"
+	@echo "... srcs/utilities/Logging.s"
+	@echo "... srcs/utilities/utilities.o"
+	@echo "... srcs/utilities/utilities.i"
+	@echo "... srcs/utilities/utilities.s"
 .PHONY : help
 
 

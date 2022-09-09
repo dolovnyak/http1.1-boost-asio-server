@@ -57,10 +57,10 @@ RM = /opt/homebrew/Cellar/cmake/3.24.0/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = "/Users/olgaborisova/Desktop/21 school/web_serv/libjtoc"
+CMAKE_SOURCE_DIR = /Users/olgaborisova/Desktop/webserver-42
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = "/Users/olgaborisova/Desktop/21 school/web_serv/libjtoc"
+CMAKE_BINARY_DIR = /Users/olgaborisova/Desktop/webserver-42
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,14 +87,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/olgaborisova/Desktop/21 school/web_serv/libjtoc/CMakeFiles" "/Users/olgaborisova/Desktop/21 school/web_serv/libjtoc//CMakeFiles/progress.marks"
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/olgaborisova/Desktop/21 school/web_serv/libjtoc/CMakeFiles" 0
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(CMAKE_COMMAND) -E cmake_progress_start /Users/olgaborisova/Desktop/webserver-42/CMakeFiles /Users/olgaborisova/Desktop/webserver-42/libjtoc//CMakeFiles/progress.marks
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 libjtoc/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/olgaborisova/Desktop/webserver-42/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 clean
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 libjtoc/clean
 .PHONY : clean
 
 # The main clean target
@@ -103,30 +103,31 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 preinstall
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 libjtoc/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 preinstall
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 libjtoc/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
-#=============================================================================
-# Target rules for targets named jtoc
+# Convenience name for target.
+libjtoc/CMakeFiles/jtoc.dir/rule:
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 libjtoc/CMakeFiles/jtoc.dir/rule
+.PHONY : libjtoc/CMakeFiles/jtoc.dir/rule
 
-# Build rule for target.
-jtoc: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 jtoc
+# Convenience name for target.
+jtoc: libjtoc/CMakeFiles/jtoc.dir/rule
 .PHONY : jtoc
 
 # fast build rule for target.
 jtoc/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/build
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/build
 .PHONY : jtoc/fast
 
 src/ft_atoi.o: src/ft_atoi.cpp.o
@@ -134,7 +135,7 @@ src/ft_atoi.o: src/ft_atoi.cpp.o
 
 # target to build an object file
 src/ft_atoi.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_atoi.cpp.o
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_atoi.cpp.o
 .PHONY : src/ft_atoi.cpp.o
 
 src/ft_atoi.i: src/ft_atoi.cpp.i
@@ -142,7 +143,7 @@ src/ft_atoi.i: src/ft_atoi.cpp.i
 
 # target to preprocess a source file
 src/ft_atoi.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_atoi.cpp.i
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_atoi.cpp.i
 .PHONY : src/ft_atoi.cpp.i
 
 src/ft_atoi.s: src/ft_atoi.cpp.s
@@ -150,7 +151,7 @@ src/ft_atoi.s: src/ft_atoi.cpp.s
 
 # target to generate assembly for a file
 src/ft_atoi.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_atoi.cpp.s
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_atoi.cpp.s
 .PHONY : src/ft_atoi.cpp.s
 
 src/ft_bzero.o: src/ft_bzero.cpp.o
@@ -158,7 +159,7 @@ src/ft_bzero.o: src/ft_bzero.cpp.o
 
 # target to build an object file
 src/ft_bzero.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_bzero.cpp.o
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_bzero.cpp.o
 .PHONY : src/ft_bzero.cpp.o
 
 src/ft_bzero.i: src/ft_bzero.cpp.i
@@ -166,7 +167,7 @@ src/ft_bzero.i: src/ft_bzero.cpp.i
 
 # target to preprocess a source file
 src/ft_bzero.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_bzero.cpp.i
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_bzero.cpp.i
 .PHONY : src/ft_bzero.cpp.i
 
 src/ft_bzero.s: src/ft_bzero.cpp.s
@@ -174,7 +175,7 @@ src/ft_bzero.s: src/ft_bzero.cpp.s
 
 # target to generate assembly for a file
 src/ft_bzero.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_bzero.cpp.s
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_bzero.cpp.s
 .PHONY : src/ft_bzero.cpp.s
 
 src/ft_isdigit.o: src/ft_isdigit.cpp.o
@@ -182,7 +183,7 @@ src/ft_isdigit.o: src/ft_isdigit.cpp.o
 
 # target to build an object file
 src/ft_isdigit.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_isdigit.cpp.o
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_isdigit.cpp.o
 .PHONY : src/ft_isdigit.cpp.o
 
 src/ft_isdigit.i: src/ft_isdigit.cpp.i
@@ -190,7 +191,7 @@ src/ft_isdigit.i: src/ft_isdigit.cpp.i
 
 # target to preprocess a source file
 src/ft_isdigit.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_isdigit.cpp.i
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_isdigit.cpp.i
 .PHONY : src/ft_isdigit.cpp.i
 
 src/ft_isdigit.s: src/ft_isdigit.cpp.s
@@ -198,7 +199,7 @@ src/ft_isdigit.s: src/ft_isdigit.cpp.s
 
 # target to generate assembly for a file
 src/ft_isdigit.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_isdigit.cpp.s
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_isdigit.cpp.s
 .PHONY : src/ft_isdigit.cpp.s
 
 src/ft_itoa.o: src/ft_itoa.cpp.o
@@ -206,7 +207,7 @@ src/ft_itoa.o: src/ft_itoa.cpp.o
 
 # target to build an object file
 src/ft_itoa.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_itoa.cpp.o
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_itoa.cpp.o
 .PHONY : src/ft_itoa.cpp.o
 
 src/ft_itoa.i: src/ft_itoa.cpp.i
@@ -214,7 +215,7 @@ src/ft_itoa.i: src/ft_itoa.cpp.i
 
 # target to preprocess a source file
 src/ft_itoa.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_itoa.cpp.i
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_itoa.cpp.i
 .PHONY : src/ft_itoa.cpp.i
 
 src/ft_itoa.s: src/ft_itoa.cpp.s
@@ -222,7 +223,7 @@ src/ft_itoa.s: src/ft_itoa.cpp.s
 
 # target to generate assembly for a file
 src/ft_itoa.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_itoa.cpp.s
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_itoa.cpp.s
 .PHONY : src/ft_itoa.cpp.s
 
 src/ft_memalloc.o: src/ft_memalloc.cpp.o
@@ -230,7 +231,7 @@ src/ft_memalloc.o: src/ft_memalloc.cpp.o
 
 # target to build an object file
 src/ft_memalloc.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_memalloc.cpp.o
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_memalloc.cpp.o
 .PHONY : src/ft_memalloc.cpp.o
 
 src/ft_memalloc.i: src/ft_memalloc.cpp.i
@@ -238,7 +239,7 @@ src/ft_memalloc.i: src/ft_memalloc.cpp.i
 
 # target to preprocess a source file
 src/ft_memalloc.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_memalloc.cpp.i
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_memalloc.cpp.i
 .PHONY : src/ft_memalloc.cpp.i
 
 src/ft_memalloc.s: src/ft_memalloc.cpp.s
@@ -246,7 +247,7 @@ src/ft_memalloc.s: src/ft_memalloc.cpp.s
 
 # target to generate assembly for a file
 src/ft_memalloc.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_memalloc.cpp.s
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_memalloc.cpp.s
 .PHONY : src/ft_memalloc.cpp.s
 
 src/ft_memcpy.o: src/ft_memcpy.cpp.o
@@ -254,7 +255,7 @@ src/ft_memcpy.o: src/ft_memcpy.cpp.o
 
 # target to build an object file
 src/ft_memcpy.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_memcpy.cpp.o
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_memcpy.cpp.o
 .PHONY : src/ft_memcpy.cpp.o
 
 src/ft_memcpy.i: src/ft_memcpy.cpp.i
@@ -262,7 +263,7 @@ src/ft_memcpy.i: src/ft_memcpy.cpp.i
 
 # target to preprocess a source file
 src/ft_memcpy.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_memcpy.cpp.i
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_memcpy.cpp.i
 .PHONY : src/ft_memcpy.cpp.i
 
 src/ft_memcpy.s: src/ft_memcpy.cpp.s
@@ -270,7 +271,7 @@ src/ft_memcpy.s: src/ft_memcpy.cpp.s
 
 # target to generate assembly for a file
 src/ft_memcpy.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_memcpy.cpp.s
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_memcpy.cpp.s
 .PHONY : src/ft_memcpy.cpp.s
 
 src/ft_strcpy.o: src/ft_strcpy.cpp.o
@@ -278,7 +279,7 @@ src/ft_strcpy.o: src/ft_strcpy.cpp.o
 
 # target to build an object file
 src/ft_strcpy.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_strcpy.cpp.o
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_strcpy.cpp.o
 .PHONY : src/ft_strcpy.cpp.o
 
 src/ft_strcpy.i: src/ft_strcpy.cpp.i
@@ -286,7 +287,7 @@ src/ft_strcpy.i: src/ft_strcpy.cpp.i
 
 # target to preprocess a source file
 src/ft_strcpy.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_strcpy.cpp.i
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_strcpy.cpp.i
 .PHONY : src/ft_strcpy.cpp.i
 
 src/ft_strcpy.s: src/ft_strcpy.cpp.s
@@ -294,7 +295,7 @@ src/ft_strcpy.s: src/ft_strcpy.cpp.s
 
 # target to generate assembly for a file
 src/ft_strcpy.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_strcpy.cpp.s
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_strcpy.cpp.s
 .PHONY : src/ft_strcpy.cpp.s
 
 src/ft_strdup.o: src/ft_strdup.cpp.o
@@ -302,7 +303,7 @@ src/ft_strdup.o: src/ft_strdup.cpp.o
 
 # target to build an object file
 src/ft_strdup.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_strdup.cpp.o
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_strdup.cpp.o
 .PHONY : src/ft_strdup.cpp.o
 
 src/ft_strdup.i: src/ft_strdup.cpp.i
@@ -310,7 +311,7 @@ src/ft_strdup.i: src/ft_strdup.cpp.i
 
 # target to preprocess a source file
 src/ft_strdup.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_strdup.cpp.i
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_strdup.cpp.i
 .PHONY : src/ft_strdup.cpp.i
 
 src/ft_strdup.s: src/ft_strdup.cpp.s
@@ -318,7 +319,7 @@ src/ft_strdup.s: src/ft_strdup.cpp.s
 
 # target to generate assembly for a file
 src/ft_strdup.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_strdup.cpp.s
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_strdup.cpp.s
 .PHONY : src/ft_strdup.cpp.s
 
 src/ft_strhash.o: src/ft_strhash.cpp.o
@@ -326,7 +327,7 @@ src/ft_strhash.o: src/ft_strhash.cpp.o
 
 # target to build an object file
 src/ft_strhash.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_strhash.cpp.o
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_strhash.cpp.o
 .PHONY : src/ft_strhash.cpp.o
 
 src/ft_strhash.i: src/ft_strhash.cpp.i
@@ -334,7 +335,7 @@ src/ft_strhash.i: src/ft_strhash.cpp.i
 
 # target to preprocess a source file
 src/ft_strhash.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_strhash.cpp.i
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_strhash.cpp.i
 .PHONY : src/ft_strhash.cpp.i
 
 src/ft_strhash.s: src/ft_strhash.cpp.s
@@ -342,7 +343,7 @@ src/ft_strhash.s: src/ft_strhash.cpp.s
 
 # target to generate assembly for a file
 src/ft_strhash.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_strhash.cpp.s
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_strhash.cpp.s
 .PHONY : src/ft_strhash.cpp.s
 
 src/ft_strlen.o: src/ft_strlen.cpp.o
@@ -350,7 +351,7 @@ src/ft_strlen.o: src/ft_strlen.cpp.o
 
 # target to build an object file
 src/ft_strlen.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_strlen.cpp.o
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_strlen.cpp.o
 .PHONY : src/ft_strlen.cpp.o
 
 src/ft_strlen.i: src/ft_strlen.cpp.i
@@ -358,7 +359,7 @@ src/ft_strlen.i: src/ft_strlen.cpp.i
 
 # target to preprocess a source file
 src/ft_strlen.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_strlen.cpp.i
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_strlen.cpp.i
 .PHONY : src/ft_strlen.cpp.i
 
 src/ft_strlen.s: src/ft_strlen.cpp.s
@@ -366,7 +367,7 @@ src/ft_strlen.s: src/ft_strlen.cpp.s
 
 # target to generate assembly for a file
 src/ft_strlen.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_strlen.cpp.s
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_strlen.cpp.s
 .PHONY : src/ft_strlen.cpp.s
 
 src/ft_strncmp.o: src/ft_strncmp.cpp.o
@@ -374,7 +375,7 @@ src/ft_strncmp.o: src/ft_strncmp.cpp.o
 
 # target to build an object file
 src/ft_strncmp.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_strncmp.cpp.o
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_strncmp.cpp.o
 .PHONY : src/ft_strncmp.cpp.o
 
 src/ft_strncmp.i: src/ft_strncmp.cpp.i
@@ -382,7 +383,7 @@ src/ft_strncmp.i: src/ft_strncmp.cpp.i
 
 # target to preprocess a source file
 src/ft_strncmp.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_strncmp.cpp.i
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_strncmp.cpp.i
 .PHONY : src/ft_strncmp.cpp.i
 
 src/ft_strncmp.s: src/ft_strncmp.cpp.s
@@ -390,7 +391,7 @@ src/ft_strncmp.s: src/ft_strncmp.cpp.s
 
 # target to generate assembly for a file
 src/ft_strncmp.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_strncmp.cpp.s
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_strncmp.cpp.s
 .PHONY : src/ft_strncmp.cpp.s
 
 src/ft_strnew.o: src/ft_strnew.cpp.o
@@ -398,7 +399,7 @@ src/ft_strnew.o: src/ft_strnew.cpp.o
 
 # target to build an object file
 src/ft_strnew.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_strnew.cpp.o
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_strnew.cpp.o
 .PHONY : src/ft_strnew.cpp.o
 
 src/ft_strnew.i: src/ft_strnew.cpp.i
@@ -406,7 +407,7 @@ src/ft_strnew.i: src/ft_strnew.cpp.i
 
 # target to preprocess a source file
 src/ft_strnew.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_strnew.cpp.i
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_strnew.cpp.i
 .PHONY : src/ft_strnew.cpp.i
 
 src/ft_strnew.s: src/ft_strnew.cpp.s
@@ -414,7 +415,7 @@ src/ft_strnew.s: src/ft_strnew.cpp.s
 
 # target to generate assembly for a file
 src/ft_strnew.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_strnew.cpp.s
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_strnew.cpp.s
 .PHONY : src/ft_strnew.cpp.s
 
 src/ft_strsub.o: src/ft_strsub.cpp.o
@@ -422,7 +423,7 @@ src/ft_strsub.o: src/ft_strsub.cpp.o
 
 # target to build an object file
 src/ft_strsub.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_strsub.cpp.o
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_strsub.cpp.o
 .PHONY : src/ft_strsub.cpp.o
 
 src/ft_strsub.i: src/ft_strsub.cpp.i
@@ -430,7 +431,7 @@ src/ft_strsub.i: src/ft_strsub.cpp.i
 
 # target to preprocess a source file
 src/ft_strsub.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_strsub.cpp.i
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_strsub.cpp.i
 .PHONY : src/ft_strsub.cpp.i
 
 src/ft_strsub.s: src/ft_strsub.cpp.s
@@ -438,7 +439,7 @@ src/ft_strsub.s: src/ft_strsub.cpp.s
 
 # target to generate assembly for a file
 src/ft_strsub.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/ft_strsub.cpp.s
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/ft_strsub.cpp.s
 .PHONY : src/ft_strsub.cpp.s
 
 src/jtoc_get.o: src/jtoc_get.cpp.o
@@ -446,7 +447,7 @@ src/jtoc_get.o: src/jtoc_get.cpp.o
 
 # target to build an object file
 src/jtoc_get.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_get.cpp.o
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_get.cpp.o
 .PHONY : src/jtoc_get.cpp.o
 
 src/jtoc_get.i: src/jtoc_get.cpp.i
@@ -454,7 +455,7 @@ src/jtoc_get.i: src/jtoc_get.cpp.i
 
 # target to preprocess a source file
 src/jtoc_get.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_get.cpp.i
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_get.cpp.i
 .PHONY : src/jtoc_get.cpp.i
 
 src/jtoc_get.s: src/jtoc_get.cpp.s
@@ -462,7 +463,7 @@ src/jtoc_get.s: src/jtoc_get.cpp.s
 
 # target to generate assembly for a file
 src/jtoc_get.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_get.cpp.s
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_get.cpp.s
 .PHONY : src/jtoc_get.cpp.s
 
 src/jtoc_get_raw_data.o: src/jtoc_get_raw_data.cpp.o
@@ -470,7 +471,7 @@ src/jtoc_get_raw_data.o: src/jtoc_get_raw_data.cpp.o
 
 # target to build an object file
 src/jtoc_get_raw_data.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_get_raw_data.cpp.o
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_get_raw_data.cpp.o
 .PHONY : src/jtoc_get_raw_data.cpp.o
 
 src/jtoc_get_raw_data.i: src/jtoc_get_raw_data.cpp.i
@@ -478,7 +479,7 @@ src/jtoc_get_raw_data.i: src/jtoc_get_raw_data.cpp.i
 
 # target to preprocess a source file
 src/jtoc_get_raw_data.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_get_raw_data.cpp.i
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_get_raw_data.cpp.i
 .PHONY : src/jtoc_get_raw_data.cpp.i
 
 src/jtoc_get_raw_data.s: src/jtoc_get_raw_data.cpp.s
@@ -486,7 +487,7 @@ src/jtoc_get_raw_data.s: src/jtoc_get_raw_data.cpp.s
 
 # target to generate assembly for a file
 src/jtoc_get_raw_data.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_get_raw_data.cpp.s
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_get_raw_data.cpp.s
 .PHONY : src/jtoc_get_raw_data.cpp.s
 
 src/jtoc_node.o: src/jtoc_node.cpp.o
@@ -494,7 +495,7 @@ src/jtoc_node.o: src/jtoc_node.cpp.o
 
 # target to build an object file
 src/jtoc_node.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_node.cpp.o
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_node.cpp.o
 .PHONY : src/jtoc_node.cpp.o
 
 src/jtoc_node.i: src/jtoc_node.cpp.i
@@ -502,7 +503,7 @@ src/jtoc_node.i: src/jtoc_node.cpp.i
 
 # target to preprocess a source file
 src/jtoc_node.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_node.cpp.i
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_node.cpp.i
 .PHONY : src/jtoc_node.cpp.i
 
 src/jtoc_node.s: src/jtoc_node.cpp.s
@@ -510,7 +511,7 @@ src/jtoc_node.s: src/jtoc_node.cpp.s
 
 # target to generate assembly for a file
 src/jtoc_node.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_node.cpp.s
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_node.cpp.s
 .PHONY : src/jtoc_node.cpp.s
 
 src/jtoc_parse.o: src/jtoc_parse.cpp.o
@@ -518,7 +519,7 @@ src/jtoc_parse.o: src/jtoc_parse.cpp.o
 
 # target to build an object file
 src/jtoc_parse.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_parse.cpp.o
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_parse.cpp.o
 .PHONY : src/jtoc_parse.cpp.o
 
 src/jtoc_parse.i: src/jtoc_parse.cpp.i
@@ -526,7 +527,7 @@ src/jtoc_parse.i: src/jtoc_parse.cpp.i
 
 # target to preprocess a source file
 src/jtoc_parse.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_parse.cpp.i
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_parse.cpp.i
 .PHONY : src/jtoc_parse.cpp.i
 
 src/jtoc_parse.s: src/jtoc_parse.cpp.s
@@ -534,7 +535,7 @@ src/jtoc_parse.s: src/jtoc_parse.cpp.s
 
 # target to generate assembly for a file
 src/jtoc_parse.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_parse.cpp.s
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_parse.cpp.s
 .PHONY : src/jtoc_parse.cpp.s
 
 src/jtoc_parse_number.o: src/jtoc_parse_number.cpp.o
@@ -542,7 +543,7 @@ src/jtoc_parse_number.o: src/jtoc_parse_number.cpp.o
 
 # target to build an object file
 src/jtoc_parse_number.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_parse_number.cpp.o
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_parse_number.cpp.o
 .PHONY : src/jtoc_parse_number.cpp.o
 
 src/jtoc_parse_number.i: src/jtoc_parse_number.cpp.i
@@ -550,7 +551,7 @@ src/jtoc_parse_number.i: src/jtoc_parse_number.cpp.i
 
 # target to preprocess a source file
 src/jtoc_parse_number.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_parse_number.cpp.i
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_parse_number.cpp.i
 .PHONY : src/jtoc_parse_number.cpp.i
 
 src/jtoc_parse_number.s: src/jtoc_parse_number.cpp.s
@@ -558,7 +559,7 @@ src/jtoc_parse_number.s: src/jtoc_parse_number.cpp.s
 
 # target to generate assembly for a file
 src/jtoc_parse_number.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_parse_number.cpp.s
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_parse_number.cpp.s
 .PHONY : src/jtoc_parse_number.cpp.s
 
 src/jtoc_parse_value.o: src/jtoc_parse_value.cpp.o
@@ -566,7 +567,7 @@ src/jtoc_parse_value.o: src/jtoc_parse_value.cpp.o
 
 # target to build an object file
 src/jtoc_parse_value.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_parse_value.cpp.o
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_parse_value.cpp.o
 .PHONY : src/jtoc_parse_value.cpp.o
 
 src/jtoc_parse_value.i: src/jtoc_parse_value.cpp.i
@@ -574,7 +575,7 @@ src/jtoc_parse_value.i: src/jtoc_parse_value.cpp.i
 
 # target to preprocess a source file
 src/jtoc_parse_value.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_parse_value.cpp.i
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_parse_value.cpp.i
 .PHONY : src/jtoc_parse_value.cpp.i
 
 src/jtoc_parse_value.s: src/jtoc_parse_value.cpp.s
@@ -582,7 +583,7 @@ src/jtoc_parse_value.s: src/jtoc_parse_value.cpp.s
 
 # target to generate assembly for a file
 src/jtoc_parse_value.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_parse_value.cpp.s
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_parse_value.cpp.s
 .PHONY : src/jtoc_parse_value.cpp.s
 
 src/jtoc_read.o: src/jtoc_read.cpp.o
@@ -590,7 +591,7 @@ src/jtoc_read.o: src/jtoc_read.cpp.o
 
 # target to build an object file
 src/jtoc_read.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_read.cpp.o
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_read.cpp.o
 .PHONY : src/jtoc_read.cpp.o
 
 src/jtoc_read.i: src/jtoc_read.cpp.i
@@ -598,7 +599,7 @@ src/jtoc_read.i: src/jtoc_read.cpp.i
 
 # target to preprocess a source file
 src/jtoc_read.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_read.cpp.i
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_read.cpp.i
 .PHONY : src/jtoc_read.cpp.i
 
 src/jtoc_read.s: src/jtoc_read.cpp.s
@@ -606,7 +607,7 @@ src/jtoc_read.s: src/jtoc_read.cpp.s
 
 # target to generate assembly for a file
 src/jtoc_read.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_read.cpp.s
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_read.cpp.s
 .PHONY : src/jtoc_read.cpp.s
 
 src/jtoc_read_file.o: src/jtoc_read_file.cpp.o
@@ -614,7 +615,7 @@ src/jtoc_read_file.o: src/jtoc_read_file.cpp.o
 
 # target to build an object file
 src/jtoc_read_file.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_read_file.cpp.o
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_read_file.cpp.o
 .PHONY : src/jtoc_read_file.cpp.o
 
 src/jtoc_read_file.i: src/jtoc_read_file.cpp.i
@@ -622,7 +623,7 @@ src/jtoc_read_file.i: src/jtoc_read_file.cpp.i
 
 # target to preprocess a source file
 src/jtoc_read_file.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_read_file.cpp.i
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_read_file.cpp.i
 .PHONY : src/jtoc_read_file.cpp.i
 
 src/jtoc_read_file.s: src/jtoc_read_file.cpp.s
@@ -630,7 +631,7 @@ src/jtoc_read_file.s: src/jtoc_read_file.cpp.s
 
 # target to generate assembly for a file
 src/jtoc_read_file.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_read_file.cpp.s
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_read_file.cpp.s
 .PHONY : src/jtoc_read_file.cpp.s
 
 src/jtoc_utils.o: src/jtoc_utils.cpp.o
@@ -638,7 +639,7 @@ src/jtoc_utils.o: src/jtoc_utils.cpp.o
 
 # target to build an object file
 src/jtoc_utils.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_utils.cpp.o
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_utils.cpp.o
 .PHONY : src/jtoc_utils.cpp.o
 
 src/jtoc_utils.i: src/jtoc_utils.cpp.i
@@ -646,7 +647,7 @@ src/jtoc_utils.i: src/jtoc_utils.cpp.i
 
 # target to preprocess a source file
 src/jtoc_utils.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_utils.cpp.i
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_utils.cpp.i
 .PHONY : src/jtoc_utils.cpp.i
 
 src/jtoc_utils.s: src/jtoc_utils.cpp.s
@@ -654,7 +655,7 @@ src/jtoc_utils.s: src/jtoc_utils.cpp.s
 
 # target to generate assembly for a file
 src/jtoc_utils.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_utils.cpp.s
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_utils.cpp.s
 .PHONY : src/jtoc_utils.cpp.s
 
 src/jtoc_utils2.o: src/jtoc_utils2.cpp.o
@@ -662,7 +663,7 @@ src/jtoc_utils2.o: src/jtoc_utils2.cpp.o
 
 # target to build an object file
 src/jtoc_utils2.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_utils2.cpp.o
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_utils2.cpp.o
 .PHONY : src/jtoc_utils2.cpp.o
 
 src/jtoc_utils2.i: src/jtoc_utils2.cpp.i
@@ -670,7 +671,7 @@ src/jtoc_utils2.i: src/jtoc_utils2.cpp.i
 
 # target to preprocess a source file
 src/jtoc_utils2.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_utils2.cpp.i
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_utils2.cpp.i
 .PHONY : src/jtoc_utils2.cpp.i
 
 src/jtoc_utils2.s: src/jtoc_utils2.cpp.s
@@ -678,7 +679,7 @@ src/jtoc_utils2.s: src/jtoc_utils2.cpp.s
 
 # target to generate assembly for a file
 src/jtoc_utils2.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_utils2.cpp.s
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_utils2.cpp.s
 .PHONY : src/jtoc_utils2.cpp.s
 
 src/jtoc_validate.o: src/jtoc_validate.cpp.o
@@ -686,7 +687,7 @@ src/jtoc_validate.o: src/jtoc_validate.cpp.o
 
 # target to build an object file
 src/jtoc_validate.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_validate.cpp.o
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_validate.cpp.o
 .PHONY : src/jtoc_validate.cpp.o
 
 src/jtoc_validate.i: src/jtoc_validate.cpp.i
@@ -694,7 +695,7 @@ src/jtoc_validate.i: src/jtoc_validate.cpp.i
 
 # target to preprocess a source file
 src/jtoc_validate.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_validate.cpp.i
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_validate.cpp.i
 .PHONY : src/jtoc_validate.cpp.i
 
 src/jtoc_validate.s: src/jtoc_validate.cpp.s
@@ -702,7 +703,7 @@ src/jtoc_validate.s: src/jtoc_validate.cpp.s
 
 # target to generate assembly for a file
 src/jtoc_validate.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_validate.cpp.s
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_validate.cpp.s
 .PHONY : src/jtoc_validate.cpp.s
 
 src/jtoc_validate_value.o: src/jtoc_validate_value.cpp.o
@@ -710,7 +711,7 @@ src/jtoc_validate_value.o: src/jtoc_validate_value.cpp.o
 
 # target to build an object file
 src/jtoc_validate_value.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_validate_value.cpp.o
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_validate_value.cpp.o
 .PHONY : src/jtoc_validate_value.cpp.o
 
 src/jtoc_validate_value.i: src/jtoc_validate_value.cpp.i
@@ -718,7 +719,7 @@ src/jtoc_validate_value.i: src/jtoc_validate_value.cpp.i
 
 # target to preprocess a source file
 src/jtoc_validate_value.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_validate_value.cpp.i
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_validate_value.cpp.i
 .PHONY : src/jtoc_validate_value.cpp.i
 
 src/jtoc_validate_value.s: src/jtoc_validate_value.cpp.s
@@ -726,7 +727,7 @@ src/jtoc_validate_value.s: src/jtoc_validate_value.cpp.s
 
 # target to generate assembly for a file
 src/jtoc_validate_value.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_validate_value.cpp.s
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_validate_value.cpp.s
 .PHONY : src/jtoc_validate_value.cpp.s
 
 src/jtoc_write.o: src/jtoc_write.cpp.o
@@ -734,7 +735,7 @@ src/jtoc_write.o: src/jtoc_write.cpp.o
 
 # target to build an object file
 src/jtoc_write.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_write.cpp.o
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_write.cpp.o
 .PHONY : src/jtoc_write.cpp.o
 
 src/jtoc_write.i: src/jtoc_write.cpp.i
@@ -742,7 +743,7 @@ src/jtoc_write.i: src/jtoc_write.cpp.i
 
 # target to preprocess a source file
 src/jtoc_write.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_write.cpp.i
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_write.cpp.i
 .PHONY : src/jtoc_write.cpp.i
 
 src/jtoc_write.s: src/jtoc_write.cpp.s
@@ -750,7 +751,7 @@ src/jtoc_write.s: src/jtoc_write.cpp.s
 
 # target to generate assembly for a file
 src/jtoc_write.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/jtoc.dir/build.make CMakeFiles/jtoc.dir/src/jtoc_write.cpp.s
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f libjtoc/CMakeFiles/jtoc.dir/build.make libjtoc/CMakeFiles/jtoc.dir/src/jtoc_write.cpp.s
 .PHONY : src/jtoc_write.cpp.s
 
 # Help Target
@@ -851,6 +852,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 
