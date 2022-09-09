@@ -73,22 +73,22 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 ################################################################################
 # tests
 ################################################################################
-if (NOT STANDARD98)
-    set(WS_TESTS ${PROJECT_NAME}-tests)
-    add_subdirectory(googletest)
+# if (NOT STANDARD98)
+#     set(WS_TESTS ${PROJECT_NAME}-tests)
+#     add_subdirectory(googletest)
 
-    add_executable(${WS_TESTS}
-            tests/test_utilities.cpp
-            tests/test_fsm_handle_request.cpp
-            tests/test_poll_module.cpp
-            )
+#     add_executable(${WS_TESTS}
+#             tests/test_utilities.cpp
+#             tests/test_fsm_handle_request.cpp
+#             tests/test_poll_module.cpp
+#             )
 
-    target_link_libraries(${WS_TESTS}
-            gtest
-            gtest_main
-            ${WS_LIB})
+#     target_link_libraries(${WS_TESTS}
+#             gtest
+#             gtest_main
+#             ${WS_LIB})
 
-    target_include_directories(${WS_TESTS} PUBLIC
-            googletest/googletest/include
-            )
-endif ()
+#     target_include_directories(${WS_TESTS} PUBLIC
+#             googletest/googletest/include
+#             )
+# endif ()
