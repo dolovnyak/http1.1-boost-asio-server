@@ -61,3 +61,7 @@ bool IsRegName(const std::string& str);
 bool IsIpv4(const std::string& str);
 
 bool SetSocketNonBlocking(int socket);
+
+std::string ReadFile(const std::string& path);
+
+std::string ReadFile(int fd);
