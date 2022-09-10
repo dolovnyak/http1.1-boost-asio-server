@@ -21,7 +21,7 @@ int             ws_jtoc_get_int(const char *key, int *value, t_jnode *n)
     return(FUNCTION_SUCCESS);
 }
 
-int ws_jtoc_get_server_config(SharedPtr<ServerConfig>& config,
+int ws_jtoc_get_server_config(SharedPtr<ServerConfig>& server_config,
                        t_jnode	*n)
 {
     t_jnode	*tmp;
@@ -33,8 +33,7 @@ int ws_jtoc_get_server_config(SharedPtr<ServerConfig>& config,
         LOG_ERROR("Failed to read json ServerInstances Name");
         return (FUNCTION_FAILURE);
     }
-    config.
-    config.name = jtoc_get_string(tmp);
+    server_config->name = jtoc_get_string(tmp);
 
     // get port
     if (!(tmp = jtoc_node_get_by_path(n, "Port"))
@@ -42,7 +41,7 @@ int ws_jtoc_get_server_config(SharedPtr<ServerConfig>& config,
         LOG_ERROR("Failed to read json ServerInstances Port");
         return (FUNCTION_FAILURE);
     }
-    config.port = jtoc_get_int(tmp);
+    server_config->port = jtoc_get_int(tmp);
 
     //  get Root
     if (!(tmp = jtoc_node_get_by_path(n, "Root"))
@@ -50,7 +49,7 @@ int ws_jtoc_get_server_config(SharedPtr<ServerConfig>& config,
         LOG_ERROR("Failed to read json ServerInstances Root");
         return (FUNCTION_FAILURE);
     }
-    config.root_path = jtoc_get_string(tmp);
+    server_config.root_path = jtoc_get_string(tmp);
 
     //  get MaxCoonnectionNumber
     if (!(tmp = jtoc_node_get_by_path(n, "MaxCoonnectionNumber"))
@@ -58,7 +57,7 @@ int ws_jtoc_get_server_config(SharedPtr<ServerConfig>& config,
         LOG_ERROR("Failed to read json ServerInstances MaxCoonnectionNumber");
         return (FUNCTION_FAILURE);
     }
-    config.max_connection_number = jtoc_get_int(tmp);
+    server_config.max_connection_number = jtoc_get_int(tmp);
 
     //get CgiDirectories
     if (!(tmp = jtoc_node_get_by_path(n, "CgiDirectories"))
@@ -66,7 +65,7 @@ int ws_jtoc_get_server_config(SharedPtr<ServerConfig>& config,
         LOG_ERROR("Failed to read json ServerInstances CgiDirectories");
         return (FUNCTION_FAILURE);
     }
-    if (ws_jtoc_get_servers_config(config.cgi_directory_paths, tmp) == FUNCTION_FAILURE) {
+    if (ws_jtoc_get_servers_config(server_config.cgi_directory_paths, tmp) == FUNCTION_FAILURE) {
 
         return (FUNCTION_FAILURE);
     }

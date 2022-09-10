@@ -15,10 +15,10 @@ namespace {
 /// TODO delete
 
     // std::vector<SharedPtr<ServerConfig> > mock_2_server_configs() {
-    //     std::vector<SharedPtr<ServerConfig> > configs;
-
-    //     ServerConfig config1(1337, "HelloWorld", "/Users/sbecker/Desktop/projects/webserver-42/", std::unordered_set<std::string>(), "index.html", 60, 300, 20);
-    //     configs.push_back(MakeShared(config1));
+//         std::vector<SharedPtr<ServerConfig> > configs;
+//
+//         ServerConfig config1(1337, "HelloWorld", "/Users/sbecker/Desktop/projects/webserver-42/", std::unordered_set<std::string>(), "index.html", 60, 300, 20);
+//         configs.push_back(MakeShared(config1));
 
     //     std::unordered_set<std::string> cgi_extensions;
     //     cgi_extensions.insert(".py");
@@ -58,14 +58,14 @@ bool Config::Load(const char* path) {
         // LOG_INFO("timeout: ", config.timeout);
         // LOG_INFO("servers_configs_0 name: ", config.servers_configs[0].name);
         // LOG_INFO("servers_configs_0 port: ", config.servers_configs[0].port);
-        // LOG_INFO("servers_configs_0 root_path: ", config.servers_configs[0].root_path);
+        // LOG_INFO("servers_configs_0 root: ", config.servers_configs[0].root);
         // LOG_INFO("servers_configs_0 cgi_directory_paths_0: ", config.servers_configs[0].cgi_directory_paths[0]);
         // LOG_INFO("servers_configs_0 cgi_directory_paths_1: ", config.servers_configs[0].cgi_directory_paths[1]);
         // LOG_INFO("servers_configs_0 cgi_directory_paths_2: ", config.servers_configs[0].cgi_directory_paths[2]);
         // LOG_INFO("servers_configs_0 max_connection_number: ", config.servers_configs[0].max_connection_number);
         // LOG_INFO("servers_configs_1 name: ", config.servers_configs[1].name);
         // LOG_INFO("servers_configs_1 port: ", config.servers_configs[1].port);
-        // LOG_INFO("servers_configs_1 root_path: ", config.servers_configs[1].root_path);
+        // LOG_INFO("servers_configs_1 root: ", config.servers_configs[1].root);
         // LOG_INFO("servers_configs_1 cgi_directory_paths_0: ", config.servers_configs[1].cgi_directory_paths[0]);
         // LOG_INFO("servers_configs_1 cgi_directory_paths_1: ", config.servers_configs[1].cgi_directory_paths[1]);
         // LOG_INFO("servers_configs_1 max_connection_number: ", config.servers_configs[1].max_connection_number);
@@ -78,9 +78,8 @@ bool Config::Load(const char* path) {
 //                            const std::unordered_set<std::string>& cgi_file_extensions,
 //                            const std::string& default_file_name,
 //                            int default_keep_alive_timeout_s,
-//                            int max_keep_alive_timeout_s,
 //                            int hang_session_timeout_s)
-//         : port(port), name(name), root_path(root_path), cgi_file_extensions(cgi_file_extensions),
+//         : port(port), name(name), root(root_path), cgi_file_extensions(cgi_file_extensions),
 //           default_file_name(default_file_name), default_keep_alive_timeout_s(default_keep_alive_timeout_s),
 //           max_keep_alive_timeout_s(max_keep_alive_timeout_s), hang_session_timeout_s(hang_session_timeout_s) {}
 
