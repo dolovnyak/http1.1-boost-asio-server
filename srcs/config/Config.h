@@ -51,15 +51,14 @@ struct Location{
 struct ServerConfig {
     ServerConfig(int port,
                 const std::string& name,
-                const std::string& root_path,
+                const std::string& root,
+                std::unordered_map <int, std::string> error_pages,
                 const std::unordered_set<std::string>& cgi_file_extensions,
-                const std::string& default_file_name,
-                int max_body_size,
-                int max_header_size,
-                int max_raw_request_size,
                 int default_keep_alive_timeout_s,
-                int max_keep_alive_timeout_s,
-                int hang_session_timeout_s);
+                int max_keep_alive_timeout_s, /// опциональное брать дефолтное значение
+                int hang_session_timeout_s, /// опциональное брать дефолтное значение
+                std::vector<Location> locations  /// TODO maybe del shared ptr
+                );
 
     int port; /// обязательное поле
 
@@ -67,20 +66,23 @@ struct ServerConfig {
 
     std::string root; /// root должен всегда заканчиваться на / (автоматически добавлять если это не так)  /// обязательное поле
 
-    std::unordered_map <int, std::string> error_pages; /// опциональное поле, они задаются в абсолютном пути (по умолчанию пустое)
-
-    std::unordered_set<std::string> cgi_file_extensions; /// опциональное поле (по умолчанию пустое)
-
     int default_keep_alive_timeout_s; /// опциональное брать дефолтное значение
 
     int max_keep_alive_timeout_s; /// опциональное брать дефолтное значение
 
     int hang_session_timeout_s; /// опциональное брать дефолтное значение
 
-    std::vector<Location> locations;  /// TODO maybe del shared ptr
+    std::unordered_map <int, std::string> error_pages; /// опциональное поле, они задаются в абсолютном пути (по умолчанию пустое)
+
+    std::unordered_set<std::string> cgi_file_extensions; /// опциональное поле (по умолчанию пустое)
+
+    std::vector<Location> locations;  /// обязательное??? TODO maybe del shared ptr
+
+    bool default_name; // not come from json
 };
 
 struct PortServersConfig {
+    
     SharedPtr<ServerConfig> GetByNameOrDefault(const std::string& name) const;
 
     std::vector<SharedPtr <ServerConfig > > server_configs; /// first server is default

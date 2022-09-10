@@ -18,7 +18,6 @@
       "DefaultKeepAliveTimeout_s": 30,
       "MaxKeepAliveTimeout_s": 1800,
       "HangSessionTimeout_s": 10,
-
       
       "DefaultErrorPages": {
         "404": "/error_pages/404.html",
