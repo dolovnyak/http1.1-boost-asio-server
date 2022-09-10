@@ -82,6 +82,14 @@ struct ServerConfig {
     std::vector<Location> locations;  /// TODO maybe del shared ptr
 };
 
+struct PortServersConfig {
+    SharedPtr<ServerConfig> GetByNameOrDefault(const std::string& name) const;
+
+    std::vector<SharedPtr <ServerConfig > > server_configs;
+
+    int port;
+};
+
 struct Config {
     bool Load(const char* path);
 
@@ -93,6 +101,5 @@ struct Config {
 
     int core_timeout_ms;  /// this value conflict with sessions_killer_delay_s, so this value should be <= sessions_killer_delay_s (set exception on ths when load config)
 
-    std::vector<SharedPtr<ServerConfig>> servers_configs;
+    std::unordered_map<int, PortServersConfig> port_servers_configs;
 };
-
