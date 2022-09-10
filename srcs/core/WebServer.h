@@ -36,11 +36,12 @@ WebServer<CoreModule>::WebServer(const SharedPtr<Config>& config)
           _sessions_killer_event(
                   SessionsKillerEvent<CoreModule>(&_sessions, &_event_queue, _config->sessions_killer_delay_s)) {
 
-    for (size_t i = 0; i < _config->servers_configs.size(); ++i) {
-        int socket = SetupServerSocket(_config->servers_configs[i], _config);
+
+    for (PortServersIt it = _config->port_servers_configs.begin(); it != _config->port_servers_configs.end(); ++it) {
+        int socket = SetupServerSocket(it->second.port, _config);
 
         SharedPtr<Session<CoreModule> > server_session = MakeShared<Session<CoreModule> >(new ServerSession<CoreModule>(
-                _core_module.GetNextSessionIndex(), &_core_module, SocketFd(socket), _config->servers_configs[i]));
+                _core_module.GetNextSessionIndex(), &_core_module, SocketFd(socket), it->second));
 
         _core_module.AddSession(socket, server_session);
     }

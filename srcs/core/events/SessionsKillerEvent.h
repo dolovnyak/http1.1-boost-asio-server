@@ -60,7 +60,7 @@ void SessionsKillerEvent<CoreModule>::Process() {
                     }
                 }
                 else if (difftime(time(nullptr), http_session->last_activity_time) >
-                         http_session->server_config->hang_session_timeout_s) {
+                         http_session->port_servers_config->hang_session_timeout_s) {
                     http_session->Close();
                 }
                 break;
@@ -71,7 +71,7 @@ void SessionsKillerEvent<CoreModule>::Process() {
                 HttpSession<CoreModule>* main_http_session = dynamic_cast<HttpSession<CoreModule>*>(file_session->main_http_session.Get());
 
                 if (difftime(time(nullptr), it->second->last_activity_time) >
-                    main_http_session->server_config->hang_session_timeout_s) {
+                    main_http_session->port_servers_config->hang_session_timeout_s) {
                     file_session->Close();
                 }
                 break;

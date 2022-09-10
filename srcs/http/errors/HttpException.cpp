@@ -4,10 +4,10 @@ HttpException::HttpException(const std::string& message,
                              Http::Code error_code,
                              const std::string& error_title,
                              bool keep_alive,
-                             const SharedPtr<ServerConfig>& server_config)
+                             const Optional<SharedPtr<ServerConfig> >& server_config)
         : _message(message),
           _keep_alive(keep_alive),
-          _error_response(MakeShared(Response::MakeErrorResponse(error_code, error_title, server_config))) {}
+          _error_response(MakeShared(Response::MakeErrorResponse(error_code, error_title))) {}
 
 HttpException::~HttpException() _NOEXCEPT {}
 
