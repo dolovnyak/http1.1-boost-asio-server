@@ -74,14 +74,25 @@ bool Config::Load(const char* path) {
     return true;
 }
 
-// ServerConfig::ServerConfig(int port, const std::string& name, const std::string& root_path,
-//                            const std::unordered_set<std::string>& cgi_file_extensions,
-//                            const std::string& default_file_name,
-//                            int default_keep_alive_timeout_s,
-//                            int hang_session_timeout_s)
-//         : port(port), name(name), root(root_path), cgi_file_extensions(cgi_file_extensions),
-//           default_file_name(default_file_name), default_keep_alive_timeout_s(default_keep_alive_timeout_s),
-//           max_keep_alive_timeout_s(max_keep_alive_timeout_s), hang_session_timeout_s(hang_session_timeout_s) {}
+ServerConfig::ServerConfig(int port,
+                            const std::string& name,
+                            const std::string& root,
+                            std::unordered_map <int, std::string> error_pages,
+                            const std::unordered_set<std::string>& cgi_file_extensions,
+                            int default_keep_alive_timeout_s,
+                            int max_keep_alive_timeout_s, 
+                            int hang_session_timeout_s,
+                            std::vector<Location> locations
+                            )
+                    : port(port),
+                    name(name),
+                    root(root),
+                    error_pages(error_pages), 
+                    cgi_file_extensions(cgi_file_extensions),
+                    default_keep_alive_timeout_s(default_keep_alive_timeout_s),
+                    max_keep_alive_timeout_s(max_keep_alive_timeout_s),
+                    hang_session_timeout_s(hang_session_timeout_s),
+                    locations(locations){}
 
 
 
