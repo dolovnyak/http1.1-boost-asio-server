@@ -46,8 +46,6 @@ struct Location{
     std::unordered_set<Http::Method, EnumClassHash> available_methods; /// если не указано, то недоступен ни один метод (на всякий, проверить)
 
     std::string redirect;  /// опциональное поле, хз как работает если задан index или autoindex (на всякий, проверить)
-
-    bool is_default; /// если он один слушает свой порт, то он дефолтный.
 };
 
 struct ServerConfig {
@@ -85,7 +83,7 @@ struct ServerConfig {
 struct PortServersConfig {
     SharedPtr<ServerConfig> GetByNameOrDefault(const std::string& name) const;
 
-    std::vector<SharedPtr <ServerConfig > > server_configs;
+    std::vector<SharedPtr <ServerConfig > > server_configs; /// first server is default
 
     int port;
 };
