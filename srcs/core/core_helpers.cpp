@@ -5,7 +5,7 @@
 #include <netinet/in.h>
 #include <unistd.h>
 
-int SetupServerSocket(SharedPtr<ServerConfig> server_config, SharedPtr<Config> config) {
+int SetupServerSocket(int port, SharedPtr<Config> config) {
     int option_value = 1;
     int socket_fd = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -27,7 +27,7 @@ int SetupServerSocket(SharedPtr<ServerConfig> server_config, SharedPtr<Config> c
     bzero(&address, sizeof(address));
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = htonl(INADDR_ANY);
-    address.sin_port = htons(server_config->port);
+    address.sin_port = htons(port);
 
     if (bind(socket_fd, (struct sockaddr*)&address, sizeof(address)) < 0) {
         close(socket_fd);

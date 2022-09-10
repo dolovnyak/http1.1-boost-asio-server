@@ -48,18 +48,18 @@ void HttpProcessRequestEvent<CoreModule>::RunCgiPipeline() {
     int err = pipe(fds);
 
     if (err == - 1) {
-        throw InternalServerError("Pipe error", _http_session->server_config);
+        throw InternalServerError("Pipe error", _http_session->port_servers_config);
     }
 
     ssize_t write_res = write(fds[1], _http_session->request->body.c_str(), _http_session->request->body.size());
     if (write_res == - 1) {
-        throw InternalServerError("Error write to pipe", _http_session->server_config);
+        throw InternalServerError("Error write to pipe", _http_session->port_servers_config);
     }
 
     int fork_id = fork();
 
     if (fork_id == - 1) {
-        throw InternalServerError("Fork error", _http_session->server_config);
+        throw InternalServerError("Fork error", _http_session->port_servers_config);
     }
     else if (fork_id == 0) {
         char** env = new char*[_http_session->request->headers.size() + 1];
@@ -103,7 +103,7 @@ template<class CoreModule>
 void HttpProcessRequestEvent<CoreModule>::RunFilePipeline() {
     int fd = open(_http_session->request->target.full_path.c_str(), O_RDONLY);
     if (fd == -1) {
-        throw NotFound("File not found or not available", _http_session->server_config);
+        throw NotFound("File not found or not available", _http_session->port_servers_config);
     }
     if (!SetSocketNonBlocking(fd)) {
         close(fd);
@@ -159,7 +159,7 @@ void HttpProcessRequestEvent<CoreModule>::Process() {
         _http_session->SendDataToClient(
                 Response::MakeErrorResponse(Http::InternalServerError,
                                             "Internal server error",
-                                            _http_session->server_config).response,
+                                            _http_session->port_servers_config).response,
                 false);
     }
 
