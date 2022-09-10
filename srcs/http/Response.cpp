@@ -6,7 +6,7 @@
 
 Response Response::MakeErrorResponse(Http::Code error, const std::string& error_title,
                                      Optional<SharedPtr<ServerConfig> > server_config) {
-    std::string body = GetHttpErrorPageByCode(error);
+    std::string body = GetHttpErrorPageByCode(error, server_config);
     std::vector<Http::Header> headers;
     headers.push_back(Http::Header("Content-Type", "text/html, charset=utf-8"));
     headers.push_back(Http::Header("Content-Length", std::to_string(body.size())));
