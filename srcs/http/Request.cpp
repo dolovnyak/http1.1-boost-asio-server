@@ -335,8 +335,8 @@ void Request::ProcessHttpVersion() {
 }
 
 void Request::ProcessFilePath() {
-    target.full_path = server_config->root_path + target.full_path;
-    target.directory_path = server_config->root_path + target.directory_path;
+    target.full_path = server_config->root + target.full_path;
+    target.directory_path = server_config->root + target.directory_path;
 
     if (server_config->cgi_file_extensions.find(target.extension) !=
         server_config->cgi_file_extensions.end()) {
