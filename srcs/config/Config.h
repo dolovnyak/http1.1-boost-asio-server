@@ -9,12 +9,13 @@
 #include <unordered_set>
 #include <unordered_map>
 
+#define WEBSERVER_NAME "Webserver-42"
+
 #define DEFAULT_MAX_SOCKETS 1024
 #define DEFAULT_READ_BUFFER_SIZE 2048
 
 #define DEFAULT_SESSION_KILLER_DELAY 2 // 2 seconds
 #define DEFAULT_CORE_TIMEOUT 1 // 1 seconds
-
 
 #define DEFAULT_MAX_BODY_SIZE 100000000 // 100 MB
 #define DEFAULT_MAX_HEADER_SIZE 1000000 // 1 MB
@@ -23,6 +24,9 @@
 #define DEFAULT_KEEP_ALIVE_TIMEOUT 60 // 60 seconds
 #define DEFAULT_MAX_KEEP_ALIVE_TIMEOUT 1800 // 30 minutes
 #define DEFAULT_HANG_SESSION_TIMEOUT 10 // 10 seconds
+
+struct PortServersConfig;
+typedef std::unordered_map<int, SharedPtr<PortServersConfig> >::iterator PortServersIt;
 
 struct Location{
     Location(
@@ -75,8 +79,6 @@ struct ServerConfig {
 
     int max_keep_alive_timeout_s; /// опциональное брать дефолтное значение
 
-    int hang_session_timeout_s; /// опциональное брать дефолтное значение
-
     std::vector<Location> locations;  /// TODO maybe del shared ptr
 };
 
@@ -99,5 +101,7 @@ struct Config {
 
     int core_timeout_ms;  /// this value conflict with sessions_killer_delay_s, so this value should be <= sessions_killer_delay_s (set exception on ths when load config)
 
-    std::unordered_map<int, PortServersConfig> port_servers_configs;
+    int hang_session_timeout_s; /// опциональное брать дефолтное значение
+
+    std::unordered_map<int, SharedPtr<PortServersConfig> > port_servers_configs;
 };

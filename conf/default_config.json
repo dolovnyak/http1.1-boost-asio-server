@@ -2,6 +2,7 @@
   "MaxSocketsNumber": 1024,
   "ReadBufferSize": 1024,
   "SessionsKillerDelay_s": 2,
+  "HangSessionTimeout_s": 10,
   "CoreTimeout_s": 1,
   "ServerInstances": [
     {
@@ -17,7 +18,6 @@
       "MaxRawRequestSize": 16384,
       "DefaultKeepAliveTimeout_s": 30,
       "MaxKeepAliveTimeout_s": 1800,
-      "HangSessionTimeout_s": 10,
 
       
       "DefaultErrorPages": {
