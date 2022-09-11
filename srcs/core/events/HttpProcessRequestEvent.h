@@ -101,7 +101,7 @@ void HttpProcessRequestEvent<CoreModule>::RunCgiPipeline() {
 
 template<class CoreModule>
 void HttpProcessRequestEvent<CoreModule>::RunFilePipeline() {
-    int fd = open(_http_session->request->target.full_path.c_str(), O_RDONLY);
+    int fd = open(_http_session->request->target.path.c_str(), O_RDONLY);
     if (fd == -1) {
         throw NotFound("File not found or not available", _http_session->port_servers_config);
     }

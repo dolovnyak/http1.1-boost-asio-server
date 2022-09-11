@@ -23,13 +23,13 @@ namespace HttpSessionState {
 template<class CoreModule>
 class HttpSession : public Session<CoreModule> {
 public:
-    HttpSession(int core_module_index, CoreModule* core_module, SocketFd socket,
+    HttpSession(const SharedPtr<Config>& config, int core_module_index, CoreModule* core_module, SocketFd socket,
                 const SharedPtr<PortServersConfig>& server_config_in)
-            : Session<CoreModule>(core_module_index, core_module, socket),
+            : Session<CoreModule>(config, core_module_index, core_module, socket),
               port_servers_config(server_config_in),
-              request(MakeShared(new Request(server_config))),
+              request(MakeShared(new Request(port_servers_config->GetDefault()))),
               keep_alive(false),
-              keep_alive_timeout(port_servers_config->default_keep_alive_timeout_s),
+              keep_alive_timeout(this->config->default_keep_alive_timeout_s),
               state(HttpSessionState::ReadRequest) {}
 
     ~HttpSession() {}
