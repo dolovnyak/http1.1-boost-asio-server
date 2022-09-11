@@ -78,13 +78,15 @@ struct ServerConfig {
 
     std::unordered_set<std::string> cgi_file_extensions; /// опциональное поле (по умолчанию пустое)
 
-    std::vector<Location> locations;  /// обязательное??? TODO maybe del shared ptr
+    std::vector<SharedPtr<Location> > locations;  /// обязательное???
 
 };
 
 struct PortServersConfig {
     
     SharedPtr<ServerConfig> GetByNameOrDefault(const std::string& name) const;
+
+    SharedPtr<ServerConfig> GetDefault() const;
 
     std::vector<SharedPtr <ServerConfig > > server_configs; /// first server is default
 

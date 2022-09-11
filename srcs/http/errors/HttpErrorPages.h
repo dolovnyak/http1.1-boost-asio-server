@@ -5,4 +5,4 @@
 #include "SharedPtr.h"
 #include "Config.h"
 
-const std::string& GetHttpErrorPageByCode(Http::Code code, Optional<SharedPtr<ServerConfig> > server_config);
+std::string GetHttpErrorPageByCode(Http::Code code, SharedPtr<ServerConfig> server_config);

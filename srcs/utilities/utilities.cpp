@@ -1,6 +1,8 @@
 #include "utilities.h"
 
 #include <sys/ioctl.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 std::string StripString(const std::string& str) {
     std::string::const_iterator start_it = str.cbegin();
@@ -268,6 +270,23 @@ bool SetSocketNonBlocking(int fd) {
     return true;
 }
 
-std::string ReadFile(const std::string& path) {
+bool ReadFile(const std::string& path, std::string& result) {
+    int fd = open(path.c_str(), O_RDONLY);
+    if (fd < 0) {
+        return false;
+    }
+    while (true) {
+        char buff[READ_BUFFER_SIZE];
 
+        ssize_t read_bytes = read(fd, buff, sizeof(buff));
+        if (read_bytes < 0) {
+            close(fd);
+            return false;
+        }
+        if (read_bytes == 0) {
+            break;
+        }
+        result.append(buff, read_bytes);
+    }
+    return true;
 }

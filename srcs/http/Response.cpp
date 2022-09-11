@@ -5,7 +5,7 @@
 #include <vector>
 
 Response Response::MakeErrorResponse(Http::Code error, const std::string& error_title,
-                                     Optional<SharedPtr<ServerConfig> > server_config) {
+                                     SharedPtr<ServerConfig> server_config) {
     std::string body = GetHttpErrorPageByCode(error, server_config);
     std::vector<Http::Header> headers;
     headers.push_back(Http::Header("Content-Type", "text/html, charset=utf-8"));
@@ -16,7 +16,7 @@ Response Response::MakeErrorResponse(Http::Code error, const std::string& error_
     return Response(error, error_title, headers, body);
 }
 
-Response Response::MakeOkResponse(const std::string& body, Optional<SharedPtr<ServerConfig> > server_config, bool keep_alive) {
+Response Response::MakeOkResponse(const std::string& body, SharedPtr<ServerConfig> server_config, bool keep_alive) {
     std::vector<Http::Header> headers;
     headers.push_back(Http::Header("Content-Type", "text/html, charset=utf-8"));
     headers.push_back(Http::Header("Content-Length", std::to_string(body.size())));
