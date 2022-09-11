@@ -77,7 +77,7 @@ void HttpReadRequestEvent<CoreModule>::Process() {
         LOG_ERROR("Unexpected exception: ", e.what());
         _http_session->SendDataToClient(Response::MakeErrorResponse(Http::InternalServerError,
                                                                     "Internal server error",
-                                                                    _http_session->server_config).response,
+                                                                    _http_session->port_servers_config).response,
                                         false);
     }
 }

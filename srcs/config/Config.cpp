@@ -81,7 +81,6 @@ ServerConfig::ServerConfig(int port,
                             const std::unordered_set<std::string>& cgi_file_extensions,
                             int default_keep_alive_timeout_s,
                             int max_keep_alive_timeout_s, 
-                            int hang_session_timeout_s,
                             std::vector<Location> locations
                             )
                     : port(port),
@@ -91,7 +90,6 @@ ServerConfig::ServerConfig(int port,
                     cgi_file_extensions(cgi_file_extensions),
                     default_keep_alive_timeout_s(default_keep_alive_timeout_s),
                     max_keep_alive_timeout_s(max_keep_alive_timeout_s),
-                    hang_session_timeout_s(hang_session_timeout_s),
                     locations(locations){}
 
 
