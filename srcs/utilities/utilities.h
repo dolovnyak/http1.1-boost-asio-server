@@ -9,6 +9,8 @@
 #define OVERRIDE override
 #endif
 
+#define READ_BUFFER_SIZE 4096
+
 struct EnumClassHash
 {
     template <typename T>
@@ -62,6 +64,4 @@ bool IsIpv4(const std::string& str);
 
 bool SetSocketNonBlocking(int socket);
 
-std::string ReadFile(const std::string& path);
-
-std::string ReadFile(int fd);
+bool ReadFile(const std::string& path, std::string& result);
