@@ -1,4 +1,4 @@
-#include "Config.h"
+//#include "Config.h"
 #include "parse_config.h"
 
 namespace {
@@ -31,6 +31,7 @@ namespace {
 }
 
 bool Config::Load(const char* path) {
+    LOG_INFO("HI ");
     /// TODO delete
     // if (std::string(path) == "1") {
     //     threads_number = 8;
@@ -52,7 +53,7 @@ bool Config::Load(const char* path) {
         /// Olga updateeeed =0
     Config config;
 
-    if(ws_jtoc_setup(config, "conf/default_config.json") == FUNCTION_SUCCESS) { // change 2 arg to path
+    if(ws_jtoc_get_config(config, "../../conf/default_config.json") == FUNCTION_SUCCESS) { // change 2 arg to path
         LOG_INFO("max_sockets_number: ", config.max_sockets_number);
         // LOG_INFO("max sockets_number: ", config.max_sockets_number);
         // LOG_INFO("timeout: ", config.timeout);
@@ -88,8 +89,6 @@ ServerConfig::ServerConfig(int port,
                     root(root),
                     error_pages(error_pages), 
                     cgi_file_extensions(cgi_file_extensions),
-                    default_keep_alive_timeout_s(default_keep_alive_timeout_s),
-                    max_keep_alive_timeout_s(max_keep_alive_timeout_s),
                     locations(locations){}
 
 
