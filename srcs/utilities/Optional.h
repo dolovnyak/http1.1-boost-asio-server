@@ -3,8 +3,6 @@
 template<class T>
 class Optional {
 public:
-    Optional() : _has_value(false) {}
-
     Optional(const T& value) : _has_value(true), _value(value) {}
 
     Optional(const Optional& other) : _has_value(other._has_value), _value(other._value) {}
@@ -29,7 +27,11 @@ public:
 
     T* operator->() { return &_value; }
 
+    static Optional<T> nullopt;
+
 private:
-    bool _has_value;
+    Optional() : _has_value(false) { }
+
+bool _has_value;
     T _value;
 };

@@ -71,21 +71,19 @@ struct ServerConfig {
 
     std::string root; /// root должен всегда заканчиваться на / (автоматически добавлять если это не так)  /// обязательное поле
 
-    int default_keep_alive_timeout_s; /// опциональное брать дефолтное значение
-
-    int max_keep_alive_timeout_s; /// опциональное брать дефолтное значение
-
     std::unordered_map <int, std::string> error_pages; /// опциональное поле, они задаются в абсолютном пути (по умолчанию пустое)
 
     std::unordered_set<std::string> cgi_file_extensions; /// опциональное поле (по умолчанию пустое)
 
-    std::vector<Location> locations;  /// обязательное??? TODO maybe del shared ptr
+    std::vector<SharedPtr<Location> > locations;  /// обязательное???
 
 };
 
 struct PortServersConfig {
     
     SharedPtr<ServerConfig> GetByNameOrDefault(const std::string& name) const;
+
+    SharedPtr<ServerConfig> GetDefault() const;
 
     std::vector<SharedPtr <ServerConfig > > server_configs; /// first server is default
 
@@ -104,6 +102,10 @@ struct Config {
     int core_timeout_ms;  /// this value conflict with sessions_killer_delay_s, so this value should be <= sessions_killer_delay_s (set exception on ths when load config)
 
     int hang_session_timeout_s; /// опциональное брать дефолтное значение
+
+    int default_keep_alive_timeout_s; /// опциональное брать дефолтное значение
+
+    int max_keep_alive_timeout_s; /// опциональное брать дефолтное значение
 
     std::unordered_map<int, SharedPtr<PortServersConfig> > port_servers_configs;
 };

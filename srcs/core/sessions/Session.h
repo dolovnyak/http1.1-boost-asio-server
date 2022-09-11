@@ -23,9 +23,10 @@ public:
     typedef SharedPtr<Session<CoreModule> > Ptr;
 
 public:
-    Session(int core_module_index, CoreModule* core_module, SocketFd socket)
+    Session(const SharedPtr<Config>& config, int core_module_index, CoreModule* core_module, SocketFd socket)
             : available(true),
               last_activity_time(time(nullptr)),
+              config(config),
               core_module_index(core_module_index),
               core_module(core_module),
               socket(socket) {}
@@ -47,6 +48,7 @@ public:
 public:
     bool available;
     time_t last_activity_time;
+    SharedPtr<Config> config;
     int core_module_index;
     CoreModule* core_module;
     SocketFd socket;
