@@ -3,6 +3,7 @@
 #include "Http.h"
 #include "HttpErrorPages.h"
 #include "SharedPtr.h"
+#include "Optional.h"
 
 /// У респонса должен быть набор базовых хедеров:
 /// Date
@@ -18,9 +19,9 @@
 class Response {
 public:
     static Response MakeErrorResponse(Http::Code code, const std::string& error_title,
-                                      SharedPtr<ServerConfig> server_config);
+                                      Optional<SharedPtr<ServerConfig> > server_config);
 
-    static Response MakeOkResponse(const std::string& body, SharedPtr<ServerConfig> server_config, bool keep_alive);
+    static Response MakeOkResponse(const std::string& body, Optional<SharedPtr<ServerConfig> > server_config, bool keep_alive);
 
     Response(Http::Code code, const std::string& title,
              const std::vector<Http::Header>& custom_headers,

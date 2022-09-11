@@ -26,9 +26,8 @@ namespace {
         }
         else {
             request_target.full_path = raw_request_target.substr(0, path_end);
-            request_target.directory_path = request_target.full_path.substr(0,
-                                                                            request_target.full_path.find_last_of('/') +
-                                                                            1);
+            request_target.directory_path = request_target.full_path
+                    .substr(0, request_target.full_path.find_last_of('/') + 1);
             request_target.query_string = raw_request_target.substr(path_end + 1);
         }
 
@@ -80,8 +79,8 @@ namespace {
     }
 }
 
-Request::Request(const SharedPtr<ServerConfig>& server_config)
-        : server_config(server_config),
+Request::Request(const SharedPtr<PortServersConfig>& port_servers_config)
+        : port_server_config(port_servers_config),
           content_length(), /// it should be empty cause it's optional
           is_cgi(false),
           _handle_state(RequestHandleState::HandleFirstLine),

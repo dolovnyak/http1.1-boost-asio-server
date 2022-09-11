@@ -1,25 +1,26 @@
 #include "Response.h"
+#include "Config.h"
 #include "utilities.h"
 
 #include <vector>
 
 Response Response::MakeErrorResponse(Http::Code error, const std::string& error_title,
-                                     SharedPtr<ServerConfig> server_config) {
-    std::string body = GetHttpErrorPageByCode(error);
+                                     Optional<SharedPtr<ServerConfig> > server_config) {
+    std::string body = GetHttpErrorPageByCode(error, server_config);
     std::vector<Http::Header> headers;
     headers.push_back(Http::Header("Content-Type", "text/html, charset=utf-8"));
     headers.push_back(Http::Header("Content-Length", std::to_string(body.size())));
-    headers.push_back(Http::Header("Server", server_config->name));
+    headers.push_back(Http::Header("Server", WEBSERVER_NAME));
     headers.push_back(Http::Header("Date", GetCurrentDateTimeString()));
     headers.push_back(Http::Header("Connection", "close"));
     return Response(error, error_title, headers, body);
 }
 
-Response Response::MakeOkResponse(const std::string& body, SharedPtr<ServerConfig> server_config, bool keep_alive) {
+Response Response::MakeOkResponse(const std::string& body, Optional<SharedPtr<ServerConfig> > server_config, bool keep_alive) {
     std::vector<Http::Header> headers;
     headers.push_back(Http::Header("Content-Type", "text/html, charset=utf-8"));
     headers.push_back(Http::Header("Content-Length", std::to_string(body.size())));
-    headers.push_back(Http::Header("Server", server_config->name));
+    headers.push_back(Http::Header("Server", WEBSERVER_NAME));
     headers.push_back(Http::Header("Date", GetCurrentDateTimeString()));
 
     keep_alive ? headers.push_back(Http::Header("Connection", "keep-alive"))

@@ -66,7 +66,7 @@ struct RequestTarget {
 
 class Request {
 public:
-    Request(const SharedPtr<ServerConfig>& server_config);
+    Request(const SharedPtr<PortServersConfig>& port_server_config);
 
     RequestHandleStatus::Status Handle(SharedPtr<std::string> raw_request_part);
 
@@ -92,7 +92,7 @@ public:
 
     std::unordered_map<std::string, std::vector<std::string> > headers;
 
-    SharedPtr<ServerConfig> server_config;
+    SharedPtr<PortServersConfig> port_server_config;
 
     RequestTarget target;
 
@@ -103,6 +103,8 @@ public:
     bool keep_alive;
 
     int keep_alive_timeout;
+
+    Optional<SharedPtr<ServerConfig>> default_server_config;
 
 
 private: /// handle helpers

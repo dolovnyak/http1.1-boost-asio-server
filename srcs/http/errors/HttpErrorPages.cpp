@@ -1,6 +1,7 @@
 #include "HttpErrorPages.h"
 
 #include <unordered_map>
+#include <fcntl.h>
 
 namespace {
     const std::string k301 =
@@ -351,4 +352,16 @@ namespace {
         return it->second;
     }
     throw std::logic_error("Unknown http error code");
+}
+
+const std::string& GetHttpErrorPageByCode(Http::Code code, Optional<SharedPtr<ServerConfig> > server_config) {
+    if (server_config.HasValue()) {
+        const std::unordered_map<int, std::string>::iterator& it = server_config.Value()->error_pages.find(code);
+        if (it != server_config.Value()->error_pages.end()) {
+            int fd = open(it->second.c_str(), O_RDONLY);
+            if (fd >= 0) {
+
+            }
+        }
+    }
 }

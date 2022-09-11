@@ -90,17 +90,7 @@ int ws_jtoc_get_port_servers_configs(std::unordered_map<int, PortServersConfig>&
 {
     t_jnode         *tmp;
     PortServersConfig port_servers_config_item;
-    ServerConfig server_config(-1,
-                                std::string(),
-                                std::string(),
-                                std::unordered_map <int, std::string>(),
-                                std::unordered_set<std::string>(),
-                                DEFAULT_KEEP_ALIVE_TIMEOUT,
-                                DEFAULT_MAX_KEEP_ALIVE_TIMEOUT, /// опциональное брать дефолтное значение
-                                DEFAULT_HANG_SESSION_TIMEOUT, /// опциональное брать дефолтное значение
-                                std::vector<Location>(),
-                                false
-                                );
+    ServerConfig server_config;
 
     std::vector<SharedPtr <ServerConfig >> server_configs;
         
@@ -114,9 +104,10 @@ int ws_jtoc_get_port_servers_configs(std::unordered_map<int, PortServersConfig>&
             return (FUNCTION_FAILURE);
         }
         if (port_servers_configs.find(server_config.port) != port_servers_configs.end()){
-            server_config.default_name = true;
+            // server_config.default_name = true;
             //consrtuctor???
             // port_servers_config_item; // = new empty 
+            port_servers_config_item = PortServersConfig();
             port_servers_config_item.port = server_config.port;
             port_servers_config_item.server_configs = std::vector<SharedPtr <ServerConfig >>();
             port_servers_config_item.server_configs.push_back(MakeShared(server_config));
@@ -127,7 +118,7 @@ int ws_jtoc_get_port_servers_configs(std::unordered_map<int, PortServersConfig>&
             // TODO check repeated names by loop in vectors
             port_servers_config_item.server_configs.push_back(MakeShared(server_config));
         }
-        server_configs.push_back(MakeShared(server_config));
+        port_servers_configs.push_back(MakeShared(server_config));
         tmp = tmp->right;
     }
 

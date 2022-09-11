@@ -267,3 +267,7 @@ bool SetSocketNonBlocking(int fd) {
     }
     return true;
 }
+
+std::string ReadFile(const std::string& path) {
+
+}

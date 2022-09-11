@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Config.h"
-
 #include <string>
 
 #define CR                  (char) '\r'

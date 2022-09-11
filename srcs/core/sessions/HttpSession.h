@@ -24,12 +24,12 @@ template<class CoreModule>
 class HttpSession : public Session<CoreModule> {
 public:
     HttpSession(int core_module_index, CoreModule* core_module, SocketFd socket,
-                const SharedPtr<ServerConfig>& server_config_in)
+                const SharedPtr<PortServersConfig>& server_config_in)
             : Session<CoreModule>(core_module_index, core_module, socket),
-              server_config(server_config_in),
+              port_servers_config(server_config_in),
               request(MakeShared(new Request(server_config))),
               keep_alive(false),
-              keep_alive_timeout(server_config->default_keep_alive_timeout_s),
+              keep_alive_timeout(port_servers_config->default_keep_alive_timeout_s),
               state(HttpSessionState::ReadRequest) {}
 
     ~HttpSession() {}
@@ -49,7 +49,7 @@ public:
     const std::string& GetName() const override;
 
 public:
-    SharedPtr<ServerConfig> server_config;
+    SharedPtr<PortServersConfig> port_servers_config;
 
     SharedPtr<Request> request;
 

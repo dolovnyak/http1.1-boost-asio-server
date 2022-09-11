@@ -2,6 +2,7 @@
   "MaxSocketsNumber": 1024,
   "ReadBufferSize": 1024,
   "SessionsKillerDelay_s": 2,
+  "HangSessionTimeout_s": 10,
   "CoreTimeout_s": 1,
   "ServerInstances": [
     {
@@ -16,9 +17,7 @@
       "MaxHeaderSize": 1024,
       "MaxRawRequestSize": 16384,
       "DefaultKeepAliveTimeout_s": 30,
-      "MaxKeepAliveTimeout_s": 1800,
-      "HangSessionTimeout_s": 10,
-      
+      "MaxKeepAliveTimeout_s": 1800,      
       "DefaultErrorPages": {
         "404": "/error_pages/404.html",
         "405": "/error_pages/405.html",
