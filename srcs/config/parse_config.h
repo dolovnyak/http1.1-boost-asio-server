@@ -16,5 +16,5 @@ int ws_jtoc_get_servers_config(SharedPtr<ServerConfig>& config,
 int ws_jtoc_get_servers_configs(std::vector<SharedPtr<ServerConfig>> & server_configs,
                                 t_jnode	*n);
 
-int				ws_jtoc_setup(Config& config,
+int				ws_jtoc_get_config(Config& config,
                                  const char *json);

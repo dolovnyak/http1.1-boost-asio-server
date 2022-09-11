@@ -4,6 +4,7 @@
 #include "Http.h"
 #include "utilities.h"
 
+
 #include <string>
 #include <vector>
 #include <unordered_set>
@@ -36,6 +37,8 @@ struct Location{
         std::string index,
         std::unordered_set<std::string> available_methods,
         std::string redirect);
+    
+    Location() {};
 
     std::string location; /// Tlocation должен всегда начинаться с / (кидать ошибку если это не так) /// обязательное поле
 
@@ -63,17 +66,13 @@ struct ServerConfig {
                 std::vector<Location> locations  /// TODO maybe del shared ptr
                 );
 
-    ServerConfig() {}
+    ServerConfig() {} // add defaut value
 
     int port; /// обязательное поле
 
     std::string name; /// обязательное поле (проверять, что несколько
 
     std::string root; /// root должен всегда заканчиваться на / (автоматически добавлять если это не так)  /// обязательное поле
-
-    int default_keep_alive_timeout_s; /// опциональное брать дефолтное значение
-
-    int max_keep_alive_timeout_s; /// опциональное брать дефолтное значение
 
     std::unordered_map <int, std::string> error_pages; /// опциональное поле, они задаются в абсолютном пути (по умолчанию пустое)
 
@@ -104,6 +103,10 @@ struct Config {
     int core_timeout_ms;  /// this value conflict with sessions_killer_delay_s, so this value should be <= sessions_killer_delay_s (set exception on ths when load config)
 
     int hang_session_timeout_s; /// опциональное брать дефолтное значение
+
+    int default_keep_alive_timeout_s; /// опциональное брать дефолтное значение
+
+    int max_keep_alive_timeout_s; /// опциональное брать дефолтное значение
 
     std::unordered_map<int, SharedPtr<PortServersConfig> > port_servers_configs;
 };
