@@ -43,81 +43,139 @@ int             ws_jtoc_get_int(const char *key, int *value, t_jnode *n, int def
     return(FUNCTION_SUCCESS);
 }
 
-int ws_jtoc_get_locations(std::vector<Location>& locations_vector,
+int ws_jtoc_get_available_methods(std::unordered_set<Http::Method, EnumClassHash>& available_methods,
                        t_jnode	*n)
 {
-    t_jnode	*tmp;
-    Location tmp_location;
+    t_jnode *tmp;
+    t_jnode *loop_iter;
+    std::string tmp_str;
+    Http::Method method;
 
-    tmp = n->down;
-    while(tmp) {
+    loop_iter = n->down;
+    while(loop_iter) {
+        tmp = loop_iter;
+        if (tmp->type != string) {
+            LOG_ERROR("Failed to read json AvailableMethods");
+            return (FUNCTION_FAILURE);
+        }
+        tmp_str = jtoc_get_string(tmp);
+        method = Http::GetMethod(tmp_str);
+        switch (method) { // check with Petr
+            case Http::Method::UNKNOWN: {
+                LOG_ERROR("Failed to read json AvailableMethods");
+                return (FUNCTION_FAILURE);
+            }
+            default:
+                available_methods.insert(method);
+                break;
+        }
+        loop_iter = loop_iter->right;
+    }
+    return (FUNCTION_SUCCESS);
+}
+
+int ws_jtoc_get_locations(std::vector<SharedPtr<Location> >& locations_vector,
+                       t_jnode	*n, std::string server_config_root)
+{
+    t_jnode	*tmp;
+    t_jnode	*loop_iter;
+    SharedPtr<Location> tmp_location;
+
+    loop_iter = n->down;
+    while(loop_iter) {
+        tmp = loop_iter;
+        // LOG_INFO("STOP HERE1");
         if (tmp->type != object) {
             LOG_ERROR("Failed to read json Locations");
             return (FUNCTION_FAILURE);
         }
-        tmp_location = Location();
+        tmp_location = MakeShared(Location());
 
+        // LOG_INFO("STOP HERE2");
         // get Location
-        if (!(tmp = jtoc_node_get_by_path(tmp, "Location"))
+        if (!(tmp = jtoc_node_get_by_path(loop_iter, "Location"))
             || tmp->type != string) {
             LOG_ERROR("Failed to read json ServerInstances->Locations->Location");
             return (FUNCTION_FAILURE);
         }
-        tmp_location.location = jtoc_get_string(tmp);
+        tmp_location->location = jtoc_get_string(tmp);
         // TODO add checking '/'
 
-        if (!(tmp = jtoc_node_get_by_path(tmp, "Root"))
-            || tmp->type != string) {
+        // LOG_INFO("STOP HERE3");
+        tmp_location->root = server_config_root;
+        tmp = jtoc_node_get_by_path(loop_iter, "Root");
+        if (tmp != NULL) {
+            LOG_INFO(tmp->type);
+            if (tmp->type != string) {
                 LOG_ERROR("Failed to read json ServerInstances->Location->Root");
                 return (FUNCTION_FAILURE);
+            }
+            tmp_location->root = jtoc_get_string(tmp);
+            // TODO add checking '/'
         }
-        tmp_location.root = jtoc_get_string(tmp);
-        // TODO add checking '/'
-
+        
         //TODO full_path
-
+        // LOG_INFO("STOP HERE4");
         // Autoindex
-        tmp = jtoc_node_get_by_path(n, "Autoindex");
-        tmp_location.autoindex = false;
+        tmp = jtoc_node_get_by_path(loop_iter, "Autoindex");
+        tmp_location->autoindex = false;
         if (tmp != NULL) {
+            LOG_INFO(tmp->type);
             if (tmp->type != integer) { //!!!!!! check if there if bool type
                 LOG_ERROR("Failed to read json Autoindex");
                 return (FUNCTION_FAILURE);
             }
-            tmp_location.autoindex = jtoc_get_int(tmp);
+            tmp_location->autoindex = jtoc_get_int(tmp);
         }
-        tmp = tmp->right;
 
+        // LOG_INFO("STOP HERE5");
         //index
-        tmp = jtoc_node_get_by_path(n, "Index");
-        tmp_location.index = std::string();
+        tmp = jtoc_node_get_by_path(loop_iter, "Index");
+        tmp_location->index = std::string();
         if (tmp != NULL) {
             if (tmp->type != string) { //!!!!!! check if there if bool type
                 LOG_ERROR("Failed to read json Index");
                 return (FUNCTION_FAILURE);
             }
-            tmp_location.index = jtoc_get_string(tmp);
-            tmp_location.autoindex = false;
+            tmp_location->index = jtoc_get_string(tmp);
+            tmp_location->autoindex = false;
         }
-        else if (tmp_location.autoindex == false) {
-            tmp_location.index = "index.html";
+        else if (tmp_location->autoindex == false) {
+            tmp_location->index = "index.html";
         }
         // TODO check my logic by config.h
 
-        // AvailableMethods std::unordered_set<Http::Method, EnumClassHash> available_methods; /// если не указано, то недоступен ни один метод (на всякий, проверить)
+        // LOG_INFO("STOP HERE6");
+        //AvailableMethods
+        tmp_location->available_methods = std::unordered_set<Http::Method, EnumClassHash>();
+        tmp = jtoc_node_get_by_path(loop_iter, "AvailableMethods");
+        if (tmp != NULL) {
+            if (tmp->type != array) {
+                LOG_ERROR("Failed to read json AvailableMethods");
+                return (FUNCTION_FAILURE);
+            }
+            else if (ws_jtoc_get_available_methods(tmp_location->available_methods, tmp) == FUNCTION_FAILURE) {
+                return (FUNCTION_FAILURE); 
+            }
+        }
+        //TODO check default value available_methods
 
-       //  Redirect std::string redirect;
-
-
-
-        tmp = tmp->right;
-
-
+        // LOG_INFO("STOP HERE7");
+        //TODO check redirect working with index autoindex
+        tmp_location->redirect = std::string();
+        tmp = jtoc_node_get_by_path(loop_iter, "Redirect");
+        if (tmp != NULL) {
+            if (tmp->type != string) {
+                LOG_ERROR("Failed to read json Redirect");
+                return (FUNCTION_FAILURE);
+            }
+            tmp_location->redirect = jtoc_get_string(tmp);
+        }
+        // LOG_INFO("STOP HERE8");
+        locations_vector.push_back(tmp_location);
+        loop_iter = loop_iter->right;
+        // LOG_INFO("STOP HERE9");
     }
-
-
-
-
     return (FUNCTION_SUCCESS);
 }
 
@@ -125,15 +183,17 @@ int ws_jtoc_get_cgi_file_extensions(std::unordered_set<std::string>& cgi_file_ex
                        t_jnode	*n)
 {
     t_jnode	*tmp;
+    t_jnode	*loop_iter;
 
-    tmp = n->down;
-    while(tmp) {
+    loop_iter = n->down;
+    while(loop_iter) {
+        tmp = loop_iter;
         if (tmp->type != string) {
             LOG_ERROR("Failed to read json CgiExtensions ");
             return (FUNCTION_FAILURE);
         }
         cgi_file_extensions.insert(jtoc_get_string(tmp));
-        tmp = tmp->right;
+        loop_iter = loop_iter->right;
     }
     return (FUNCTION_SUCCESS);
 }
@@ -142,10 +202,12 @@ int ws_jtoc_get_error_pages(std::unordered_map <int, std::string>& error_pages,
                        t_jnode	*n)
 {
     t_jnode	*tmp;
+    t_jnode *loop_iter;
     int tmp_error_code;
 
-    tmp = n->down;
-    while(tmp) {
+    loop_iter = n->down;
+    while(loop_iter) {
+        tmp = loop_iter;
         if (tmp->type != string) {
             LOG_ERROR("Failed to read json DefaultErrorPages ", tmp->name);
             return (FUNCTION_FAILURE);
@@ -162,9 +224,11 @@ int ws_jtoc_get_error_pages(std::unordered_map <int, std::string>& error_pages,
             LOG_ERROR("Failed to read json DefaultErrorPages ", tmp->name);
             return (FUNCTION_FAILURE);
         }
-        LOG_INFO(tmp_error_code);
+        // LOG_INFO("before tmp_error_code");
+        // LOG_INFO(tmp_error_code);
+        // LOG_INFO("after tmp_error_code");
         error_pages.insert({tmp_error_code, jtoc_get_string(tmp)});
-        tmp = tmp->right;
+        loop_iter = loop_iter->right;
     }
     return (FUNCTION_SUCCESS);
 }
@@ -220,34 +284,18 @@ int ws_jtoc_get_server_config(ServerConfig& server_config,
             return (FUNCTION_FAILURE);
         }
     }
-
+    LOG_INFO("ws_jtoc_get_server_config until LOCATIONS");
     //get Locations
     if (!(tmp = jtoc_node_get_by_path(n, "Locations"))
         || tmp->type != array) {
         LOG_ERROR("Failed to read json Locations");
         return (FUNCTION_FAILURE);
     }
-    if (ws_jtoc_get_locations(server_config.locations, tmp) == FUNCTION_FAILURE){
+    else if (ws_jtoc_get_locations(server_config.locations, tmp, server_config.root) == FUNCTION_FAILURE){
         return (FUNCTION_FAILURE);
     }
 
-
-
-
-    
-
-
-
-    // //get CgiDirectories
-    // if (!(tmp = jtoc_node_get_by_path(n, "CgiDirectories"))
-    //     || tmp->type != array) {
-    //     LOG_ERROR("Failed to read json ServerInstances CgiDirectories");
-    //     return (FUNCTION_FAILURE);
-    // }
-    // if (ws_jtoc_get_servers_config(server_config.cgi_directory_paths, tmp) == FUNCTION_FAILURE) {
-
-    //     return (FUNCTION_FAILURE);
-    // }
+    LOG_INFO("ws_jtoc_get_server_config completed");
     return (FUNCTION_SUCCESS);
 }
 
@@ -257,13 +305,15 @@ int ws_jtoc_get_port_servers_configs(std::unordered_map<int, SharedPtr<PortServe
                                 t_jnode	*n)
 {
     t_jnode                         *tmp;
+    t_jnode                         *loop_iter;
     SharedPtr<PortServersConfig>    tmp_port_servers_config_item;
     ServerConfig                    tmp_server_config_item;
 
     std::vector<SharedPtr <ServerConfig >> server_config_vect;
         
-    tmp = n->down;
-    while(tmp) {
+    loop_iter = n->down;
+    while(loop_iter) {
+        tmp = loop_iter;
         if (tmp->type != object) {
             LOG_ERROR("Failed to read json array ServerInstances");
             return (FUNCTION_FAILURE);
@@ -288,8 +338,10 @@ int ws_jtoc_get_port_servers_configs(std::unordered_map<int, SharedPtr<PortServe
             tmp_port_servers_config_item->server_configs.push_back(MakeShared(tmp_server_config_item));
             port_servers_configs_map.insert({tmp_server_config_item.port, tmp_port_servers_config_item});
         }
+        LOG_INFO("BEFORE");
         LOG_INFO("Port number port name: ", tmp_server_config_item.port, tmp_server_config_item.name);
-        tmp = tmp->right;
+        LOG_INFO("AFTER");
+        loop_iter = loop_iter->right;
     }
 
     return (FUNCTION_SUCCESS);

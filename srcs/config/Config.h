@@ -61,9 +61,7 @@ struct ServerConfig {
                 const std::string& root,
                 std::unordered_map <int, std::string> error_pages,
                 const std::unordered_set<std::string>& cgi_file_extensions,
-                int default_keep_alive_timeout_s,
-                int max_keep_alive_timeout_s, /// опциональное брать дефолтное значение
-                std::vector<Location> locations  /// TODO maybe del shared ptr
+                std::vector<SharedPtr<Location> > locations  /// TODO maybe del shared ptr
                 );
 
     ServerConfig() {} // add defaut value

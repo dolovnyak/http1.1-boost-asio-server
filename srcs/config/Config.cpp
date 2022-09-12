@@ -31,31 +31,61 @@ namespace {
 }
 
 bool Config::Load(const char* path) {
-    LOG_INFO("HI ");
-    /// TODO delete
-    // if (std::string(path) == "1") {
-    //     threads_number = 8;
-    //     max_sockets_number = 256;
-    //     timeout = 1000;
-    //     servers_configs = mock_1_server_config();
-    //     return true;
-    // }
-    // else if (std::string(path) == "2") {
-    //     threads_number = 8;
-    //     max_sockets_number = 128;
-    //     timeout = 1000;
-    //     servers_configs = mock_2_server_configs();
-    //     return true;
-    //     //         str.push_back(jtoc_get_string(tmp));
-    //     //         tmp = tmp->right;
-    // }
-    // else {
-        /// Olga updateeeed =0
     Config config;
 
-    if(ws_jtoc_get_config(config, "../../conf/default_config.json") == FUNCTION_SUCCESS) { // change 2 arg to path
+    if(ws_jtoc_get_config(config, "../../../conf/default_config.json") == FUNCTION_SUCCESS) { // change 2 arg to path
+        
+        LOG_INFO("START TEST: ");
         LOG_INFO("max_sockets_number: ", config.max_sockets_number);
-        // LOG_INFO("max sockets_number: ", config.max_sockets_number);
+        LOG_INFO("read_buffer_size: ", config.read_buffer_size);
+        LOG_INFO("sessions_killer_delay_s: ", config.sessions_killer_delay_s);
+        LOG_INFO("core_timeout_ms: ", config.core_timeout_ms);
+        LOG_INFO("hang_session_timeout_s: ", config.hang_session_timeout_s);
+        LOG_INFO("default_keep_alive_timeout_s: ", config.default_keep_alive_timeout_s);
+        LOG_INFO("max_keep_alive_timeout_s: ", config.max_keep_alive_timeout_s);
+        // config.port_servers_configs.begin(); 
+        for (std::unordered_map<int, SharedPtr<PortServersConfig> >::iterator it_psc = config.port_servers_configs.begin();
+            it_psc != config.port_servers_configs.end(); ++it_psc) {
+            LOG_INFO("port in port_servers_configs ", it_psc->first);
+            SharedPtr<PortServersConfig> tmp_post_servers_config = it_psc->second;
+            LOG_INFO("port in PortServersConfig ", it_psc->second->port);
+            for (int i = 0; i < (int)tmp_post_servers_config->server_configs.size(); i++) {
+                SharedPtr<ServerConfig > tmp_server_configs = tmp_post_servers_config->server_configs.at(i);
+                LOG_INFO("  ServerInstances numb =  ", i);
+                LOG_INFO("  port ", tmp_server_configs->port);
+                LOG_INFO("  name ", tmp_server_configs->name);
+                LOG_INFO("  root ", tmp_server_configs->root);
+                LOG_INFO("  error_pages: ");
+                for (std::unordered_map <int, std::string>::iterator it_ep = tmp_server_configs->error_pages.begin();
+                    it_ep != tmp_server_configs->error_pages.end(); ++it_ep) {
+                        LOG_INFO("      ", it_ep->first, " ", it_ep->second);
+                }
+                LOG_INFO("  cgi_file_extensions: ");
+                for (std::unordered_set<std::string>::iterator it_cgi_fe = tmp_server_configs->cgi_file_extensions.begin();
+                    it_cgi_fe != tmp_server_configs->cgi_file_extensions.end(); ++it_cgi_fe) {
+                        LOG_INFO("      ", *it_cgi_fe);
+                }
+                LOG_INFO("  locations: ");
+                for (int j = 0; j < (int)tmp_server_configs->locations.size(); j++) {
+                    LOG_INFO("  locations num ", j);
+                    SharedPtr<Location > tmp_location = tmp_server_configs->locations.at(j);
+                    LOG_INFO("      location ", tmp_location->location);
+                    LOG_INFO("      root ", tmp_location->root);
+                    LOG_INFO("      full_path ", tmp_location->full_path);
+                    LOG_INFO("      autoindex ", tmp_location->autoindex);
+                    LOG_INFO("      index ", tmp_location->index);
+                    LOG_INFO("      available_methods: ");
+                    for (std::unordered_set<Http::Method, EnumClassHash>::iterator it_am = tmp_location->available_methods.begin();
+                    it_am != tmp_location->available_methods.end(); ++it_am) {
+                        LOG_INFO("      ", *it_am);
+                    }
+                    LOG_INFO("      redirect ", tmp_location->redirect);
+                }
+
+                
+                // LOG_INFO("  root ", tmp_server_configs.root);
+            }
+        }
         // LOG_INFO("timeout: ", config.timeout);
         // LOG_INFO("servers_configs_0 name: ", config.servers_configs[0].name);
         // LOG_INFO("servers_configs_0 port: ", config.servers_configs[0].port);
@@ -80,9 +110,7 @@ ServerConfig::ServerConfig(int port,
                             const std::string& root,
                             std::unordered_map <int, std::string> error_pages,
                             const std::unordered_set<std::string>& cgi_file_extensions,
-                            int default_keep_alive_timeout_s,
-                            int max_keep_alive_timeout_s, 
-                            std::vector<Location> locations
+                            std::vector<SharedPtr<Location> > locations
                             )
                     : port(port),
                     name(name),
