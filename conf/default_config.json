@@ -1,23 +1,33 @@
 {
-  "MaxSocketsNumber": 1024,
+  "MaxSocketsNumber": 1021,
   "ReadBufferSize": 1024,
   "SessionsKillerDelay_s": 2,
   "HangSessionTimeout_s": 10,
   "DefaultKeepAliveTimeout_s": 30,
   "MaxKeepAliveTimeout_s": 1800,
   "CoreTimeout_s": 1,
-  "DefaultKeepAliveTimeout_s": 30,
-  "MaxKeepAliveTimeout_s": 1800,   
   "ServerInstances": [
     {
-      "Name": "Server5",
       "Port": 80,
-      "Root": "/Users/sbecker/Desktop/projects/webserver-42/examples"
+      "Name": "kabun1",
+      "Root": "/Users/sbecker/Desktop/projects/webserver-42/examples/cgi_checker1",
+      "Locations": [
+        {
+          "Location": "/",
+          "Root": "/",
+          "Autoindex": false,
+          "Index": "index.html",
+          "AvailableMethods": [
+            "GET",
+            "POST"
+          ]
+        }
+      ]
     },
     {
       "Port": 80,
-      "Name": "kabun",
-      "Root": "/Users/sbecker/Desktop/projects/webserver-42/examples/cgi_checker",
+      "Name": "kabun2",
+      "Root": "/Users/sbecker/Desktop/projects/webserver-42/examples/cgi_checker2",
       "MaxBodySize": 8096,
       "MaxHeaderSize": 1024,
       "MaxRawRequestSize": 16384,
