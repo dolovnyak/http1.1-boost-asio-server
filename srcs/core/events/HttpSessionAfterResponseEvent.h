@@ -12,13 +12,13 @@
 #include <unistd.h>
 
 template<class CoreModule>
-class HttpAfterResponseEvent : public Event {
+class HttpSessionAfterResponseEvent : public Event {
 public:
-    HttpAfterResponseEvent(const SharedPtr<Session<CoreModule>>& session, std::queue<SharedPtr<Event> >* event_queue)
+    HttpSessionAfterResponseEvent(const SharedPtr<Session<CoreModule>>& session, std::queue<SharedPtr<Event> >* event_queue)
             : _packaged_http_session(session),
               _event_queue(event_queue) {}
 
-    ~HttpAfterResponseEvent() {};
+    ~HttpSessionAfterResponseEvent() {};
 
     const std::string& GetName() const OVERRIDE;
 
@@ -31,7 +31,7 @@ private:
 };
 
 template<class CoreModule>
-void HttpAfterResponseEvent<CoreModule>::Process() {
+void HttpSessionAfterResponseEvent<CoreModule>::Process() {
     if (!_packaged_http_session->available) {
         LOG_INFO(GetName(), " on closed connection");
         return;
@@ -58,7 +58,7 @@ void HttpAfterResponseEvent<CoreModule>::Process() {
 }
 
 template<class CoreModule>
-const std::string& HttpAfterResponseEvent<CoreModule>::GetName() const {
-    static std::string kName = "HttpAfterResponseEvent";
+const std::string& HttpSessionAfterResponseEvent<CoreModule>::GetName() const {
+    static std::string kName = "HttpSessionAfterResponseEvent";
     return kName;
 }

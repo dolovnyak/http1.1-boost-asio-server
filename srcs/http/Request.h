@@ -132,7 +132,6 @@ private: /// handle helpers
 
     size_t _chunk_body_size;
 
-
 private: /// process helpers
     void ProcessHttpVersion();
 

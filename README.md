@@ -40,10 +40,10 @@
 Сgi нужно запускать, чтобы его относительные пути сохранялись.
 
 Events interaction:
-Core inner read event -> HttpReadRequestEvent -> HttpProcessRequestEvent -> 
+Core inner read event -> HttpSessionReadEvent -> HttpSessionProcessRequestEvent -> 
 Core inner read event -> HttpFileReadEvent -> Core inner read zero bytes event -> 
 FileReadZeroByteEvent -> Core inner write event (response to client) -> 
-Core inner after write event -> HttpAfterResponseEvent
+Core inner after write event -> HttpSessionAfterResponseEvent
 
 написать cgi (нужно корректно прокинуть энвайронмент аргументы и тело реквеста, и поместить stdout fd в poll)
 после cgi состояние сервера будет минимально рабочим

@@ -65,4 +65,6 @@ namespace Http {
     };
 
     Method GetMethod(const std::string& method);
+
+    const std::string& ToString(Http::Version http_version);
 }

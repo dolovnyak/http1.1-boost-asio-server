@@ -63,7 +63,7 @@ struct ServerConfig {
                 const std::unordered_set<std::string>& cgi_file_extensions,
                 int default_keep_alive_timeout_s,
                 int max_keep_alive_timeout_s, /// опциональное брать дефолтное значение
-                std::vector<Location> locations  /// TODO maybe del shared ptr
+                const std::vector<SharedPtr<Location> >& locations
                 );
 
     ServerConfig() {} // add defaut value
@@ -78,8 +78,11 @@ struct ServerConfig {
 
     std::unordered_set<std::string> cgi_file_extensions; /// опциональное поле (по умолчанию пустое)
 
-    std::vector<SharedPtr<Location> > locations;  /// обязательное???
+    int max_body_size; /// опциональное поле, если не указано то берется из дефолта
 
+    int max_request_size; /// опциональное поле, если не указано то берется из дефолта
+
+    std::vector<SharedPtr<Location> > locations;  /// обязательное???
 };
 
 struct PortServersConfig {
