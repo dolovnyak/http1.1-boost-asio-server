@@ -82,7 +82,7 @@ ServerConfig::ServerConfig(int port,
                             const std::unordered_set<std::string>& cgi_file_extensions,
                             int default_keep_alive_timeout_s,
                             int max_keep_alive_timeout_s, 
-                            std::vector<Location> locations
+                            const std::vector<SharedPtr<Location> >& locations
                             )
                     : port(port),
                     name(name),

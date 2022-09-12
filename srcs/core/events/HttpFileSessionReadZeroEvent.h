@@ -13,14 +13,14 @@
 #include <unistd.h>
 
 template<class CoreModule>
-class HttpReadFileZeroBytesEvent : public Event {
+class HttpFileSessionReadZeroEvent : public Event {
 public:
-    HttpReadFileZeroBytesEvent(const SharedPtr<Session<CoreModule>>& session,
-                               std::queue<SharedPtr<Event> >* event_queue)
+    HttpFileSessionReadZeroEvent(const SharedPtr<Session<CoreModule>>& session,
+                                 std::queue<SharedPtr<Event> >* event_queue)
             : _packaged_file_session(session),
               _event_queue(event_queue) {}
 
-    ~HttpReadFileZeroBytesEvent() {};
+    ~HttpFileSessionReadZeroEvent() {};
 
     const std::string& GetName() const OVERRIDE;
 
@@ -34,7 +34,7 @@ private:
 };
 
 template<class CoreModule>
-void HttpReadFileZeroBytesEvent<CoreModule>::Process() {
+void HttpFileSessionReadZeroEvent<CoreModule>::Process() {
     if (!_packaged_file_session->available) {
         LOG_INFO(GetName(), " on closed file");
         return;
@@ -72,7 +72,7 @@ void HttpReadFileZeroBytesEvent<CoreModule>::Process() {
 }
 
 template<class CoreModule>
-const std::string& HttpReadFileZeroBytesEvent<CoreModule>::GetName() const {
-    static std::string kName = "HttpReadFileZeroBytesEvent";
+const std::string& HttpFileSessionReadZeroEvent<CoreModule>::GetName() const {
+    static std::string kName = "HttpFileSessionReadZeroEvent";
     return kName;
 }
