@@ -11,14 +11,14 @@
 #include <unistd.h>
 
 template<class CoreModule>
-class HttpReadFileEvent : public Event {
+class HttpFileSessionReadEvent : public Event {
 public:
-    HttpReadFileEvent(const SharedPtr<Session<CoreModule>>& session, const SharedPtr<std::string>& incoming_data, std::queue<SharedPtr<Event> >* event_queue)
+    HttpFileSessionReadEvent(const SharedPtr<Session<CoreModule>>& session, const SharedPtr<std::string>& incoming_data, std::queue<SharedPtr<Event> >* event_queue)
             : _packaged_file_session(session),
               _incoming_data(incoming_data),
               _event_queue(event_queue) {}
 
-    ~HttpReadFileEvent() {};
+    ~HttpFileSessionReadEvent() {};
 
     const std::string& GetName() const OVERRIDE;
 
@@ -32,7 +32,7 @@ private:
 };
 
 template<class CoreModule>
-void HttpReadFileEvent<CoreModule>::Process() {
+void HttpFileSessionReadEvent<CoreModule>::Process() {
     if (!_packaged_file_session->available) {
         LOG_INFO(GetName(), " on closed file");
         return;
@@ -54,7 +54,7 @@ void HttpReadFileEvent<CoreModule>::Process() {
 }
 
 template<class CoreModule>
-const std::string& HttpReadFileEvent<CoreModule>::GetName() const {
-    static std::string kName = "HttpReadFileEvent";
+const std::string& HttpFileSessionReadEvent<CoreModule>::GetName() const {
+    static std::string kName = "HttpFileSessionReadEvent";
     return kName;
 }

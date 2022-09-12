@@ -1,15 +1,37 @@
 Глобально, что осталось до конца:
 * запуск cgi скриптов
+* Перед тем как делать загрузку и удаление файлов, посмотреть это работает в nginx.
 * загрузка файлов через Put, если это разрешено в конфиге
 * удаление файлов через Delete, если это разрешено в конфиге
-* возможность задавать для каждого файла какие методы к нему можно применять
 * directory listing и возможность отключения и включения его из конфига
 * Http redirection
-* Добавить лимиты для body size и для хедеров (первая строка будет входить в лимит хедеров) и общий лимит на raw_request чтобы в него нельзя было пихать мусор
 * Тесты на ReadFile, проверить что кастомные ерор старинцы работают.
-
-
+* Проверить что locations работают, отдельно написать тесты на функцию, которая их матчит с Route.
+* Написать мок конфига.
 * Делать ли обработку trailer-part при chanked запросе?
+
+
+Завтра: сделать мок (а лучше допилить или чтобы Оля допилила парсер и просто настроить) конфига и пример как это сказано в чекере.
+Проверить как работают put и delete в nginx.
+Погуглить как работает http redirection.
+
+- Download the cgi_test executable on the host
+- Create a directory YoupiBanane with:
+  * file name youpi.bad_extension 
+  * file name youpi.bla 
+  * sub directory called nop 
+  * file name youpi.bad_extension in nop 
+  * file name other.pouic in nop 
+  * sub directory called Yeah 
+  * file name not_happy.bad_extension in Yeah 
+
+Setup the configuration file as follow:
+- / must answer to GET request ONLY
+- /put_test/* must answer to PUT request and save files to a directory of your choice
+- any file with .bla as extension must answer to POST request by calling the cgi_test executable
+- /post_body must answer anything to POST request with a maxBody of 100
+- /directory/ must answer to GET request and the root of it would be the repository YoupiBanane and if no file are requested, it should search for youpi.bad_extension files
+
 
 Хедеры поддерживаемые на данный момент:
 * Host (not supported ipv6 and ipvFuture)
@@ -40,10 +62,10 @@
 Сgi нужно запускать, чтобы его относительные пути сохранялись.
 
 Events interaction:
-Core inner read event -> HttpReadRequestEvent -> HttpProcessRequestEvent -> 
+Core inner read event -> HttpSessionReadEvent -> HttpSessionProcessRequestEvent -> 
 Core inner read event -> HttpFileReadEvent -> Core inner read zero bytes event -> 
 FileReadZeroByteEvent -> Core inner write event (response to client) -> 
-Core inner after write event -> HttpAfterResponseEvent
+Core inner after write event -> HttpSessionAfterResponseEvent
 
 написать cgi (нужно корректно прокинуть энвайронмент аргументы и тело реквеста, и поместить stdout fd в poll)
 после cgi состояние сервера будет минимально рабочим

@@ -4,22 +4,22 @@
 #include "HttpException.h"
 #include "SharedPtr.h"
 #include "utilities.h"
-#include "HttpProcessRequestEvent.h"
+#include "HttpSessionProcessRequestEvent.h"
 #include "HttpSession.h"
 
 #include <queue>
 
 template<class CoreModule>
-class HttpReadRequestEvent : public Event {
+class HttpSessionReadEvent : public Event {
 public:
-    HttpReadRequestEvent(const SharedPtr<Session<CoreModule> >& session,
+    HttpSessionReadEvent(const SharedPtr<Session<CoreModule> >& session,
                          const SharedPtr<std::string>& incoming_data,
                          std::queue<SharedPtr<Event> >* event_queue)
             : _packaged_http_session(session),
               _incoming_data(incoming_data),
               _event_queue(event_queue) {}
 
-    ~HttpReadRequestEvent() {};
+    ~HttpSessionReadEvent() {};
 
     const std::string& GetName() const OVERRIDE;
 
@@ -33,13 +33,13 @@ private:
 };
 
 template<class CoreModule>
-const std::string& HttpReadRequestEvent<CoreModule>::GetName() const {
-    static std::string kName = "HttpReadRequestEvent";
+const std::string& HttpSessionReadEvent<CoreModule>::GetName() const {
+    static std::string kName = "HttpSessionReadEvent";
     return kName;
 }
 
 template<class CoreModule>
-void HttpReadRequestEvent<CoreModule>::Process() {
+void HttpSessionReadEvent<CoreModule>::Process() {
     if (!_packaged_http_session->available) {
         LOG_INFO(GetName(), " on closed connection");
         return;
@@ -63,7 +63,7 @@ void HttpReadRequestEvent<CoreModule>::Process() {
             case RequestHandleStatus::Finish:
                 _http_session->state = HttpSessionState::ProcessRequest;
                 _event_queue->push(MakeShared<Event>(
-                        new HttpProcessRequestEvent<CoreModule>(_packaged_http_session, _event_queue)));
+                        new HttpSessionProcessRequestEvent<CoreModule>(_packaged_http_session, _event_queue)));
 
             case RequestHandleStatus::WaitMoreData:
                 return;

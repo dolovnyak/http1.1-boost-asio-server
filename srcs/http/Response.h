@@ -18,12 +18,13 @@
 
 class Response {
 public:
-    static Response MakeErrorResponse(Http::Code code, const std::string& error_title,
+    static Response MakeErrorResponse(Http::Version http_version, Http::Code code, const std::string& error_title,
                                       SharedPtr<ServerConfig> server_config);
 
-    static Response MakeOkResponse(const std::string& body, SharedPtr<ServerConfig> server_config, bool keep_alive);
+    static Response MakeOkResponse(Http::Version http_version, const std::string& body,
+                                   SharedPtr<ServerConfig> server_config, bool keep_alive);
 
-    Response(Http::Code code, const std::string& title,
+    Response(Http::Version http_version, Http::Code code, const std::string& title,
              const std::vector<Http::Header>& custom_headers,
              const std::string& body);
 
