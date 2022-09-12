@@ -98,7 +98,7 @@ void Request::Clear() {
     target.Clear();
     content_length = Optional<size_t>::nullopt;
     is_cgi = false;
-    /// keep alive and server config are not cleared
+    /// keep alive, keep alive timeout and server config are not cleared
 
     _handle_state = RequestHandleState::HandleFirstLine;
     _handled_size = 0;
@@ -166,7 +166,6 @@ RequestHandleState::State Request::ParseHeaderHandler() {
 }
 
 RequestHandleState::State Request::AnalyzeHeadersBeforeParseBodyHandler() {
-
 
     /// transfer encoding
     HeaderIterator it = headers.find(TRANSFER_ENCODING);
@@ -246,6 +245,10 @@ RequestHandleState::State Request::ParseChunkBodyHandler() {
     }
 
     body += raw.substr(_handled_size, _chunk_body_size);
+    if (body.size() > static_cast<size_t>(server_config->max_body_size)) {
+        throw PayloadTooLarge("Body too large", server_config);
+    }
+
     _handled_size += _chunk_body_size + CRLF_LEN;
     return RequestHandleState::HandleChunkSize;
 }
@@ -258,8 +261,7 @@ RequestHandleState::State Request::ParseChunkTrailerPartHandler() {
     /// for now ignore chunked trailer part data
     content_length = body.size();
     _handled_size = trailer_end + CRLF_LEN;
-    /// for now _handled_size could be lower than raw size if there are some spam after chunked trailer part
-    /// and for now I don't do anything with it, same as with content_length handling.
+    /// _handled_size could be lower than raw size if there are some spam after chunked trailer part.
     return RequestHandleState::FinishHandle;
 }
 
@@ -270,6 +272,10 @@ RequestHandleState::State Request::ParseBodyByContentLengthHandler() {
     }
     else {
         body += raw.substr(_handled_size, *content_length);
+        if (body.size() > static_cast<size_t>(server_config->max_body_size)) {
+            throw PayloadTooLarge("Body too large", server_config);
+        }
+
         _handled_size += *content_length;
         /// for now _handled_size could be lower than raw size if there are some spam after content_length
         return RequestHandleState::FinishHandle;
@@ -278,7 +284,7 @@ RequestHandleState::State Request::ParseBodyByContentLengthHandler() {
 
 RequestHandleStatus::Status Request::Handle(SharedPtr<std::string> raw_request_part) {
     raw += *raw_request_part;
-    if (raw.size() >= 1337) { /// TODO get value from config
+    if (raw.size() > static_cast<size_t>(server_config->max_request_size)) {
         throw PayloadTooLarge("Payload too large", server_config);
     }
     RequestHandleState::State prev_state = _handle_state;

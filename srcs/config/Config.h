@@ -76,8 +76,11 @@ struct ServerConfig {
 
     std::unordered_set<std::string> cgi_file_extensions; /// опциональное поле (по умолчанию пустое)
 
-    std::vector<SharedPtr<Location> > locations;  /// обязательное???
+    int max_body_size; /// опциональное поле, если не указано то берется из дефолта
 
+    int max_request_size; /// опциональное поле, если не указано то берется из дефолта
+
+    std::vector<SharedPtr<Location> > locations;  /// обязательное???
 };
 
 struct PortServersConfig {

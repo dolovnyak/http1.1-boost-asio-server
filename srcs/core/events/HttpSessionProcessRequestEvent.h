@@ -10,13 +10,13 @@
 #include <fcntl.h>
 
 template<class CoreModule>
-class HttpProcessRequestEvent : public Event {
+class HttpSessionProcessRequestEvent : public Event {
 public:
-    HttpProcessRequestEvent(const SharedPtr<Session<CoreModule> >& session,
-                            std::queue<SharedPtr<Event> >* event_queue)
+    HttpSessionProcessRequestEvent(const SharedPtr<Session<CoreModule> >& session,
+                                   std::queue<SharedPtr<Event> >* event_queue)
             : _packaged_http_session(session), _event_queue(event_queue) {}
 
-    ~HttpProcessRequestEvent() {}
+    ~HttpSessionProcessRequestEvent() {}
 
     const std::string& GetName() const OVERRIDE;
 
@@ -37,13 +37,13 @@ private:
 
 
 template<class CoreModule>
-const std::string& HttpProcessRequestEvent<CoreModule>::GetName() const {
-    static std::string kName = "HttpProcessRequestEvent";
+const std::string& HttpSessionProcessRequestEvent<CoreModule>::GetName() const {
+    static std::string kName = "HttpSessionProcessRequestEvent";
     return kName;
 }
 
 template<class CoreModule>
-void HttpProcessRequestEvent<CoreModule>::RunCgiPipeline() {
+void HttpSessionProcessRequestEvent<CoreModule>::RunCgiPipeline() {
     int fds[2];
     int err = pipe(fds);
 
@@ -100,7 +100,7 @@ void HttpProcessRequestEvent<CoreModule>::RunCgiPipeline() {
 }
 
 template<class CoreModule>
-void HttpProcessRequestEvent<CoreModule>::RunFilePipeline() {
+void HttpSessionProcessRequestEvent<CoreModule>::RunFilePipeline() {
     int fd = open(_http_session->request->target.path.c_str(), O_RDONLY);
     if (fd == -1) {
         throw NotFound("File not found or not available", _http_session->port_servers_config);
@@ -120,7 +120,7 @@ void HttpProcessRequestEvent<CoreModule>::RunFilePipeline() {
 }
 
 template<class CoreModule>
-void HttpProcessRequestEvent<CoreModule>::Process() {
+void HttpSessionProcessRequestEvent<CoreModule>::Process() {
     if (!_packaged_http_session->available) {
         LOG_INFO(GetName(), " on closed connection");
         return;
