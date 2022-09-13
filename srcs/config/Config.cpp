@@ -30,12 +30,20 @@
     // }
 // }
 
-// namespace PortServersConfig {
-//     SharedPtr<ServerConfig> GetByNameOrDefault(const std::string& name) {
+SharedPtr<ServerConfig> PortServersConfig::GetByNameOrDefault(const std::string& name) const {
+    SharedPtr <ServerConfig > server_config;
 
-//     }
-// }
-
+    for (int i = 0; i < (int)server_configs.size(); i++) { 
+        server_config = server_configs[i];
+        if (server_config->name == name) {
+            return (server_config);
+        }
+    }
+    if ((int)server_configs.size() > 0) {
+        return server_configs[0];
+    }
+    return (SharedPtr<ServerConfig>());
+}
 
 bool Config::Load(const char* path) {
     Config config;
@@ -55,6 +63,11 @@ bool Config::Load(const char* path) {
             it_psc != config.port_servers_configs.end(); ++it_psc) {
             LOG_INFO("port in port_servers_configs ", it_psc->first);
             SharedPtr<PortServersConfig> tmp_post_servers_config = it_psc->second;
+            //checkeing GetByNameOrDefault
+            std::string tmp_string;
+            LOG_ERROR(tmp_post_servers_config->GetByNameOrDefault("kabun1")->name);
+            LOG_ERROR(tmp_post_servers_config->GetByNameOrDefault("kabun2")->name);
+            LOG_ERROR(tmp_post_servers_config->GetByNameOrDefault("kabun3")->name);
             LOG_INFO("port in PortServersConfig ", it_psc->second->port);
             for (int i = 0; i < (int)tmp_post_servers_config->server_configs.size(); i++) {
                 SharedPtr<ServerConfig > tmp_server_configs = tmp_post_servers_config->server_configs.at(i);
@@ -90,7 +103,6 @@ bool Config::Load(const char* path) {
                 }
 
                 
-                // LOG_INFO("  root ", tmp_server_configs.root);
             }
         }
         return false;
