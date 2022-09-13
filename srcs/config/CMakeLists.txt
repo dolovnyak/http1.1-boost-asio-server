@@ -17,6 +17,9 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 add_executable(${PROJECT_NAME}
         Config.cpp
         parse_config.cpp
+        parse_port_server_config.cpp
+        parse_server_config.cpp
+        parse_location.cpp
         parser_test_main.cpp
         ../http/Http.cpp
         ../utilities/utilities.cpp

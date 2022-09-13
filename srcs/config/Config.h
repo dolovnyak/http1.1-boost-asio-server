@@ -20,7 +20,7 @@
 
 #define DEFAULT_MAX_BODY_SIZE 100000000 // 100 MB
 #define DEFAULT_MAX_HEADER_SIZE 1000000 // 1 MB
-#define DEFAULT_MAX_RAW_REQUEST_SIZE 200000000 // 200 MB
+#define DEFAULT_MAX_REQUEST_SIZE 200000000 // 200 MB
 
 #define DEFAULT_KEEP_ALIVE_TIMEOUT 60 // 60 seconds
 #define DEFAULT_MAX_KEEP_ALIVE_TIMEOUT 1800 // 30 minutes
@@ -40,7 +40,7 @@ struct Location{
     
     Location() {};
 
-    std::string location; /// Tlocation должен всегда начинаться с / (кидать ошибку если это не так) /// обязательное поле
+    std::string location; /// location должен всегда начинаться с / (кидать ошибку если это не так) /// обязательное поле
 
     std::string root; /// root должен всегда заканчиваться на / (автоматически добавлять если это не так)  /// опциональное поле, если нет - то записывать от рута сервера
 
@@ -64,7 +64,7 @@ struct ServerConfig {
                 std::vector<SharedPtr<Location> > locations  /// TODO maybe del shared ptr
                 );
 
-    ServerConfig() {} // add defaut value
+    ServerConfig() {} // TODO add defaut value
 
     int port; /// обязательное поле
 
@@ -80,7 +80,7 @@ struct ServerConfig {
 
     int max_request_size; /// опциональное поле, если не указано то берется из дефолта
 
-    std::vector<SharedPtr<Location> > locations;  /// обязательное???
+    std::vector<SharedPtr<Location> > locations; 
 };
 
 struct PortServersConfig {
@@ -113,3 +113,20 @@ struct Config {
 
     std::unordered_map<int, SharedPtr<PortServersConfig> > port_servers_configs;
 };
+
+/// TODO check if order stays during reading json
+/// TODO check availiable methods defaults
+/// TODO check redirect behaviare
+/// error not Allow если к недопустимому методу 
+/// name для location обязательный?  
+/// проверить root and location in subject
+
+//  NOTICES:
+//
+//все интовые значения должны быть > 0
+//
+//парсер читает все строчки, и при повторяющихся ключей берет первое значение  
+//
+//problem by jtocs. Doen't see comments and empty line, exempl: 
+//     "Name": ""
+//    //"root": "ssss/"
