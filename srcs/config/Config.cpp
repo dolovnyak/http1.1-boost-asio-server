@@ -64,9 +64,8 @@ bool Config::Load(const char* path) {
             LOG_INFO("port in port_servers_configs ", it_psc->first);
             SharedPtr<PortServersConfig> tmp_post_servers_config = it_psc->second;
             //checkeing GetByNameOrDefault
-            std::string tmp_string;
-            LOG_ERROR(tmp_post_servers_config->GetByNameOrDefault("kabun1")->name);
-            LOG_ERROR(tmp_post_servers_config->GetByNameOrDefault("kabun2")->name);
+            LOG_ERROR(tmp_post_servers_config->GetByNameOrDefault("name")->name);
+            LOG_ERROR(tmp_post_servers_config->GetByNameOrDefault("name3")->name);
             LOG_ERROR(tmp_post_servers_config->GetByNameOrDefault("kabun3")->name);
             LOG_INFO("port in PortServersConfig ", it_psc->second->port);
             for (int i = 0; i < (int)tmp_post_servers_config->server_configs.size(); i++) {
@@ -75,6 +74,8 @@ bool Config::Load(const char* path) {
                 LOG_INFO("  port ", tmp_server_configs->port);
                 LOG_INFO("  name ", tmp_server_configs->name);
                 LOG_INFO("  root ", tmp_server_configs->root);
+                LOG_INFO("  max_body_size ", tmp_server_configs->max_body_size);
+                LOG_INFO("  max_request_size ", tmp_server_configs->max_request_size);
                 LOG_INFO("  error_pages: ");
                 for (std::unordered_map <int, std::string>::iterator it_ep = tmp_server_configs->error_pages.begin();
                     it_ep != tmp_server_configs->error_pages.end(); ++it_ep) {
