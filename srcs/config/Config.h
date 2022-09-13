@@ -87,7 +87,7 @@ struct PortServersConfig {
     
     SharedPtr<ServerConfig> GetByNameOrDefault(const std::string& name) const;
 
-    SharedPtr<ServerConfig> GetDefault() const;
+    SharedPtr<ServerConfig> GetDefault() const; // что за const?
 
     std::vector<SharedPtr <ServerConfig > > server_configs; /// first server is default
 

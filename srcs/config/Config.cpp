@@ -1,7 +1,7 @@
 //#include "Config.h"
 #include "parse_config.h"
 
-namespace {
+// namespace {
 /// TODO delete when parse will finish
 
     // std::vector<SharedPtr<ServerConfig> > mock_1_server_config() {
@@ -28,7 +28,14 @@ namespace {
     //     configs.push_back(MakeShared(config2));
     //     return configs;
     // }
-}
+// }
+
+// namespace PortServersConfig {
+//     SharedPtr<ServerConfig> GetByNameOrDefault(const std::string& name) {
+
+//     }
+// }
+
 
 bool Config::Load(const char* path) {
     Config config;
@@ -86,21 +93,7 @@ bool Config::Load(const char* path) {
                 // LOG_INFO("  root ", tmp_server_configs.root);
             }
         }
-        // LOG_INFO("timeout: ", config.timeout);
-        // LOG_INFO("servers_configs_0 name: ", config.servers_configs[0].name);
-        // LOG_INFO("servers_configs_0 port: ", config.servers_configs[0].port);
-        // LOG_INFO("servers_configs_0 root: ", config.servers_configs[0].root);
-        // LOG_INFO("servers_configs_0 cgi_directory_paths_0: ", config.servers_configs[0].cgi_directory_paths[0]);
-        // LOG_INFO("servers_configs_0 cgi_directory_paths_1: ", config.servers_configs[0].cgi_directory_paths[1]);
-        // LOG_INFO("servers_configs_0 cgi_directory_paths_2: ", config.servers_configs[0].cgi_directory_paths[2]);
-        // LOG_INFO("servers_configs_0 max_connection_number: ", config.servers_configs[0].max_connection_number);
-        // LOG_INFO("servers_configs_1 name: ", config.servers_configs[1].name);
-        // LOG_INFO("servers_configs_1 port: ", config.servers_configs[1].port);
-        // LOG_INFO("servers_configs_1 root: ", config.servers_configs[1].root);
-        // LOG_INFO("servers_configs_1 cgi_directory_paths_0: ", config.servers_configs[1].cgi_directory_paths[0]);
-        // LOG_INFO("servers_configs_1 cgi_directory_paths_1: ", config.servers_configs[1].cgi_directory_paths[1]);
-        // LOG_INFO("servers_configs_1 max_connection_number: ", config.servers_configs[1].max_connection_number);
-    return false;
+        return false;
     }
     return true;
 }
