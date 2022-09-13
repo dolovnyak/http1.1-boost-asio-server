@@ -13,7 +13,7 @@
         {
           "Location": "/",
           "Root": "/",
-          "Autoindex": false,
+          "Autoindex": 0,
           "Index": "index.html",
           "AvailableMethods": [
             "GET",
@@ -41,7 +41,7 @@
         {
           "Location": "/",
           "Root": "/",
-          "Autoindex": false,
+          "Autoindex": 1,
           "Index": "index.html",
           "AvailableMethods": [
             "GET",

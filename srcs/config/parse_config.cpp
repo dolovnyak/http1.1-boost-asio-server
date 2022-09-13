@@ -5,7 +5,7 @@
 #include <sstream>
 
 
-// TODO check if arrays are not epty while using while
+// TODO check if arrays are not empty while using while_loop
 // TODO update logs
 
 bool is_number(const std::string& s)
@@ -80,60 +80,77 @@ int ws_jtoc_get_locations(std::vector<SharedPtr<Location> >& locations_vector,
     t_jnode	*tmp;
     t_jnode	*loop_iter;
     SharedPtr<Location> tmp_location;
+    int tmp_int;
+    std::string tmp_string;
 
     loop_iter = n->down;
     while(loop_iter) {
         tmp = loop_iter;
-        // LOG_INFO("STOP HERE1");
         if (tmp->type != object) {
             LOG_ERROR("Failed to read json Locations");
             return (FUNCTION_FAILURE);
         }
         tmp_location = MakeShared(Location());
 
-        // LOG_INFO("STOP HERE2");
         // get Location
         if (!(tmp = jtoc_node_get_by_path(loop_iter, "Location"))
             || tmp->type != string) {
             LOG_ERROR("Failed to read json ServerInstances->Locations->Location");
             return (FUNCTION_FAILURE);
         }
+        tmp_string = jtoc_get_string(tmp);
+        LOG_ERROR(tmp_string[0]);
+        LOG_ERROR(tmp_string);
+        if (tmp_string.length() < 1 or tmp_string[0] != '/') {
+            LOG_ERROR("Failed to read json ServerInstances->Locations->Location");
+            return (FUNCTION_FAILURE);
+        }
         tmp_location->location = jtoc_get_string(tmp);
-        // TODO add checking '/'
+        LOG_ERROR(tmp_location->location);
 
-        // LOG_INFO("STOP HERE3");
         tmp_location->root = server_config_root;
         tmp = jtoc_node_get_by_path(loop_iter, "Root");
         if (tmp != NULL) {
-            LOG_INFO(tmp->type);
+            LOG_INFO(tmp->type);   
             if (tmp->type != string) {
                 LOG_ERROR("Failed to read json ServerInstances->Location->Root");
                 return (FUNCTION_FAILURE);
             }
             tmp_location->root = jtoc_get_string(tmp);
-            // TODO add checking '/'
         }
+        if (tmp_location->root.back() != '/') {
+            tmp_location->root += '/';
+        }
+
+        tmp_location->full_path = tmp_location->root + tmp_location->location.substr(1, tmp_location->location.length() - 1);
         
-        //TODO full_path
-        // LOG_INFO("STOP HERE4");
+        
         // Autoindex
         tmp = jtoc_node_get_by_path(loop_iter, "Autoindex");
         tmp_location->autoindex = false;
         if (tmp != NULL) {
-            LOG_INFO(tmp->type);
-            if (tmp->type != integer) { //!!!!!! check if there if bool type
+            if (tmp->type != integer) {
                 LOG_ERROR("Failed to read json Autoindex");
-                return (FUNCTION_FAILURE);
+                return (FUNCTION_FAILURE);  
             }
-            tmp_location->autoindex = jtoc_get_int(tmp);
+            tmp_int = jtoc_get_int(tmp);
+            if (tmp_int == 0) {
+                tmp_location->autoindex = false;
+            }
+            else if (tmp_int == 1) {
+                tmp_location->autoindex = true;
+            }
+            else {
+                LOG_ERROR("Failed to read json Autoindex");
+                return (FUNCTION_FAILURE);  
+            }
         }
 
-        // LOG_INFO("STOP HERE5");
         //index
         tmp = jtoc_node_get_by_path(loop_iter, "Index");
         tmp_location->index = std::string();
         if (tmp != NULL) {
-            if (tmp->type != string) { //!!!!!! check if there if bool type
+            if (tmp->type != string) { 
                 LOG_ERROR("Failed to read json Index");
                 return (FUNCTION_FAILURE);
             }
@@ -145,7 +162,6 @@ int ws_jtoc_get_locations(std::vector<SharedPtr<Location> >& locations_vector,
         }
         // TODO check my logic by config.h
 
-        // LOG_INFO("STOP HERE6");
         //AvailableMethods
         tmp_location->available_methods = std::unordered_set<Http::Method, EnumClassHash>();
         tmp = jtoc_node_get_by_path(loop_iter, "AvailableMethods");
@@ -160,7 +176,6 @@ int ws_jtoc_get_locations(std::vector<SharedPtr<Location> >& locations_vector,
         }
         //TODO check default value available_methods
 
-        // LOG_INFO("STOP HERE7");
         //TODO check redirect working with index autoindex
         tmp_location->redirect = std::string();
         tmp = jtoc_node_get_by_path(loop_iter, "Redirect");
@@ -171,10 +186,8 @@ int ws_jtoc_get_locations(std::vector<SharedPtr<Location> >& locations_vector,
             }
             tmp_location->redirect = jtoc_get_string(tmp);
         }
-        // LOG_INFO("STOP HERE8");
         locations_vector.push_back(tmp_location);
         loop_iter = loop_iter->right;
-        // LOG_INFO("STOP HERE9");
     }
     return (FUNCTION_SUCCESS);
 }
