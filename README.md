@@ -14,10 +14,13 @@
   * Array of server instances. `required at least one server`
 
 - ### Server instanse fields:
-  * Port - the port that this server is listening on. (few server may listen the same port and first server declared in config will be default [see below](#few-servers-on-the-same-port-rules))
+  * Port `required` - the port that this server is listening on. (few servers may listen the same port and first server declared in config will be default, [see below](#few-servers-on-the-same-port-rules))
+  * Name `required` - the name of the server which is used in the "host" request header. If few servers are listening one port, the desired server will be selected with the host header with the correct server name:port" 
+  * Root `required` - absolute path 
   * MaxBodySize_b `default: 100 mb (100000000 b)` - max request body size (this value is checking during request reading).
   * MaxRequestSize_b `default: 200 mb (200000000 b)` - max request size (this value is checking during request reading).
-
+ 
+## Few servers on the same port rules:
 
 ### Config example:
 ```
@@ -92,11 +95,6 @@
   ]
 }
 ```
-
-
-
-## Few servers on the same port rules:
-
 
 Глобально, что осталось до конца:
 * запуск cgi скриптов
