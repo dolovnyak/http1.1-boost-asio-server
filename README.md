@@ -14,7 +14,7 @@
   * Array of server instances. `required at least one server`
 
 - ### Server instanse fields:
-  * Port - the port that this server is listening on. (few server may listen the same port and first server declared in config will be default [See below](#few-servers-on-the-same-port-rules))
+  * Port - the port that this server is listening on. (few server may listen the same port and first server declared in config will be default [see below](#few-servers-on-the-same-port-rules))
   * MaxBodySize_b `default: 100 mb (100000000 b)` - max request body size (this value is checking during request reading).
   * MaxRequestSize_b `default: 200 mb (200000000 b)` - max request size (this value is checking during request reading).
 
