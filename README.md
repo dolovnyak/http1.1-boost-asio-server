@@ -1,3 +1,104 @@
+# Webserver-42
+
+### Nginx style webserver working with poll (TODO epoll), which can manage static content, upload files, run cgi-scripts. Supported autoindex, nginx style locations, partial support of http/1.1 and http/1.0
+
+* TODO build status
+* TODO tests coverage
+
+## Config rules:
+- ### Config common fields:
+  * MaxSessionsNumber `default: 1024` - how many simultaneous connections the server can handle. (the user must take into account the limitation on sockets in the operating system)
+  * ReadBufferSize `default: 4096` - buffer size when server is reading from socket.
+  * CoreTimeous_s `default: 1s` - timeout for poll or epoll when event queue is empty. (if queue isn't empty, timeout is 0) 
+  * SessionsKillerDelay_s `default: 2s` - delay for task who kills hung or keep-alive sessions by timeout. It's recommended to set it larger and multiple of CoreTimeout_s because otherwise delay may be longer.
+  * Array of server instances. `required at least one server`
+
+- ### Server instanse fields:
+  * Port - the port that this server is listening on. (few server may listen the same port and first server declared in config will be default)
+  * MaxBodySize_b `default: 100 mb (100000000 b)` - max request body size (this value is checking during request reading).
+  * MaxRequestSize_b `default: 200 mb (200000000 b)` - max request size (this value is checking during request reading).
+
+
+AAA: [Go to Real Cool Heading section](#real-cool-heading)  
+
+### Config example:
+```
+{
+  "MaxSessionsNumber": 2048,
+  "ReadBufferSize": 4096,
+  "SessionsKillerDelay_s": 2,
+  "HangSessionTimeout_s": 10,
+  "CoreTimeout_s": 1,
+  "ServerInstances": [
+    {
+      "Port": 80,
+      "Name": "test1",
+      "Root": "/tmp/my_server/",
+      "MaxBodySize" : 8192,
+      "MaxRequestSize" : 16384,
+      "Locations": [
+        {
+          "MaxClientBodySize": 4096,
+          "Location": "/",
+          "Root": "/",
+          "Autoindex": 0,
+          "Index": "index.html",
+          "AvailableMethods": [
+            "GET",
+            "POST"
+          ]
+        }
+      ]
+    },
+    {
+      "Port": 80,
+      "Name": "kabun2",
+      "Root": "/Users/sbecker/Desktop/projects/webserver-42/examples/cgi_checker2",
+      "MaxBodySize": 8096,
+      "MaxRequestSize": 16384,
+      "DefaultErrorPages": {
+        "404": "/error_pages/404.html",
+        "405": "/error_pages/405.html",
+        "500": "/error_pages/500.html"
+      },
+      "CgiExtensions": [
+        ".py",
+        ".php"
+      ],
+      "Locations": [
+        {
+          "Location": "/",
+          "Root": "/",
+          "Autoindex": 1,
+          "Index": "index.html",
+          "AvailableMethods": [
+            "GET",
+            "POST"
+          ]
+        },
+        {
+          "Location": "/upload",
+          "Root": "/cgi-bin/upload.py",
+          "AvailableMethods": [
+            "GET",
+            "POST",
+            "DELETE"
+          ]
+        },
+        {
+          "Location": "/images/kitty.jpg",
+          "Redirect": "/images/kitty2.jpg"
+        }
+      ]
+    }
+  ]
+}
+```
+
+
+
+#Real Cool Heading
+
 Глобально, что осталось до конца:
 * запуск cgi скриптов
 * Перед тем как делать загрузку и удаление файлов, посмотреть это работает в nginx.
