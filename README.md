@@ -17,7 +17,7 @@
   * Port `required` - the port that this server is listening on. (few servers may listen the same port and first server declared in config will be default, [see below](#few-servers-on-the-same-port-rules))
   * Name `required` - the name of the server which is used in the "host" request header. If few servers are listening one port, the desired server will be selected with the host header with the correct server name:port" 
   * Root `required` - absolute path which will be the directory that will be returned by the "/" route (if there is no location). Also if location doesn't have root, or if it has root that doesn't start with "/" it will use server root.
-  * DefaultErrorPages `default:` [HttpErrorPages.cpp](https://github.com/dolovnyak/webserver-42/blob/master/srcs/http/errors/HttpErrorPages.cpp) - array like {http_error_code, path}, where path either absolute path if it begin with "/", either relative root path.
+  * DefaultErrorPages `default: `[`HttpErrorPages.cpp`](https://github.com/dolovnyak/webserver-42/blob/master/srcs/http/errors/HttpErrorPages.cpp) - array like {http_error_code, path}, where path either absolute path if it begin with "/", either relative root path.
   * MaxBodySize_b `default: 100 mb (100000000 b)` - max request body size (this value is checking during request reading).
   * MaxRequestSize_b `default: 200 mb (200000000 b)` - max request size (this value is checking during request reading).
  
