@@ -19,7 +19,7 @@
   * MaxRequestSize_b `default: 200 mb (200000000 b)` - max request size (this value is checking during request reading).
 
 
-AAA: [Go to Real Cool Heading section] (#real-cool-heading)  
+AAA: [Go to Real Cool Heading section](#few-servers-on-the-same-port-rules)  
 
 ### Config example:
 ```
@@ -97,7 +97,8 @@ AAA: [Go to Real Cool Heading section] (#real-cool-heading)
 
 
 
-#Real Cool Heading
+## Few servers on the same port rules:
+
 
 Глобально, что осталось до конца:
 * запуск cgi скриптов
