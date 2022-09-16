@@ -17,15 +17,16 @@
   * Port `required` - the port that this server is listening on. (few servers may listen the same port and first server declared in config will be default, [see below](#few-servers-on-the-same-port-rules))
   * Name `required` - the name of the server which is used in the "host" request header. If few servers are listening one port, the desired server will be selected with the host header with the correct server_name:port" 
   * Root `required` - absolute path which will be the server directory. If location doesn't have root, or if location root doesn't start with "/", location root will be relative from server root.
-  * ErrorPages `default:`[`HttpErrorPages.cpp`](https://github.com/dolovnyak/webserver-42/blob/master/srcs/http/errors/HttpErrorPages.cpp) - array like {http_error_code, path}, where path either absolute path if it begin with "/", either relative root path.
-  * CgiExtensions `default: no one` - array with extensions like ".py", ".php" ... , files with this extensions  
+  * ErrorPages `default:`[`HttpErrorPages.cpp`](https://github.com/dolovnyak/webserver-42/blob/master/srcs/http/errors/HttpErrorPages.cpp) - array like {http_error_code, path}, where path either absolute path if it begin with "/", either relative root path. 
   * MaxBodySize_b `default: 100 mb (100000000 b)` - max request body size (this value is checking during request reading).
   * MaxRequestSize_b `default: 200 mb (200000000 b)` - max request size (this value is checking during request reading).
   * KeepAliveTimeout_s `default: 60 s` - default keep-alive timeout if connection persistent and there is no keep-alive header with timeout value.
   * KeepAliveMaxTimeout_s `default: 1800 s` - max keep-alive timeout which could be set from request, if timeout from request higher than max, timeout - max.
-  * Locations `default: 
+  * Locations `required at least one location` - locations which will be match with routes. See [locations match rules](#locations-match-rules)
  
 ## Few servers on the same port rules:
+
+## Locations match rules
 
 ### Config example:
 ```
