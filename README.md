@@ -27,10 +27,10 @@
 - ### Location fields:
   * location `required` - there are two types locations: Path location - location that start with "/" (for example /images). And extension location - location that start with "*." (for example *.php). See [locations match rules](#locations-match-rules)
   * root `default: relative to the server root` - absolute path if it's start with "/", relative to the server root path in other cases. (for example if server root is /tmp/my_server/ and location root is html, full location root will be /tmp/my_server/html/)
-  * autoindex `default: false` - on/off directory listing. can't be enabled with [intersected location rules](#intersected-location-rules)
-  * methods `default: no one` - available methods for this location. Other will forbidden.
-  * cgi_path - TODO
-  * upload_path - TODO
+  * autoindex `default: false` - on/off directory listing. Behave according to [intersected location fields rules](#intersected-location-fields-rules)
+  * methods `default: no one` - array of available methods for this location. Other will forbidden.
+  * cgi_path - `default: empty (cgi off)` - path to cgi script which will be execute for this location. Behave according to [intersected location fields rules](#intersected-location-fields-rules)
+  * upload_path `default: empty (uploading off)` - path to the directory where to upload files when a PUT request arrives. Behave according to [intersected location fields rules](#intersected-location-fields-rules)
   * redirect - TODO
  
 ## Default server rules:
@@ -39,7 +39,7 @@ TODO
 ## Locations match rules:
 TODO
 
-## Intersected location rules:
+## Intersected location fields rules:
 TODO
 
 ### Config example:
