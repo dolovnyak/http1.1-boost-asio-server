@@ -42,79 +42,10 @@ TODO
 ## Intersected location fields rules:
 There are 4 location fields that cause different behavior and conflict with each other. It's `cgi_path`, `upload_path`, `return` and `autoindex`. For now we will never allow more than one of them to be enabled at the same time.
 
-### Config example:
-```
-{
-  "MaxSessionsNumber": 2048,
-  "ReadBufferSize": 4096,
-  "SessionsKillerDelay_s": 2,
-  "HangSessionTimeout_s": 10,
-  "CoreTimeout_s": 1,
-  "ServerInstances": [
-    {
-      "Port": 80,
-      "Name": "test1",
-      "Root": "/tmp/my_server/",
-      "MaxBodySize" : 8192,
-      "MaxRequestSize" : 16384,
-      "Locations": [
-        {
-          "MaxClientBodySize": 4096,
-          "Location": "/",
-          "Root": "/",
-          "Autoindex": 0,
-          "Index": "index.html",
-          "AvailableMethods": [
-            "GET",
-            "POST"
-          ]
-        }
-      ]
-    },
-    {
-      "Port": 80,
-      "Name": "kabun2",
-      "Root": "/Users/sbecker/Desktop/projects/webserver-42/examples/cgi_checker2",
-      "MaxBodySize": 8096,
-      "MaxRequestSize": 16384,
-      "DefaultErrorPages": {
-        "404": "/error_pages/404.html",
-        "405": "/error_pages/405.html",
-        "500": "/error_pages/500.html"
-      },
-      "CgiExtensions": [
-        ".py",
-        ".php"
-      ],
-      "Locations": [
-        {
-          "Location": "/",
-          "Root": "/",
-          "Autoindex": 1,
-          "Index": "index.html",
-          "AvailableMethods": [
-            "GET",
-            "POST"
-          ]
-        },
-        {
-          "Location": "/upload",
-          "Root": "/cgi-bin/upload.py",
-          "AvailableMethods": [
-            "GET",
-            "POST",
-            "DELETE"
-          ]
-        },
-        {
-          "Location": "/images/kitty.jpg",
-          "Redirect": "/images/kitty2.jpg"
-        }
-      ]
-    }
-  ]
-}
-```
+
+
+
+
 
 Глобально, что осталось до конца:
 * запуск cgi скриптов
