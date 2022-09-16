@@ -34,7 +34,9 @@
   * return `default: none` - "http_error_code" or "http_redirect_code url". if url start with "/" it's local path and we need to construct correct url. In other case we consider that url is correct global url. Behave according to [intersected location fields rules](#intersected-location-fields-rules)
  
 ## Default server rules:
-If several servers listen on the same port, then the first one in the config will be default. That means, that until the host header is processed (that is, until the entire request is read), the default server will be used and this will affect error pages. For example: we have default server A with error_page 404 /tmp/A/404.html and server B with error_page 404 /tmp/B/404.html. And in case if request invalid, like incorect header syntex or incorrect http version despite the fact that we requested the server B, we will get error_page from server A.
+If several servers listen on the same port, then the first one in the config will be default. That means two things: 
+ 1. If host header match with no one server - default server will be used.
+ 2. Until the host header is processed (that is, until the entire request is read), the default server will be used and this will affect error pages. If we have default server A with error_page 404 /A/404.html and server B with error_page 404 /B/404.html - in case if request invalid, like incorect header syntex we will recieve error_page /A/404.html.
 
 ## Locations match rules:
 TODO
@@ -42,7 +44,9 @@ TODO
 ## Intersected location fields rules:
 There are 4 location fields that cause different behavior and conflict with each other. It's `cgi_path`, `upload_path`, `return` and `autoindex`. For now we will never allow more than one of them to be enabled at the same time.
 
-
+------------------------------------------------
+------------------------------------------------
+------------------------------------------------
 
 
 
