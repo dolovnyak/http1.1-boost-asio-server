@@ -30,6 +30,7 @@
   * autoindex `default: false` - on/off directory listing. can't be enabled with [intersected location rules](#intersected-location-rules)
   * methods `default: no one` - available methods for this location. Other will forbidden.
   * cgi_path - TODO
+  * upload_path - TODO
   * redirect - TODO
  
 ## Default server rules:
