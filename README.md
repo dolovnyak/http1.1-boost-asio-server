@@ -5,7 +5,7 @@
 * TODO build status
 * TODO tests coverage
 
-## Config rules:
+## Config:
 - ### Config common fields:
   * MaxSessionsNumber `default: 1024` - how many simultaneous connections the server can handle. (the user must take into account the limitation on sockets in the operating system)
   * ReadBufferSize `default: 4096` - buffer size when server is reading from socket.
@@ -22,11 +22,24 @@
   * MaxRequestSize_b `default: 200 mb (200000000 b)` - max request size (this value is checking during request reading).
   * KeepAliveTimeout_s `default: 60 s` - default keep-alive timeout if connection persistent and there is no keep-alive header with timeout value.
   * KeepAliveMaxTimeout_s `default: 1800 s` - max keep-alive timeout which could be set from request, if timeout from request higher than max, timeout - max.
-  * Locations `required at least one location` - locations which will be match with routes. See [locations match rules](#locations-match-rules)
+  * Locations `required at least one location` - array of locations, which will be match with routes. See [locations match rules](#locations-match-rules)
+
+- ### Location fields:
+  * location `required` - there are two types locations: Path location, it's location that start with "/" (for example /images). And extension location that start with "*." (for example *.php). See [locations match rules](#locations-match-rules)
+  * root `default: relative to the server root` - absolute path if it's start with "/", relative to the server root path in other cases. (for example if server root is /tmp/my_server/ and location root is html, full location root will be /tmp/my_server/html/)
+  * autoindex `default: false` - on/off directory listing. can't be enabled with [intersected location rules](#intersected-location-rules)
+  * methods `default: no one` - available methods for this location. Other will forbidden.
+  * cgi_path - TODO
+  * redirect - TODO
  
 ## Default server rules:
+TODO
 
-## Locations match rules
+## Locations match rules:
+TODO
+
+## Intersected location rules:
+TODO
 
 ### Config example:
 ```
