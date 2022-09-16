@@ -7,31 +7,31 @@
 
 ## Config:
 - ### Config common fields:
-  * MaxSessionsNumber `default: 1024` - how many simultaneous connections the server can handle. (the user must take into account the limitation on sockets in the operating system)
-  * ReadBufferSize `default: 4096` - buffer size when server is reading from socket.
-  * CoreTimeous_s `default: 1 s` - timeout for poll or epoll when event queue is empty. (if queue isn't empty, timeout is 0) 
-  * SessionsKillerDelay_s `default: 2 s` - delay for task who kills hung or keep-alive sessions by timeout. It's recommended to set it larger and multiple of CoreTimeout_s because otherwise delay may be longer.
-  * ServerInstances `required at least one server` - array of server instances.
+  * **MaxSessionsNumber** `default: 1024` - how many simultaneous connections the server can handle. (the user must take into account the limitation on sockets in the operating system)
+  * **ReadBufferSize** `default: 4096` - buffer size when server is reading from socket.
+  * **CoreTimeous_s** `default: 1 s` - timeout for poll or epoll when event queue is empty. (if queue isn't empty, timeout is 0) 
+  * **SessionsKillerDelay_s** `default: 2 s` - delay for task who kills hung or keep-alive sessions by timeout. It's recommended to set it larger and multiple of CoreTimeout_s because otherwise delay may be longer.
+  * **ServerInstances** `required at least one server` - array of server instances.
 
 - ### Server instanse fields:
-  * Port `required` - the port that this server is listening on. (few servers may listen the same port and first server declared in config will be default. See [default server rules](#default-server-rules))
-  * Name `required` - the name of the server which is used in the "host" request header. If few servers are listening one port, the desired server will be selected with the host header with the correct server_name:port" 
-  * Root `required` - absolute path which will be the server directory. If location doesn't have root, or if location root doesn't start with "/", location root will be relative from server root.
-  * ErrorPages `default:`[`HttpErrorPages.cpp`](https://github.com/dolovnyak/webserver-42/blob/master/srcs/http/errors/HttpErrorPages.cpp) - array like {http_error_code, path}, where path either absolute path if it begin with "/", either relative root path. 
-  * MaxBodySize_b `default: 100 mb (100000000 b)` - max request body size (this value is checking during request reading).
-  * MaxRequestSize_b `default: 200 mb (200000000 b)` - max request size (this value is checking during request reading).
-  * KeepAliveTimeout_s `default: 60 s` - default keep-alive timeout if connection persistent and there is no keep-alive header with timeout value.
-  * KeepAliveMaxTimeout_s `default: 1800 s` - max keep-alive timeout which could be set from request, if timeout from request higher than max, timeout - max.
-  * Locations `required at least one location` - array of locations, which will be match with routes. See [locations match rules](#locations-match-rules)
+  * **Port** `required` - the port that this server is listening on. (few servers may listen the same port and first server declared in config will be default. See [default server rules](#default-server-rules))
+  * **Name** `required` - the name of the server which is used in the "host" request header. If few servers are listening one port, the desired server will be selected with the host header with the correct server_name:port" 
+  * **Root** `required` - absolute path which will be the server directory. If location doesn't have root, or if location root doesn't start with "/", location root will be relative from server root.
+  * **ErrorPages** `default:`[`HttpErrorPages.cpp`](https://github.com/dolovnyak/webserver-42/blob/master/srcs/http/errors/HttpErrorPages.cpp) - array like {http_error_code, path}, where path either absolute path if it begin with "/", either relative root path. 
+  * **MaxBodySize_b** `default: 100 mb (100000000 b)` - max request body size (this value is checking during request reading).
+  * **MaxRequestSize_b** `default: 200 mb (200000000 b)` - max request size (this value is checking during request reading).
+  * **KeepAliveTimeout_s** `default: 60 s` - default keep-alive timeout if connection persistent and there is no keep-alive header with timeout value.
+  * **KeepAliveMaxTimeout_s** `default: 1800 s` - max keep-alive timeout which could be set from request, if timeout from request higher than max, timeout - max.
+  * **Locations** `required at least one location` - array of locations, which will be match with routes. See [locations match rules](#locations-match-rules)
 
 - ### Location fields:
-  * location `required` - there are two types locations: Path location - location that start with "/" (for example /images). And extension location - location that start with "*." (for example *.php). See [locations match rules](#locations-match-rules)
-  * root `default: relative to the server root` - absolute path if it's start with "/", relative to the server root path in other cases. (for example if server root is /tmp/my_server/ and location root is html, full location root will be /tmp/my_server/html/)
-  * autoindex `default: false` - on/off directory listing. Behave according to [intersected location fields rules](#intersected-location-fields-rules)
-  * methods `default: no one` - array of available methods for this location. Other will forbidden.
-  * cgi_path - `default: none (cgi off)` - path to cgi script which will be execute for this location. Behave according to [intersected location fields rules](#intersected-location-fields-rules)
-  * upload_path `default: none (uploading off)` - path to the directory where to upload files when a PUT request arrives. Behave according to [intersected location fields rules](#intersected-location-fields-rules)
-  * return `default: none` - "http_error_code" or "http_redirect_code url". if url start with "/" it's local path and we need to construct correct url. In other case we consider that url is correct global url. Behave according to [intersected location fields rules](#intersected-location-fields-rules)
+  * **location** `required` - there are two types locations: Path location - location that start with "/" (for example /images). And extension location - location that start with "*." (for example *.php). See [locations match rules](#locations-match-rules)
+  * **root** `default: relative to the server root` - absolute path if it's start with "/", relative to the server root path in other cases. (for example if server root is /tmp/my_server/ and location root is html, full location root will be /tmp/my_server/html/)
+  * **autoindex** `default: false` - on/off directory listing. Behave according to [intersected location fields rules](#intersected-location-fields-rules)
+  * **methods** `default: no one` - array of available methods for this location. Other will forbidden.
+  * **cgi_path** - `default: none (cgi off)` - path to cgi script which will be execute for this location. Behave according to [intersected location fields rules](#intersected-location-fields-rules)
+  * **upload_path** `default: none (uploading off)` - path to the directory where to upload files when a PUT request arrives. Behave according to [intersected location fields rules](#intersected-location-fields-rules)
+  * **return** `default: none` - "http_error_code" or "http_redirect_code url". if url start with "/" it's local path and we need to construct correct url. In other case we consider that url is correct global url. Behave according to [intersected location fields rules](#intersected-location-fields-rules)
  
 ## Default server rules:
 If several servers listen on the same port, then the first one in the config will be default. That means two things: 
