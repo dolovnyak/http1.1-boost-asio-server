@@ -25,7 +25,7 @@
   * Locations `required at least one location` - array of locations, which will be match with routes. See [locations match rules](#locations-match-rules)
 
 - ### Location fields:
-  * location `required` - there are two types locations: Path location, it's location that start with "/" (for example /images). And extension location that start with "*." (for example *.php). See [locations match rules](#locations-match-rules)
+  * location `required` - there are two types locations: Path location - location that start with "/" (for example /images). And extension location - location that start with "*." (for example *.php). See [locations match rules](#locations-match-rules)
   * root `default: relative to the server root` - absolute path if it's start with "/", relative to the server root path in other cases. (for example if server root is /tmp/my_server/ and location root is html, full location root will be /tmp/my_server/html/)
   * autoindex `default: false` - on/off directory listing. can't be enabled with [intersected location rules](#intersected-location-rules)
   * methods `default: no one` - available methods for this location. Other will forbidden.
