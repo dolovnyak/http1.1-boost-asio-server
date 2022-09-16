@@ -29,18 +29,18 @@
   * root `default: relative to the server root` - absolute path if it's start with "/", relative to the server root path in other cases. (for example if server root is /tmp/my_server/ and location root is html, full location root will be /tmp/my_server/html/)
   * autoindex `default: false` - on/off directory listing. Behave according to [intersected location fields rules](#intersected-location-fields-rules)
   * methods `default: no one` - array of available methods for this location. Other will forbidden.
-  * cgi_path - `default: empty (cgi off)` - path to cgi script which will be execute for this location. Behave according to [intersected location fields rules](#intersected-location-fields-rules)
-  * upload_path `default: empty (uploading off)` - path to the directory where to upload files when a PUT request arrives. Behave according to [intersected location fields rules](#intersected-location-fields-rules)
-  * redirect - TODO
+  * cgi_path - `default: none (cgi off)` - path to cgi script which will be execute for this location. Behave according to [intersected location fields rules](#intersected-location-fields-rules)
+  * upload_path `default: none (uploading off)` - path to the directory where to upload files when a PUT request arrives. Behave according to [intersected location fields rules](#intersected-location-fields-rules)
+  * return `default: none` - "http_error_code" or "http_redirect_code url". if url start with "/" it's local path and we need to construct correct url. In other case we consider that url is correct global url. Behave according to [intersected location fields rules](#intersected-location-fields-rules)
  
 ## Default server rules:
-TODO
+If several servers listen on the same port, then the first one in the config will be default. That means, that until the host header is processed (that is, until the entire request is read), the default server will be used and this will affect error pages. For example: we have default server A with error_page 404 /tmp/A/404.html and server B with error_page 404 /tmp/B/404.html. And in case if request invalid, like incorect header syntex or incorrect http version despite the fact that we requested the server B, we will get error_page from server A.
 
 ## Locations match rules:
 TODO
 
 ## Intersected location fields rules:
-TODO
+There are 4 location fields that cause different behavior and conflict with each other. It's `cgi_path`, `upload_path`, `return` and `autoindex`. For now we will never allow more than one of them to be enabled at the same time.
 
 ### Config example:
 ```
