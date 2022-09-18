@@ -26,11 +26,11 @@ public:
 
     void CloseSession(int poll_index);
 
-    void CloseSocket(int poll_index);
-
     int GetNextSessionIndex() const;
 
 private:
+    void CloseSocket(int poll_index);
+
     void ProcessInnerRead(int poll_index);
 
     void ProcessInnerWrite(int poll_index);

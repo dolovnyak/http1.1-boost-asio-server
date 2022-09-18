@@ -34,7 +34,7 @@ int SetupServerSocket(int port, SharedPtr<Config> config) {
         throw std::runtime_error("Failed to bind socket");
     }
 
-    if (listen(socket_fd, config->max_sockets_number) < 0) {
+    if (listen(socket_fd, config->max_sessions_number) < 0) {
         close(socket_fd);
         throw std::runtime_error("Failed to set listen backlog");
     }

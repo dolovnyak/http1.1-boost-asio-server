@@ -87,7 +87,7 @@ int				ws_jtoc_get_config(Config& config,
         return (FUNCTION_FAILURE);
     }
 
-    if (ws_jtoc_get_int("MaxSocketsNumber", &config.max_sockets_number, root, DEFAULT_MAX_SOCKETS, false) == FUNCTION_FAILURE){
+    if (ws_jtoc_get_int("MaxSocketsNumber", &config.max_sessions_number, root, DEFAULT_MAX_SOCKETS, false) == FUNCTION_FAILURE){
         return (FUNCTION_FAILURE);
     }
 

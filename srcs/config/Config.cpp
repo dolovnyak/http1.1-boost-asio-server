@@ -51,7 +51,7 @@ bool Config::Load(const char* path) {
     if(ws_jtoc_get_config(config, "../../../conf/default_config.json") == FUNCTION_SUCCESS) { // change 2 arg to path
         
         LOG_INFO("START TEST: ");
-        LOG_INFO("max_sockets_number: ", config.max_sockets_number);
+        LOG_INFO("max_sessions_number: ", config.max_sessions_number);
         LOG_INFO("read_buffer_size: ", config.read_buffer_size);
         LOG_INFO("sessions_killer_delay_s: ", config.sessions_killer_delay_s);
         LOG_INFO("core_timeout_ms: ", config.core_timeout_ms);
