@@ -3,37 +3,36 @@
 #include "HttpException.h"
 #include "HttpErrorPages.h"
 #include "Logging.h"
+#include "Optional.h"
 
 namespace {
-    std::string ParseMethod(const std::string& raw_method,
-                            const SharedPtr<ServerConfig>& server_config) {
+    std::string ParseMethod(const std::string& raw_method, const SharedPtr<ServerConfig>& server_config) {
         if (!IsTcharString(raw_method)) {
             throw BadFirstLine("Incorrect first line", server_config);
         }
         return raw_method;
     }
 
-    RequestTarget ParseRequestTarget(const std::string& raw_request_target,
-                                     const SharedPtr<ServerConfig>& server_config) {
+    RequestTarget
+    ParseRequestTarget(const std::string& raw_request_target, const SharedPtr<ServerConfig>& server_config) {
         RequestTarget request_target;
 
         size_t path_end = raw_request_target.find_first_of('?');
 
         if (path_end == std::string::npos) {
-            request_target.full_path = raw_request_target;
+            request_target.path = raw_request_target;
             request_target.directory_path = raw_request_target.substr(0, raw_request_target.find_last_of('/') + 1);
             request_target.query_string = "";
         }
         else {
-            request_target.full_path = raw_request_target.substr(0, path_end);
-            request_target.directory_path = request_target.full_path.substr(0,
-                                                                            request_target.full_path.find_last_of('/') +
-                                                                            1);
+            request_target.path = raw_request_target.substr(0, path_end);
+            request_target.directory_path = request_target.path
+                    .substr(0, request_target.path.find_last_of('/') + 1);
             request_target.query_string = raw_request_target.substr(path_end + 1);
         }
 
-        if (request_target.full_path != request_target.directory_path) {
-            request_target.file_name = request_target.full_path.substr(request_target.full_path.find_last_of('/') + 1);
+        if (request_target.path != request_target.directory_path) {
+            request_target.file_name = request_target.path.substr(request_target.path.find_last_of('/') + 1);
             if (request_target.file_name.find('.') != std::string::npos) {
                 request_target.extension = request_target.file_name.substr(
                         request_target.file_name.find_last_of('.') + 1);
@@ -45,7 +44,7 @@ namespace {
         }
 
 
-        if (!IsAbsolutePath(request_target.full_path)) {
+        if (!IsAbsolutePath(request_target.path)) {
             throw BadFirstLine("Incorrect first line", server_config);
         }
         if (!IsQueryString(request_target.query_string)) {
@@ -80,13 +79,31 @@ namespace {
     }
 }
 
-Request::Request(const SharedPtr<ServerConfig>& server_config)
-        : server_config(server_config),
-          content_length(), /// it should be empty cause it's optional
+Request::Request(SharedPtr<ServerConfig> default_server_config)
+        : content_length(Optional<size_t>::nullopt),
           is_cgi(false),
+          server_config(default_server_config),
           _handle_state(RequestHandleState::HandleFirstLine),
           _handled_size(0),
           _chunk_body_size(0) {}
+
+
+void Request::Clear() {
+    raw_method.clear();
+    method = Http::Method::UNKNOWN;
+    raw_http_version = HttpVersion();
+    body.clear();
+    raw.clear();
+    headers.clear();
+    target.Clear();
+    content_length = Optional<size_t>::nullopt;
+    is_cgi = false;
+    /// keep alive, keep alive timeout and server config are not cleared
+
+    _handle_state = RequestHandleState::HandleFirstLine;
+    _handled_size = 0;
+    _chunk_body_size = 0;
+}
 
 RequestHandleState::State Request::ParseFirstLineHandler() {
     size_t first_line_end = raw.find(CRLF, _handled_size);
@@ -149,7 +166,6 @@ RequestHandleState::State Request::ParseHeaderHandler() {
 }
 
 RequestHandleState::State Request::AnalyzeHeadersBeforeParseBodyHandler() {
-
 
     /// transfer encoding
     HeaderIterator it = headers.find(TRANSFER_ENCODING);
@@ -229,6 +245,10 @@ RequestHandleState::State Request::ParseChunkBodyHandler() {
     }
 
     body += raw.substr(_handled_size, _chunk_body_size);
+    if (body.size() > static_cast<size_t>(server_config->max_body_size)) {
+        throw PayloadTooLarge("Body too large", server_config);
+    }
+
     _handled_size += _chunk_body_size + CRLF_LEN;
     return RequestHandleState::HandleChunkSize;
 }
@@ -241,8 +261,7 @@ RequestHandleState::State Request::ParseChunkTrailerPartHandler() {
     /// for now ignore chunked trailer part data
     content_length = body.size();
     _handled_size = trailer_end + CRLF_LEN;
-    /// for now _handled_size could be lower than raw size if there are some spam after chunked trailer part
-    /// and for now I don't do anything with it, same as with content_length handling.
+    /// _handled_size could be lower than raw size if there are some spam after chunked trailer part.
     return RequestHandleState::FinishHandle;
 }
 
@@ -253,6 +272,10 @@ RequestHandleState::State Request::ParseBodyByContentLengthHandler() {
     }
     else {
         body += raw.substr(_handled_size, *content_length);
+        if (body.size() > static_cast<size_t>(server_config->max_body_size)) {
+            throw PayloadTooLarge("Body too large", server_config);
+        }
+
         _handled_size += *content_length;
         /// for now _handled_size could be lower than raw size if there are some spam after content_length
         return RequestHandleState::FinishHandle;
@@ -261,7 +284,7 @@ RequestHandleState::State Request::ParseBodyByContentLengthHandler() {
 
 RequestHandleStatus::Status Request::Handle(SharedPtr<std::string> raw_request_part) {
     raw += *raw_request_part;
-    if (raw.size() >= 1337) { /// TODO get value from config
+    if (raw.size() > static_cast<size_t>(server_config->max_request_size)) {
         throw PayloadTooLarge("Payload too large", server_config);
     }
     RequestHandleState::State prev_state = _handle_state;
@@ -334,24 +357,48 @@ void Request::ProcessHttpVersion() {
     }
 }
 
-void Request::ProcessFilePath() {
-    target.full_path = server_config->root_path + target.full_path;
-    target.directory_path = server_config->root_path + target.directory_path;
+void Request::ProcessRouteLocation() {
+    /// для server_config.
+    /// для каждого location проверить, что он подходит для данного пути
+    /// если ни для одного не подходит уменьшить путь до предыдущего слеша и проверить снова
+
+    std::string path = target.path;
+    size_t path_len = path.size();
+
+
+    while (true) {
+        for (std::vector<SharedPtr<Location> >::iterator it = server_config->locations.begin();
+             it != server_config->locations.end(); ++it) {
+            SharedPtr<Location> current_location = *it;
+            if (current_location->location.compare(0, path_len, path) == 0) {
+                location = current_location;
+                return;
+            }
+        }
+
+        path_len = path.rfind('/', path_len - 1);
+        if (path_len == 0 || path_len == std::string::npos) {
+            throw NotFound("Location not found", server_config);
+        }
+    }
+
+    target.path = server_config->root + target.path;
+    target.directory_path = server_config->root + target.directory_path;
 
     if (server_config->cgi_file_extensions.find(target.extension) !=
         server_config->cgi_file_extensions.end()) {
         is_cgi = true;
     }
     else {
-        if (target.full_path == target.directory_path) {
-            target.full_path += server_config->default_file_name;
+        if (target.path == target.directory_path) {
+            target.path += server_config->default_file_name;
         }
         is_cgi = false;
     }
 }
 
 
-void Request::ProcessHostHeader() {
+void Request::ProcessHostHeader(SharedPtr<PortServersConfig> port_servers_config) {
     HeaderIterator it = headers.find(HOST);
 
     if (it == headers.end()) {
@@ -387,6 +434,8 @@ void Request::ProcessHostHeader() {
     if (!IsIpv4(host) && !IsRegName(host)) {
         throw BadRequest("Host header incorrect", server_config);
     }
+
+    server_config = port_servers_config->GetByNameOrDefault(host);
 }
 
 void Request::ProcessConnectionHeader() {
@@ -499,13 +548,19 @@ void Request::ProcessMethod() {
 }
 
 
-void Request::Process() {
+void Request::Process(const SharedPtr<PortServersConfig>& port_servers_config) {
     /// never change order of these methods
+
     ProcessHttpVersion();
-    ProcessFilePath();
+
+    /// this method change server_config by host header if few servers listen one port
+    ProcessHostHeader(port_servers_config);
+
+    /// this method set location for request or throw exception
+    ProcessRouteLocation();
+
     ProcessContentTypeHeader();
     ProcessContentLengthHeader();
-    ProcessHostHeader();
     ProcessConnectionHeader();
     ProcessKeepAliveHeader();
     ProcessAcceptHeader();
@@ -521,18 +576,4 @@ void Request::AddHeader(const std::string& key, const std::string& value) {
         headers[lower_key] = std::vector<std::string>();
     }
     headers[lower_key].push_back(StripString(value));
-}
-
-void Request::Clear() {
-    raw_method.clear();
-    method = Http::Method::UNKNOWN;
-    raw_http_version = HttpVersion();
-    body.clear();
-    raw.clear();
-    headers.clear();
-    target.Clear();
-    content_length = Optional<size_t>();
-    _handle_state = RequestHandleState::HandleFirstLine;
-    _handled_size = 0;
-    _chunk_body_size = 0;
 }

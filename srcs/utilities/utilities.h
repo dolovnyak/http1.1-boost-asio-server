@@ -9,6 +9,17 @@
 #define OVERRIDE override
 #endif
 
+#define READ_BUFFER_SIZE 4096
+
+struct EnumClassHash
+{
+    template <typename T>
+    std::size_t operator()(T t) const
+    {
+        return static_cast<std::size_t>(t);
+    }
+};
+
 std::string StripString(const std::string& str);
 
 std::vector<std::string> SplitString(const std::string& str, const std::string& delimiters);
@@ -52,3 +63,5 @@ bool IsRegName(const std::string& str);
 bool IsIpv4(const std::string& str);
 
 bool SetSocketNonBlocking(int socket);
+
+bool ReadFile(const std::string& path, std::string& result);

@@ -57,10 +57,10 @@ RM = /opt/homebrew/Cellar/cmake/3.24.0/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = "/Users/olgaborisova/Desktop/21 school/web_serv/libjtoc"
+CMAKE_SOURCE_DIR = /Users/olgaborisova/Desktop/webserver-42
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = "/Users/olgaborisova/Desktop/21 school/web_serv/libjtoc"
+CMAKE_BINARY_DIR = /Users/olgaborisova/Desktop/webserver-42
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,14 +87,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd "/Users/olgaborisova/Desktop/21 school/web_serv/libjtoc" && $(CMAKE_COMMAND) -E cmake_progress_start "/Users/olgaborisova/Desktop/21 school/web_serv/libjtoc/CMakeFiles" "/Users/olgaborisova/Desktop/21 school/web_serv/libjtoc/src//CMakeFiles/progress.marks"
-	cd "/Users/olgaborisova/Desktop/21 school/web_serv/libjtoc" && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/all
-	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/olgaborisova/Desktop/21 school/web_serv/libjtoc/CMakeFiles" 0
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(CMAKE_COMMAND) -E cmake_progress_start /Users/olgaborisova/Desktop/webserver-42/CMakeFiles /Users/olgaborisova/Desktop/webserver-42/libjtoc/src//CMakeFiles/progress.marks
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 libjtoc/src/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/olgaborisova/Desktop/webserver-42/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd "/Users/olgaborisova/Desktop/21 school/web_serv/libjtoc" && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/clean
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 libjtoc/src/clean
 .PHONY : clean
 
 # The main clean target
@@ -103,17 +103,17 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd "/Users/olgaborisova/Desktop/21 school/web_serv/libjtoc" && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/preinstall
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 libjtoc/src/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd "/Users/olgaborisova/Desktop/21 school/web_serv/libjtoc" && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 src/preinstall
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 libjtoc/src/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd "/Users/olgaborisova/Desktop/21 school/web_serv/libjtoc" && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Help Target
@@ -135,6 +135,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd "/Users/olgaborisova/Desktop/21 school/web_serv/libjtoc" && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /Users/olgaborisova/Desktop/webserver-42 && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

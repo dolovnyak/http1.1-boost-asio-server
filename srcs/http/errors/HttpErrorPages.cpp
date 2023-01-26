@@ -314,7 +314,7 @@ namespace {
 }
 
 
-    const std::string& GetHttpErrorPageByCode(Http::Code code) {
+const std::string& GetHttpErrorPageByCode(Http::Code code) {
     static std::unordered_map<int, std::string> error_pages = {
             {400, k400},
             {401, k401},
@@ -351,4 +351,17 @@ namespace {
         return it->second;
     }
     throw std::logic_error("Unknown http error code");
+}
+
+std::string GetHttpErrorPageByCode(Http::Code code, SharedPtr<ServerConfig> server_config) {
+    const std::unordered_map<int, std::string>::iterator& page_path_it = server_config->error_pages.find(code);
+
+    if (page_path_it != server_config->error_pages.end()) {
+        std::string error_page;
+        if (ReadFile(page_path_it->second, error_page)) {
+            return error_page;
+        }
+    }
+
+    return GetHttpErrorPageByCode(code);
 }

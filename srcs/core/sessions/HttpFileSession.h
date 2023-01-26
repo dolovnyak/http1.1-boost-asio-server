@@ -5,9 +5,9 @@
 template<class CoreModule>
 class HttpFileSession : public Session<CoreModule> {
 public:
-    HttpFileSession(int core_module_index, CoreModule* core_module, SocketFd socket,
+    HttpFileSession(const SharedPtr<Config>& config, int core_module_index, CoreModule* core_module, SocketFd socket,
                     const SharedPtr<Session<CoreModule> >& main_session)
-            : Session<CoreModule>(core_module_index, core_module, socket),
+            : Session<CoreModule>(config, core_module_index, core_module, socket),
               main_http_session(main_session) {}
 
     ~HttpFileSession() {}
