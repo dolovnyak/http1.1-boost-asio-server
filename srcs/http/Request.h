@@ -34,6 +34,7 @@ namespace RequestHandleState {
 
 struct HttpVersion {
     HttpVersion() : major(0), minor(0) {}
+
     HttpVersion(int major, int minor) : major(major), minor(minor) {}
 
     bool operator==(const HttpVersion& other) const {
@@ -49,14 +50,14 @@ struct HttpVersion {
 };
 
 struct RequestTarget {
-    std::string full_path;
+    std::string path;
     std::string directory_path;
     std::string file_name;
     std::string extension;
     std::string query_string;
 
     void Clear() {
-        full_path.clear();
+        path.clear();
         directory_path.clear();
         file_name.clear();
         extension.clear();
@@ -66,11 +67,13 @@ struct RequestTarget {
 
 class Request {
 public:
-    Request(const SharedPtr<ServerConfig>& server_config);
+    Request();
+
+    Request(SharedPtr<ServerConfig> default_server_config);
 
     RequestHandleStatus::Status Handle(SharedPtr<std::string> raw_request_part);
 
-    void Process();
+    void Process(const SharedPtr<PortServersConfig>& port_servers_config);
 
     void AddHeader(const std::string& key, const std::string& value);
 
@@ -92,8 +95,6 @@ public:
 
     std::unordered_map<std::string, std::vector<std::string> > headers;
 
-    SharedPtr<ServerConfig> server_config;
-
     RequestTarget target;
 
     Optional<size_t> content_length;
@@ -103,6 +104,10 @@ public:
     bool keep_alive;
 
     int keep_alive_timeout;
+
+    SharedPtr<ServerConfig> server_config; /// it could change during ProcessHostHeader
+
+    SharedPtr<Location> location;
 
 
 private: /// handle helpers
@@ -127,11 +132,10 @@ private: /// handle helpers
 
     size_t _chunk_body_size;
 
-
 private: /// process helpers
     void ProcessHttpVersion();
 
-    void ProcessHostHeader();
+    void ProcessHostHeader(SharedPtr<PortServersConfig> port_servers_config);
 
     void ProcessContentTypeHeader();
 
@@ -147,7 +151,7 @@ private: /// process helpers
 
     void ProcessCookiesHeader();
 
-    void ProcessFilePath();
+    void ProcessRouteLocation();
 
     void ProcessAuthorizationHeader();
 

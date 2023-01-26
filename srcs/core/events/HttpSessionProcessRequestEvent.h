@@ -10,13 +10,13 @@
 #include <fcntl.h>
 
 template<class CoreModule>
-class HttpProcessRequestEvent : public Event {
+class HttpSessionProcessRequestEvent : public Event {
 public:
-    HttpProcessRequestEvent(const SharedPtr<Session<CoreModule> >& session,
-                            std::queue<SharedPtr<Event> >* event_queue)
+    HttpSessionProcessRequestEvent(const SharedPtr<Session<CoreModule> >& session,
+                                   std::queue<SharedPtr<Event> >* event_queue)
             : _packaged_http_session(session), _event_queue(event_queue) {}
 
-    ~HttpProcessRequestEvent() {}
+    ~HttpSessionProcessRequestEvent() {}
 
     const std::string& GetName() const OVERRIDE;
 
@@ -37,29 +37,29 @@ private:
 
 
 template<class CoreModule>
-const std::string& HttpProcessRequestEvent<CoreModule>::GetName() const {
-    static std::string kName = "HttpProcessRequestEvent";
+const std::string& HttpSessionProcessRequestEvent<CoreModule>::GetName() const {
+    static std::string kName = "HttpSessionProcessRequestEvent";
     return kName;
 }
 
 template<class CoreModule>
-void HttpProcessRequestEvent<CoreModule>::RunCgiPipeline() {
+void HttpSessionProcessRequestEvent<CoreModule>::RunCgiPipeline() {
     int fds[2];
     int err = pipe(fds);
 
     if (err == - 1) {
-        throw InternalServerError("Pipe error", _http_session->server_config);
+        throw InternalServerError("Pipe error", _http_session->port_servers_config);
     }
 
     ssize_t write_res = write(fds[1], _http_session->request->body.c_str(), _http_session->request->body.size());
     if (write_res == - 1) {
-        throw InternalServerError("Error write to pipe", _http_session->server_config);
+        throw InternalServerError("Error write to pipe", _http_session->port_servers_config);
     }
 
     int fork_id = fork();
 
     if (fork_id == - 1) {
-        throw InternalServerError("Fork error", _http_session->server_config);
+        throw InternalServerError("Fork error", _http_session->port_servers_config);
     }
     else if (fork_id == 0) {
         char** env = new char*[_http_session->request->headers.size() + 1];
@@ -100,10 +100,10 @@ void HttpProcessRequestEvent<CoreModule>::RunCgiPipeline() {
 }
 
 template<class CoreModule>
-void HttpProcessRequestEvent<CoreModule>::RunFilePipeline() {
-    int fd = open(_http_session->request->target.full_path.c_str(), O_RDONLY);
+void HttpSessionProcessRequestEvent<CoreModule>::RunFilePipeline() {
+    int fd = open(_http_session->request->target.path.c_str(), O_RDONLY);
     if (fd == -1) {
-        throw NotFound("File not found or not available", _http_session->server_config);
+        throw NotFound("File not found or not available", _http_session->port_servers_config);
     }
     if (!SetSocketNonBlocking(fd)) {
         close(fd);
@@ -120,7 +120,7 @@ void HttpProcessRequestEvent<CoreModule>::RunFilePipeline() {
 }
 
 template<class CoreModule>
-void HttpProcessRequestEvent<CoreModule>::Process() {
+void HttpSessionProcessRequestEvent<CoreModule>::Process() {
     if (!_packaged_http_session->available) {
         LOG_INFO(GetName(), " on closed connection");
         return;
@@ -159,7 +159,7 @@ void HttpProcessRequestEvent<CoreModule>::Process() {
         _http_session->SendDataToClient(
                 Response::MakeErrorResponse(Http::InternalServerError,
                                             "Internal server error",
-                                            _http_session->server_config).response,
+                                            _http_session->port_servers_config).response,
                 false);
     }
 
