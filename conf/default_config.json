@@ -1,16 +1,18 @@
 {
-  "MaxSocketsNumber": 1021,
-  "ReadBufferSize": 1024,
+  "MaxSessionsNumber": 2048,
+  "ReadBufferSize": 4096,
   "SessionsKillerDelay_s": 2,
   "HangSessionTimeout_s": 10,
   "CoreTimeout_s": 1,
   "ServerInstances": [
     {
-      "MaxBodySize" : 1000000,
-      "MaxRequestSize" : 100000000,
       "Port": 80,
       "Name": "kabun1",
       "Root": "/Users/sbecker/Desktop/projects/webserver-42/examples/cgi_checker1",
+      "MaxBodySize" : 1000000,
+      "MaxRequestSize" : 100000000,
+      "KeepAliveTimeout_s" : 30,
+      "KeepAliveMaxTimeout_s" : 1800,
       "Locations": [
         {
           "Location": "/",
@@ -30,15 +32,11 @@
       "Root": "/Users/sbecker/Desktop/projects/webserver-42/examples/cgi_checker2",
       "MaxBodySize": 8096,
       "MaxRequestSize": 16384,
-      "DefaultErrorPages": {
+      "ErrorPages": {
         "404": "/error_pages/404.html",
         "405": "/error_pages/405.html",
         "500": "/error_pages/500.html"
       },
-      "CgiExtensions": [
-        ".py",
-        ".php"
-      ],
       "Locations": [
         {
           "Location": "/",

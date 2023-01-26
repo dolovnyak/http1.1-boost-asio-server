@@ -19,7 +19,6 @@
 #define DEFAULT_CORE_TIMEOUT 1 // 1 seconds
 
 #define DEFAULT_MAX_BODY_SIZE 100000000 // 100 MB
-#define DEFAULT_MAX_HEADER_SIZE 1000000 // 1 MB
 #define DEFAULT_MAX_REQUEST_SIZE 200000000 // 200 MB
 
 #define DEFAULT_KEEP_ALIVE_TIMEOUT 60 // 60 seconds
@@ -68,17 +67,19 @@ struct ServerConfig {
 
     int port; /// обязательное поле
 
-    std::string name; /// обязательное поле (проверять, что несколько
+    std::string name;
 
     std::string root; /// root должен всегда заканчиваться на / (автоматически добавлять если это не так)  /// обязательное поле
 
     std::unordered_map <int, std::string> error_pages; /// опциональное поле, они задаются в абсолютном пути (по умолчанию пустое)
 
-    std::unordered_set<std::string> cgi_file_extensions; /// опциональное поле (по умолчанию пустое)
-
     int max_body_size; /// опциональное поле, если не указано то берется из дефолта
 
     int max_request_size; /// опциональное поле, если не указано то берется из дефолта
+
+    int default_keep_alive_timeout_s; /// опциональное брать дефолтное значение
+
+    int max_keep_alive_timeout_s; /// опциональное брать дефолтное значение
 
     std::vector<SharedPtr<Location> > locations; 
 };
@@ -87,7 +88,7 @@ struct PortServersConfig {
     
     SharedPtr<ServerConfig> GetByNameOrDefault(const std::string& name) const;
 
-    SharedPtr<ServerConfig> GetDefault() const; // что за const?
+    SharedPtr<ServerConfig> GetDefault() const;
 
     std::vector<SharedPtr <ServerConfig > > server_configs; /// first server is default
 
@@ -97,7 +98,7 @@ struct PortServersConfig {
 struct Config {
     bool Load(const char* path);
 
-    int max_sockets_number; /// опциональное поле, по умолчанию 1024
+    int max_sessions_number; /// опциональное поле, по умолчанию 1024
 
     int read_buffer_size; /// опциональное поле, по умолчанию 2048
 
@@ -106,10 +107,6 @@ struct Config {
     int core_timeout_ms;  /// this value conflict with sessions_killer_delay_s, so this value should be <= sessions_killer_delay_s (set exception on ths when load config)
 
     int hang_session_timeout_s; /// опциональное брать дефолтное значение
-
-    int default_keep_alive_timeout_s; /// опциональное брать дефолтное значение
-
-    int max_keep_alive_timeout_s; /// опциональное брать дефолтное значение
 
     std::unordered_map<int, SharedPtr<PortServersConfig> > port_servers_configs;
 };
