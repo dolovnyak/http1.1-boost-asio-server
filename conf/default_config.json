@@ -1,20 +1,38 @@
 {
-  "MaxSocketsNumber": 1024,
+  "MaxSessionsNumber": 2048,
+  "ReadBufferSize": 4096,
   "SessionsKillerDelay_s": 2,
+  "HangSessionTimeout_s": 10,
   "CoreTimeout_s": 1,
-  "ReadBufferSize": 1024,
   "ServerInstances": [
     {
       "Port": 80,
-      "Name": "kabun",
-      "Root": "/Users/sbecker/Desktop/projects/webserver-42/examples/cgi_checker",
+      "Name": "kabun1",
+      "Root": "/Users/sbecker/Desktop/projects/webserver-42/examples/cgi_checker1",
+      "MaxBodySize" : 1000000,
+      "MaxRequestSize" : 100000000,
+      "KeepAliveTimeout_s" : 30,
+      "KeepAliveMaxTimeout_s" : 1800,
+      "Locations": [
+        {
+          "Location": "/",
+          "Root": "/",
+          "Autoindex": 0,
+          "Index": "index.html",
+          "AvailableMethods": [
+            "GET",
+            "POST"
+          ]
+        }
+      ]
+    },
+    {
+      "Port": 80,
+      "Name": "kabun2",
+      "Root": "/Users/sbecker/Desktop/projects/webserver-42/examples/cgi_checker2",
       "MaxBodySize": 8096,
-      "MaxHeaderSize": 1024,
-      "MaxRawRequestSize": 16384,
-      "DefaultKeepAliveTimeout_s": 30,
-      "MaxKeepAliveTimeout_s": 1800,
-      "HangSessionTimeout_s": 10,
-      "DefaultErrorPages": {
+      "MaxRequestSize": 16384,
+      "ErrorPages": {
         "404": "/error_pages/404.html",
         "405": "/error_pages/405.html",
         "500": "/error_pages/500.html"
@@ -23,7 +41,7 @@
         {
           "Location": "/",
           "Root": "/",
-          "Autoindex": false,
+          "Autoindex": 1,
           "Index": "index.html",
           "AvailableMethods": [
             "GET",

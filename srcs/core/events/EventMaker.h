@@ -1,12 +1,12 @@
 #pragma once
 
 #include "SharedPtr.h"
-#include "HttpReadRequestEvent.h"
-#include "HttpProcessRequestEvent.h"
-#include "HttpReadFileEvent.h"
-#include "HttpReadRequestZeroBytesEvent.h"
-#include "HttpReadFileZeroBytesEvent.h"
-#include "HttpAfterResponseEvent.h"
+#include "HttpSessionReadEvent.h"
+#include "HttpSessionProcessRequestEvent.h"
+#include "HttpFileSessionReadEvent.h"
+#include "HttpSessionReadZeroEvent.h"
+#include "HttpFileSessionReadZeroEvent.h"
+#include "HttpSessionAfterResponseEvent.h"
 #include "HttpSession.h"
 #include "HttpFileSession.h"
 
@@ -18,9 +18,9 @@ public:
                                           std::queue<SharedPtr<Event> >* event_queue) {
         switch (session->GetType()) {
             case SessionType::Http:
-                return MakeShared<Event>(new HttpReadRequestEvent<CoreModule>(session, incoming_data, event_queue));
+                return MakeShared<Event>(new HttpSessionReadEvent<CoreModule>(session, incoming_data, event_queue));
             case SessionType::File:
-                return MakeShared<Event>(new HttpReadFileEvent<CoreModule>(session, incoming_data, event_queue));
+                return MakeShared<Event>(new HttpFileSessionReadEvent<CoreModule>(session, incoming_data, event_queue));
             case SessionType::Server:
                 throw std::logic_error("EventMaker::MakeReadEvent() should not be called for ServerSession");
         }
@@ -30,9 +30,9 @@ public:
                                                    std::queue<SharedPtr<Event> >* event_queue) {
         switch (session->GetType()) {
             case SessionType::Http:
-                return MakeShared<Event>(new HttpReadRequestZeroBytesEvent<CoreModule>(session, event_queue));
+                return MakeShared<Event>(new HttpSessionReadZeroEvent<CoreModule>(session, event_queue));
             case SessionType::File:
-                return MakeShared<Event>(new HttpReadFileZeroBytesEvent<CoreModule>(session, event_queue));
+                return MakeShared<Event>(new HttpFileSessionReadZeroEvent<CoreModule>(session, event_queue));
             case SessionType::Server:
                 throw std::logic_error("EventMaker::MakeReadZeroBytesEvent() should not be called for ServerSession");
         }
@@ -42,7 +42,7 @@ public:
                                                 std::queue<SharedPtr<Event> >* event_queue) {
         switch (session->GetType()) {
             case SessionType::Http:
-                return MakeShared<Event>(new HttpAfterResponseEvent<CoreModule>(session, event_queue));
+                return MakeShared<Event>(new HttpSessionAfterResponseEvent<CoreModule>(session, event_queue));
             case SessionType::File:
                 throw std::logic_error("EventMaker::MakeAfterWriteEvent() should not be called for FileSession");
             case SessionType::Server:
