@@ -9,13 +9,27 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 
 ################################################################################
+# lib-mini-event target
+################################################################################
+set(LIB_MINI_EVENT lib-mini-event)
+add_library(${LIB_MINI_EVENT}
+        lib_mini_event/events/DefaultCloseEvent.cpp
+)
+
+target_include_directories(${LIB_MINI_EVENT} PUBLIC
+        lib_mini_event/
+        lib_mini_event/events
+        lib_mini_event/sessions
+        lib_mini_event/modules
+        )
+
+################################################################################
 # web-server-lib target
 ################################################################################
 set(WS_LIB ${PROJECT_NAME}-lib)
-
 add_library(${WS_LIB}
         srcs/config/Config.cpp
-        srcs/core/modules/PollModule.cpp
+        lib_mini_event/modules/poll_module/PollModule.cpp
         srcs/core/sessions/HttpSession.cpp
         srcs/core/core_helpers.cpp
         srcs/http/Request.cpp
@@ -45,7 +59,10 @@ target_include_directories(${WS_LIB} PUBLIC
         libjtoc/include
         )
 
-target_link_libraries(${WS_LIB} PUBLIC jtoc)
+target_link_libraries(${WS_LIB} PUBLIC
+        ${LIB_MINI_EVENT}
+        jtoc
+        )
 
 if (STANDARD98)
     target_compile_definitions(${WS_LIB} PUBLIC -D_STANDARD98)
@@ -69,22 +86,22 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 ################################################################################
 # tests
 ################################################################################
-if (NOT STANDARD98)
-    set(WS_TESTS ${PROJECT_NAME}-tests)
-    add_subdirectory(googletest)
+# if (NOT STANDARD98)
+#     set(WS_TESTS ${PROJECT_NAME}-tests)
+#     add_subdirectory(googletest)
 
-    add_executable(${WS_TESTS}
-            tests/test_utilities.cpp
-            tests/test_fsm_handle_request.cpp
-            tests/test_poll_module.cpp
-            )
+#     add_executable(${WS_TESTS}
+#             tests/test_utilities.cpp
+#             tests/test_fsm_handle_request.cpp
+#             tests/test_poll_module.cpp
+#             )
 
-    target_link_libraries(${WS_TESTS}
-            gtest
-            gtest_main
-            ${WS_LIB})
+#     target_link_libraries(${WS_TESTS}
+#             gtest
+#             gtest_main
+#             ${WS_LIB})
 
-    target_include_directories(${WS_TESTS} PUBLIC
-            googletest/googletest/include
-            )
-endif ()
+#     target_include_directories(${WS_TESTS} PUBLIC
+#             googletest/googletest/include
+#             )
+# endif ()

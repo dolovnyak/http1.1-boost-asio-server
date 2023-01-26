@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Config.h"
-
 #include <string>
 
 #define CR                  (char) '\r'
@@ -67,4 +65,6 @@ namespace Http {
     };
 
     Method GetMethod(const std::string& method);
+
+    const std::string& ToString(Http::Version http_version);
 }
