@@ -67,6 +67,9 @@ There are 4 location fields that cause different behavior and conflict with each
 Завтра: сделать мок (а лучше допилить или чтобы Оля допилила парсер и просто настроить) конфига и пример как это сказано в чекере.
 Проверить как работают put и delete в nginx.
 Погуглить как работает http redirection.
+Проверить, если в nginx задать location /images, а задать запрос /images123/ - сматчит ли он это.
+
+Сегодня за ночь мне надо полностью закончить парсер чтобы он подходил под сабжект и больше не думать о нем.
 
 - Download the cgi_test executable on the host
 - Create a directory YoupiBanane with:
@@ -141,3 +144,6 @@ Core inner after write event -> HttpSessionAfterResponseEvent
 Среди всех этих locations должен быть подобран самый оптимальный.
 То есть для /bin/upload/statistics.py должен быть выбран location /bin/upload/statistics.py.
 а для /bin/upload/"что угодно кроме statistics.py" должен быть выбран location /bin/upload.
+
+
+

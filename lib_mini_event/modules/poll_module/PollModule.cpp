@@ -13,7 +13,7 @@ PollModule::PollModule(const SharedPtr<Config>& config,
           _event_queue(event_queue),
           _sessions(sessions),
           _poll_index(0),
-          _poll_fds_size(_config->max_sockets_number),
+          _poll_fds_size(_config->max_sessions_number),
           _poll_fds(new struct pollfd[_poll_fds_size]),
           _should_compress(false),
           _read_buffer_size(_config->read_buffer_size),
@@ -96,7 +96,7 @@ void PollModule::ProcessEvents(int timeout) {
 void PollModule::ProcessInnerNewHttpSessions(int poll_index, SharedPtr<ServerConfig> server_config) {
     LOG_DEBUG("New sessions processing");
 
-    if (_poll_index >= _config->max_sockets_number) {
+    if (_poll_index >= _config->max_sessions_number) {
         LOG_ERROR("Max sockets number reached");
         return;
     }
