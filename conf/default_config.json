@@ -49,6 +49,14 @@
           ]
         },
         {
+          "Location": ".php|.py|.rb|.pl|.cgi",
+          "Cgi-pass": "/Users/sbecker/Desktop/projects/webserver-42/examples/cgi_checker/cgi.php",
+          "AvailableMethods": [
+            "GET",
+            "POST"
+          ]
+        },
+        {
           "Location": "/upload",
           "Root": "/cgi-bin/upload.py",
           "AvailableMethods": [
