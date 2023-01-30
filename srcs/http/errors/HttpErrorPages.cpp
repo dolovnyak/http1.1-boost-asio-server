@@ -353,7 +353,7 @@ const std::string& GetHttpErrorPageByCode(Http::Code code) {
     throw std::logic_error("Unknown http error code");
 }
 
-std::string GetHttpErrorPageByCode(Http::Code code, SharedPtr<ServerConfig> server_config) {
+std::string GetHttpErrorPageByCode(Http::Code code, std::shared_ptr<ServerConfig> server_config) {
     const std::unordered_map<int, std::string>::iterator& page_path_it = server_config->error_pages.find(code);
 
     if (page_path_it != server_config->error_pages.end()) {

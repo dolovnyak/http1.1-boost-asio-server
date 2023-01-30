@@ -3,10 +3,9 @@
 #define private public
 
 #include "Request.h"
-#include "SharedPtr.h"
 #include "Http.h"
 
-SharedPtr<ServerConfig> default_server_config = MakeShared(ServerConfig({8080, "kabun", "/", {}, "index.html", 0, 0, 0}));
+std::shared_ptr<ServerConfig> default_server_config = std::make_shared<ServerConfig>(ServerConfig({8080, "kabun", "/", {}, "index.html", 0, 0, 0}));
 
 TEST(Request, Check_Init) {
     Request request(default_server_config);

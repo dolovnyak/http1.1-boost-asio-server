@@ -1,7 +1,5 @@
 #pragma once
 
-#include "SharedPtr.h"
-#include "Optional.h"
 #include "Config.h"
 #include "Http.h"
 
@@ -69,11 +67,11 @@ class Request {
 public:
     Request();
 
-    Request(SharedPtr<ServerConfig> default_server_config);
+    Request(std::shared_ptr<ServerConfig> default_server_config);
 
-    RequestHandleStatus::Status Handle(SharedPtr<std::string> raw_request_part);
+    RequestHandleStatus::Status Handle(std::shared_ptr<std::string> raw_request_part);
 
-    void Process(const SharedPtr<PortServersConfig>& port_servers_config);
+    void Process(const std::shared_ptr<PortServersConfig>& port_servers_config);
 
     void AddHeader(const std::string& key, const std::string& value);
 
@@ -97,7 +95,7 @@ public:
 
     RequestTarget target;
 
-    Optional<size_t> content_length;
+    std::optional<size_t> content_length;
 
     bool is_cgi;
 
@@ -105,9 +103,9 @@ public:
 
     int keep_alive_timeout;
 
-    SharedPtr<ServerConfig> server_config; /// it could change during ProcessHostHeader
+    std::shared_ptr<ServerConfig> server_config; /// it could change during ProcessHostHeader
 
-    SharedPtr<Location> location;
+    std::shared_ptr<Location> location;
 
 
 private: /// handle helpers
@@ -135,7 +133,7 @@ private: /// handle helpers
 private: /// process helpers
     void ProcessHttpVersion();
 
-    void ProcessHostHeader(SharedPtr<PortServersConfig> port_servers_config);
+    void ProcessHostHeader(std::shared_ptr<PortServersConfig> port_servers_config);
 
     void ProcessContentTypeHeader();
 

@@ -2,7 +2,7 @@
 
 #include "Event.h"
 #include "Session.h"
-#include "SharedPtr.h"
+#include "std::shared_ptr.h"
 #include "Http.h"
 #include "utilities.h"
 #include "HttpFileSession.h"
@@ -15,7 +15,7 @@
 template<class CoreModule>
 class HttpSessionReadZeroEvent : public Event {
 public:
-    HttpSessionReadZeroEvent(const SharedPtr<Session<CoreModule>>& session, std::queue<SharedPtr<Event> >* event_queue)
+    HttpSessionReadZeroEvent(const std::shared_ptr<Session<CoreModule>>& session, std::queue<std::shared_ptr<Event> >* event_queue)
             : _packaged_http_session(session),
               _event_queue(event_queue) {}
 
@@ -26,9 +26,9 @@ public:
     void Process() OVERRIDE;
 
 private:
-    SharedPtr<Session<CoreModule> > _packaged_http_session;
+    std::shared_ptr<Session<CoreModule> > _packaged_http_session;
     HttpSession<CoreModule>* _http_session;
-    std::queue<SharedPtr<Event> >* _event_queue;
+    std::queue<std::shared_ptr<Event> >* _event_queue;
 };
 
 template<class CoreModule>

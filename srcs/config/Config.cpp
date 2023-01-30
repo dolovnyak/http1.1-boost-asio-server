@@ -4,8 +4,8 @@
 // namespace {
 /// TODO delete when parse will finish
 
-    // std::vector<SharedPtr<ServerConfig> > mock_1_server_config() {
-    //     std::vector<SharedPtr<ServerConfig> > configs;
+    // std::vector<std::shared_ptr<ServerConfig> > mock_1_server_config() {
+    //     std::vector<std::shared_ptr<ServerConfig> > configs;
 
     //     ServerConfig config(2222, "Kabun", "examples/aaaa/", std::unordered_set<std::string>(), "index.html", 10, 300, 10);
     //     configs.push_back(MakeShared(config));
@@ -14,8 +14,8 @@
 
 /// TODO delete
 
-    // std::vector<SharedPtr<ServerConfig> > mock_2_server_configs() {
-//         std::vector<SharedPtr<ServerConfig> > configs;
+    // std::vector<std::shared_ptr<ServerConfig> > mock_2_server_configs() {
+//         std::vector<std::shared_ptr<ServerConfig> > configs;
 //
 //         ServerConfig config1(1337, "HelloWorld", "/Users/sbecker/Desktop/projects/webserver-42/", std::unordered_set<std::string>(), "index.html", 60, 300, 20);
 //         configs.push_back(MakeShared(config1));
@@ -30,8 +30,8 @@
     // }
 // }
 
-SharedPtr<ServerConfig> PortServersConfig::GetByNameOrDefault(const std::string& name) const {
-    SharedPtr <ServerConfig > server_config;
+std::shared_ptr<ServerConfig> PortServersConfig::GetByNameOrDefault(const std::string& name) const {
+    std::shared_ptr <ServerConfig > server_config;
 
     for (int i = 0; i < (int)server_configs.size(); i++) { 
         server_config = server_configs[i];
@@ -42,7 +42,7 @@ SharedPtr<ServerConfig> PortServersConfig::GetByNameOrDefault(const std::string&
     if ((int)server_configs.size() > 0) {
         return server_configs[0];
     }
-    return (SharedPtr<ServerConfig>());
+    return (std::shared_ptr<ServerConfig>());
 }
 
 bool Config::Load(const char* path) {
@@ -59,17 +59,17 @@ bool Config::Load(const char* path) {
         LOG_INFO("default_keep_alive_timeout_s: ", config.default_keep_alive_timeout_s);
         LOG_INFO("max_keep_alive_timeout_s: ", config.max_keep_alive_timeout_s);
         // config.port_servers_configs.begin(); 
-        for (std::unordered_map<int, SharedPtr<PortServersConfig> >::iterator it_psc = config.port_servers_configs.begin();
+        for (std::unordered_map<int, std::shared_ptr<PortServersConfig> >::iterator it_psc = config.port_servers_configs.begin();
             it_psc != config.port_servers_configs.end(); ++it_psc) {
             LOG_INFO("port in port_servers_configs ", it_psc->first);
-            SharedPtr<PortServersConfig> tmp_post_servers_config = it_psc->second;
+            std::shared_ptr<PortServersConfig> tmp_post_servers_config = it_psc->second;
             //checkeing GetByNameOrDefault
             LOG_ERROR(tmp_post_servers_config->GetByNameOrDefault("name")->name);
             LOG_ERROR(tmp_post_servers_config->GetByNameOrDefault("name3")->name);
             LOG_ERROR(tmp_post_servers_config->GetByNameOrDefault("kabun3")->name);
             LOG_INFO("port in PortServersConfig ", it_psc->second->port);
             for (int i = 0; i < (int)tmp_post_servers_config->server_configs.size(); i++) {
-                SharedPtr<ServerConfig > tmp_server_configs = tmp_post_servers_config->server_configs.at(i);
+                std::shared_ptr<ServerConfig > tmp_server_configs = tmp_post_servers_config->server_configs.at(i);
                 LOG_INFO("  ServerInstances numb =  ", i);
                 LOG_INFO("  port ", tmp_server_configs->port);
                 LOG_INFO("  name ", tmp_server_configs->name);
@@ -89,7 +89,7 @@ bool Config::Load(const char* path) {
                 LOG_INFO("  locations: ");
                 for (int j = 0; j < (int)tmp_server_configs->locations.size(); j++) {
                     LOG_INFO("  locations num ", j);
-                    SharedPtr<Location > tmp_location = tmp_server_configs->locations.at(j);
+                    std::shared_ptr<Location > tmp_location = tmp_server_configs->locations.at(j);
                     LOG_INFO("      location ", tmp_location->location);
                     LOG_INFO("      root ", tmp_location->root);
                     LOG_INFO("      full_path ", tmp_location->full_path);
@@ -116,7 +116,7 @@ ServerConfig::ServerConfig(int port,
                             const std::string& root,
                             std::unordered_map <int, std::string> error_pages,
                             const std::unordered_set<std::string>& cgi_file_extensions,
-                            std::vector<SharedPtr<Location> > locations
+                            std::vector<std::shared_ptr<Location> > locations
                             )
                     : port(port),
                     name(name),

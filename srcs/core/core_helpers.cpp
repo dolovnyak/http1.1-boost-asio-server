@@ -5,7 +5,7 @@
 #include <netinet/in.h>
 #include <unistd.h>
 
-int SetupServerSocket(int port, SharedPtr<Config> config) {
+int SetupServerSocket(int port, std::shared_ptr<Config> config) {
     int option_value = 1;
     int socket_fd = socket(AF_INET, SOCK_STREAM, 0);
 

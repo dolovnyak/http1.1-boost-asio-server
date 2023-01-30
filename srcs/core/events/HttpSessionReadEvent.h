@@ -2,7 +2,7 @@
 
 #include "Event.h"
 #include "HttpException.h"
-#include "SharedPtr.h"
+#include "std::shared_ptr.h"
 #include "utilities.h"
 #include "HttpSessionProcessRequestEvent.h"
 #include "HttpSession.h"
@@ -12,9 +12,9 @@
 template<class CoreModule>
 class HttpSessionReadEvent : public Event {
 public:
-    HttpSessionReadEvent(const SharedPtr<Session<CoreModule> >& session,
-                         const SharedPtr<std::string>& incoming_data,
-                         std::queue<SharedPtr<Event> >* event_queue)
+    HttpSessionReadEvent(const std::shared_ptr<Session<CoreModule> >& session,
+                         const std::shared_ptr<std::string>& incoming_data,
+                         std::queue<std::shared_ptr<Event> >* event_queue)
             : _packaged_http_session(session),
               _incoming_data(incoming_data),
               _event_queue(event_queue) {}
@@ -26,9 +26,9 @@ public:
     void Process() OVERRIDE;
 
 private:
-    SharedPtr<Session<CoreModule> > _packaged_http_session;
-    SharedPtr<std::string> _incoming_data;
-    std::queue<SharedPtr<Event> >* _event_queue;
+    std::shared_ptr<Session<CoreModule> > _packaged_http_session;
+    std::shared_ptr<std::string> _incoming_data;
+    std::queue<std::shared_ptr<Event> >* _event_queue;
     HttpSession<CoreModule>* _http_session;
 };
 

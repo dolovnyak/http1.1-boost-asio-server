@@ -1,26 +1,11 @@
 cmake_minimum_required(VERSION 3.16)
 project(web-server)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
-
-################################################################################
-# lib-mini-event target
-################################################################################
-set(LIB_MINI_EVENT lib-mini-event)
-add_library(${LIB_MINI_EVENT}
-        lib_mini_event/events/DefaultCloseEvent.cpp
-)
-
-target_include_directories(${LIB_MINI_EVENT} PUBLIC
-        lib_mini_event/
-        lib_mini_event/events
-        lib_mini_event/sessions
-        lib_mini_event/modules
-        )
 
 ################################################################################
 # web-server-lib target
@@ -28,13 +13,11 @@ target_include_directories(${LIB_MINI_EVENT} PUBLIC
 set(WS_LIB ${PROJECT_NAME}-lib)
 add_library(${WS_LIB}
         srcs/config/Config.cpp
-        lib_mini_event/modules/poll_module/PollModule.cpp
         srcs/core/sessions/HttpSession.cpp
         srcs/core/core_helpers.cpp
         srcs/http/Request.cpp
         srcs/http/Response.cpp
         srcs/http/errors/HttpErrorPages.cpp
-        srcs/http/errors/HttpException.cpp
         srcs/http/Http.cpp
         srcs/utilities/utilities.cpp
         srcs/utilities/Logging.cpp
@@ -62,6 +45,11 @@ target_link_libraries(${WS_LIB} PUBLIC
         ${LIB_MINI_EVENT}
         jtoc
         )
+
+# Boost asio
+find_package(Boost REQUIRED COMPONENTS system thread regex REQUIRED)
+target_include_directories(${WS_LIB} PUBLIC ${Boost_INCLUDE_DIR})
+target_link_libraries(${WS_LIB} LINK_PUBLIC ${Boost_LIBRARIES})
 
 target_compile_definitions(${WS_LIB} PUBLIC -D_DEBUG)
 

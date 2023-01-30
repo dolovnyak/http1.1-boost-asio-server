@@ -2,8 +2,6 @@
 
 #include "Http.h"
 #include "HttpErrorPages.h"
-#include "SharedPtr.h"
-#include "Optional.h"
 
 /// У респонса должен быть набор базовых хедеров:
 /// Date
@@ -18,15 +16,48 @@
 
 class Response {
 public:
-    static Response MakeErrorResponse(Http::Version http_version, Http::Code code, const std::string& error_title,
-                                      SharedPtr<ServerConfig> server_config);
+    static Response MakeErrorResponse(Http::Version http_version, Http::Code error_code, const std::string& error_title,
+                                      const std::shared_ptr<ServerConfig>& server_config) {
+
+        std::string body = GetHttpErrorPageByCode(error_code, server_config);
+        std::vector<Http::Header> headers = {
+                Http::Header("Content-Type", "text/html, charset=utf-8"),
+                Http::Header("Content-Length", std::to_string(body.size())),
+                Http::Header("Server", WEBSERVER_NAME),
+                Http::Header("Date", GetCurrentDateTimeString()),
+                Http::Header("Connection", "close")
+        };
+
+        return {http_version, error_code, error_title, headers, body};
+    }
 
     static Response MakeOkResponse(Http::Version http_version, const std::string& body,
-                                   SharedPtr<ServerConfig> server_config, bool keep_alive);
+                                   const std::shared_ptr<ServerConfig>& server_config, bool keep_alive) {
+        std::vector<Http::Header> headers = {
+                Http::Header("Content-Type", "text/html, charset=utf-8"),
+                Http::Header("Content-Length", std::to_string(body.size())),
+                Http::Header("Server", WEBSERVER_NAME),
+                Http::Header("Date", GetCurrentDateTimeString())
+        };
 
-    Response(Http::Version http_version, Http::Code code, const std::string& title,
-             const std::vector<Http::Header>& custom_headers,
-             const std::string& body);
+        keep_alive ? headers.emplace_back("Connection", "keep-alive")
+                   : headers.emplace_back("Connection", "close");
+
+        return {http_version, Http::Code::OK, "OK", headers, body};
+    }
+
+    Response(Http::Version http_version,
+             Http::Code code,
+             const std::string& title,
+             const std::vector<Http::Header>& headers,
+             const std::string& body) {
+        response = Http::ToString(http_version) + " " + std::to_string(code) + " " + title + "\r\n";
+        for (const auto& header: headers) {
+            response += header.key + ": " + header.value + "\r\n";
+        }
+        response += "\r\n";
+        response += body;
+    }
 
     std::string response;
 };

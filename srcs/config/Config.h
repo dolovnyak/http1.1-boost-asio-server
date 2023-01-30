@@ -1,6 +1,5 @@
 #pragma once
 
-#include "SharedPtr.h"
 #include "Http.h"
 #include "utilities.h"
 
@@ -26,17 +25,17 @@
 #define DEFAULT_HANG_SESSION_TIMEOUT 10 // 10 seconds
 
 struct PortServersConfig;
-typedef std::unordered_map<int, SharedPtr<PortServersConfig> >::iterator PortServersIt;
+typedef std::unordered_map<int, std::shared_ptr<PortServersConfig> >::iterator PortServersIt;
 
-struct Location{
+struct Location {
     Location(
-        std::string location,
-        std::string root,
-        bool autoindex,
-        std::string index,
-        std::unordered_set<std::string> available_methods,
-        std::string redirect);
-    
+            std::string location,
+            std::string root,
+            bool autoindex,
+            std::string index,
+            std::unordered_set<std::string> available_methods,
+            std::string redirect);
+
     Location() {};
 
     std::string location; /// location должен всегда начинаться с / (кидать ошибку если это не так) /// обязательное поле
@@ -56,12 +55,12 @@ struct Location{
 
 struct ServerConfig {
     ServerConfig(int port,
-                const std::string& name,
-                const std::string& root,
-                std::unordered_map <int, std::string> error_pages,
-                const std::unordered_set<std::string>& cgi_file_extensions,
-                std::vector<SharedPtr<Location> > locations  /// TODO maybe del shared ptr
-                );
+                 const std::string& name,
+                 const std::string& root,
+                 std::unordered_map<int, std::string> error_pages,
+                 const std::unordered_set<std::string>& cgi_file_extensions,
+                 std::vector<std::shared_ptr<Location>> locations  /// TODO maybe del shared ptr
+    );
 
     ServerConfig() {} // TODO add defaut value
 
@@ -71,7 +70,7 @@ struct ServerConfig {
 
     std::string root; /// root должен всегда заканчиваться на / (автоматически добавлять если это не так)  /// обязательное поле
 
-    std::unordered_map <int, std::string> error_pages; /// опциональное поле, они задаются в абсолютном пути (по умолчанию пустое)
+    std::unordered_map<int, std::string> error_pages; /// опциональное поле, они задаются в абсолютном пути (по умолчанию пустое)
 
     int max_body_size; /// опциональное поле, если не указано то берется из дефолта
 
@@ -81,16 +80,16 @@ struct ServerConfig {
 
     int max_keep_alive_timeout_s; /// опциональное брать дефолтное значение
 
-    std::vector<SharedPtr<Location> > locations; 
+    std::vector<std::shared_ptr<Location>> locations;
 };
 
 struct PortServersConfig {
-    
-    SharedPtr<ServerConfig> GetByNameOrDefault(const std::string& name) const;
 
-    SharedPtr<ServerConfig> GetDefault() const;
+    std::shared_ptr<ServerConfig> GetByNameOrDefault(const std::string& name) const;
 
-    std::vector<SharedPtr <ServerConfig > > server_configs; /// first server is default
+    std::shared_ptr<ServerConfig> GetDefault() const;
+
+    std::vector<std::shared_ptr<ServerConfig>> server_configs; /// first server is default
 
     int port;
 };
@@ -108,7 +107,8 @@ struct Config {
 
     int hang_session_timeout_s; /// опциональное брать дефолтное значение
 
-    std::unordered_map<int, SharedPtr<PortServersConfig> > port_servers_configs;
+    std::unordered_map<int, std::shared_ptr < PortServersConfig> >
+    port_servers_configs;
 };
 
 /// TODO check if order stays during reading json

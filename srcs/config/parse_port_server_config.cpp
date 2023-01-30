@@ -1,13 +1,13 @@
 #include "parse_config.h"
 
-int ws_jtoc_get_port_servers_configs(std::unordered_map<int, SharedPtr<PortServersConfig>>& port_servers_configs_map,
+int ws_jtoc_get_port_servers_configs(std::unordered_map<int, std::shared_ptr<PortServersConfig>>& port_servers_configs_map,
                                 t_jnode	*n)
 {
     t_jnode                                 *tmp;
     t_jnode                                 *loop_iter;
-    SharedPtr<PortServersConfig>            tmp_port_servers_config_item;
+    std::shared_ptr<PortServersConfig>            tmp_port_servers_config_item;
     ServerConfig                            tmp_server_config_item;
-    std::vector<SharedPtr <ServerConfig > > tmp_server_config_vect;
+    std::vector<std::shared_ptr <ServerConfig > > tmp_server_config_vect;
 
     loop_iter = n->down;
     if (loop_iter == NULL) {
@@ -37,7 +37,7 @@ int ws_jtoc_get_port_servers_configs(std::unordered_map<int, SharedPtr<PortServe
         else{
             tmp_port_servers_config_item = MakeShared(PortServersConfig());
             tmp_port_servers_config_item->port = tmp_server_config_item.port;
-            tmp_port_servers_config_item->server_configs = std::vector<SharedPtr <ServerConfig >>();
+            tmp_port_servers_config_item->server_configs = std::vector<std::shared_ptr <ServerConfig >>();
             tmp_port_servers_config_item->server_configs.push_back(MakeShared(tmp_server_config_item));
             port_servers_configs_map.insert({tmp_server_config_item.port, tmp_port_servers_config_item});
         }

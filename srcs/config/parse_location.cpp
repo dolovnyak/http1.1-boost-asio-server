@@ -31,12 +31,12 @@ int ws_jtoc_get_available_methods(std::unordered_set<Http::Method, EnumClassHash
     return (FUNCTION_SUCCESS);
 }
 
-int ws_jtoc_get_locations(std::vector<SharedPtr<Location> >& locations_vector,
+int ws_jtoc_get_locations(std::vector<std::shared_ptr<Location> >& locations_vector,
                        t_jnode	*n, std::string server_config_root)
 {
     t_jnode	*tmp;
     t_jnode	*loop_iter;
-    SharedPtr<Location> tmp_location;
+    std::shared_ptr<Location> tmp_location;
     int tmp_int;
     std::string tmp_string;
 

@@ -5,8 +5,8 @@
 template<class CoreModule>
 class HttpFileSession : public Session<CoreModule> {
 public:
-    HttpFileSession(const SharedPtr<Config>& config, int core_module_index, CoreModule* core_module, SocketFd socket,
-                    const SharedPtr<Session<CoreModule> >& main_session)
+    HttpFileSession(const std::shared_ptr<Config>& config, int core_module_index, CoreModule* core_module, SocketFd socket,
+                    const std::shared_ptr<Session<CoreModule> >& main_session)
             : Session<CoreModule>(config, core_module_index, core_module, socket),
               main_http_session(main_session) {}
 
@@ -29,7 +29,7 @@ public:
         return kName;
     }
 
-    SharedPtr<Session<CoreModule> > main_http_session;
+    std::shared_ptr<Session<CoreModule> > main_http_session;
 
     std::string read_data;
 };

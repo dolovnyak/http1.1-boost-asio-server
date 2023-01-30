@@ -7,7 +7,7 @@
 int				ws_jtoc_get_config(Config& config,
                                  const char *json);
 
-int ws_jtoc_get_port_servers_configs(std::unordered_map<int, SharedPtr<PortServersConfig>>& port_servers_configs_map,
+int ws_jtoc_get_port_servers_configs(std::unordered_map<int, std::shared_ptr<PortServersConfig>>& port_servers_configs_map,
                                 t_jnode	*n);
 
 int ws_jtoc_get_server_config(ServerConfig& server_config,
@@ -19,7 +19,7 @@ int ws_jtoc_get_error_pages(std::unordered_map <int, std::string>& error_pages,
 int ws_jtoc_get_cgi_file_extensions(std::unordered_set<std::string>& cgi_file_extensions,
                        t_jnode	*n);
 
-int ws_jtoc_get_locations(std::vector<SharedPtr<Location> >& locations_vector,
+int ws_jtoc_get_locations(std::vector<std::shared_ptr<Location> >& locations_vector,
                        t_jnode	*n, std::string server_config_root);
                 
 int ws_jtoc_get_available_methods(std::unordered_set<Http::Method, EnumClassHash>& available_methods,
