@@ -3,7 +3,6 @@
 #include "Event.h"
 #include "Logging.h"
 #include "core_helpers.h"
-#include "SharedPtr.h"
 
 #include <queue>
 
@@ -15,15 +14,14 @@ namespace SessionType {
     };
 }
 
-template<class CoreModule>
 class Session {
 public:
-    typedef typename std::unordered_map<SocketFd, SharedPtr<Session<CoreModule> > >::iterator It;
+    typedef typename std::unordered_map<SocketFd, std::shared_ptr<Session<CoreModule> > >::iterator It;
 
-    typedef SharedPtr<Session<CoreModule> > Ptr;
+    typedef std::shared_ptr<Session<CoreModule> > Ptr;
 
 public:
-    Session(const SharedPtr<Config>& config, int core_module_index, CoreModule* core_module, SocketFd socket)
+    Session(const std::shared_ptr<Config>& config, int core_module_index, CoreModule* core_module, SocketFd socket)
             : available(true),
               last_activity_time(time(nullptr)),
               config(config),
@@ -41,35 +39,30 @@ public:
 
     virtual SessionType::Type GetType() const = 0;
 
-    void Close();
+    void Close() {
+        this->core_module->CloseSession(core_module_index);
+    }
 
     void UpdateLastActivityTime();
 
 public:
     bool available;
     time_t last_activity_time;
-    SharedPtr<Config> config;
+    std::shared_ptr<Config> config;
     int core_module_index;
     CoreModule* core_module;
     SocketFd socket;
 };
 
-template<class CoreModule>
-void Session<CoreModule>::Close() {
-    this->core_module->CloseSession(core_module_index);
-}
 
-template<class CoreModule>
-void LogSession(Event* event, SharedPtr<Session<CoreModule> > session) {
+void LogSession(Event* event, std::shared_ptr<Session<CoreModule> > session) {
     LOG_INFO(event->GetName(), " on ", session->GetName(), "_fd_", session->socket);
 }
 
-template<class CoreModule>
-void LogSession(SharedPtr<Session<CoreModule> > session, const std::string& message) {
+void LogSession(std::shared_ptr<Session<CoreModule> > session, const std::string& message) {
     LOG_INFO(session->GetName(), "_fd_", session->socket, ": ", message);
 }
 
-template<class CoreModule>
 void Session<CoreModule>::UpdateLastActivityTime() {
     last_activity_time = time(nullptr);
 }

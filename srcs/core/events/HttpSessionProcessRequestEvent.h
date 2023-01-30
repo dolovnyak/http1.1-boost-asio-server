@@ -12,8 +12,8 @@
 template<class CoreModule>
 class HttpSessionProcessRequestEvent : public Event {
 public:
-    HttpSessionProcessRequestEvent(const SharedPtr<Session<CoreModule> >& session,
-                                   std::queue<SharedPtr<Event> >* event_queue)
+    HttpSessionProcessRequestEvent(const std::shared_ptr<Session<CoreModule> >& session,
+                                   std::queue<std::shared_ptr<Event> >* event_queue)
             : _packaged_http_session(session), _event_queue(event_queue) {}
 
     ~HttpSessionProcessRequestEvent() {}
@@ -28,11 +28,11 @@ private:
 
     void RunFilePipeline();
 
-    SharedPtr<Session<CoreModule> > _packaged_http_session;
+    std::shared_ptr<Session<CoreModule> > _packaged_http_session;
 
     HttpSession<CoreModule>* _http_session;
 
-    std::queue<SharedPtr<Event> >* _event_queue;
+    std::queue<std::shared_ptr<Event> >* _event_queue;
 };
 
 
@@ -110,7 +110,7 @@ void HttpSessionProcessRequestEvent<CoreModule>::RunFilePipeline() {
         throw std::runtime_error("Failed to set socket non blocking");
     }
 
-    SharedPtr<Session<CoreModule> > file_session = MakeShared<Session<CoreModule> >(
+    std::shared_ptr<Session<CoreModule> > file_session = MakeShared<Session<CoreModule> >(
             new HttpFileSession<CoreModule>(_packaged_http_session->core_module->GetNextSessionIndex(),
                                             _packaged_http_session->core_module, SocketFd(fd),
                                             _packaged_http_session));

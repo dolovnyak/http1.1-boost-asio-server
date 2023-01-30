@@ -7,8 +7,8 @@
 template<class CoreModule>
 class ServerSession : public Session<CoreModule> {
 public:
-    ServerSession(const SharedPtr<Config>& config, int core_module_index, CoreModule* core_module, SocketFd socket,
-                  const SharedPtr<ServerConfig>& server_config)
+    ServerSession(const std::shared_ptr<Config>& config, int core_module_index, CoreModule* core_module, SocketFd socket,
+                  const std::shared_ptr<ServerConfig>& server_config)
             : Session<CoreModule>(config, core_module_index, core_module, socket),
               server_config(server_config) {}
 
@@ -31,5 +31,5 @@ public:
         return SessionType::Server;
     }
 
-    SharedPtr<ServerConfig> server_config;
+    std::shared_ptr<ServerConfig> server_config;
 };

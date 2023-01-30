@@ -34,9 +34,9 @@ public:
 };
 
 TEST(Poll_Module, Process_Compress_Basic) {
-    SharedPtr<Config> config = MakeShared(Config());
-    std::queue<SharedPtr<Event> > event_queue;
-    std::unordered_map<SocketFd, SharedPtr<Session<PollModule> > > sessions;
+    std::shared_ptr<Config> config = MakeShared(Config());
+    std::queue<std::shared_ptr<Event> > event_queue;
+    std::unordered_map<SocketFd, std::shared_ptr<Session<PollModule> > > sessions;
 
     PollModule poll_module(config, &event_queue, &sessions);
     poll_module._should_compress = true;
@@ -70,9 +70,9 @@ TEST(Poll_Module, Process_Compress_Basic) {
 }
 
 TEST(Poll_Module, Process_Compress_Correct_Update_Sessions) {
-    SharedPtr<Config> config = MakeShared(Config());
-    std::queue<SharedPtr<Event> > event_queue;
-    std::unordered_map<SocketFd, SharedPtr<Session<PollModule> > > sessions;
+    std::shared_ptr<Config> config = MakeShared(Config());
+    std::queue<std::shared_ptr<Event> > event_queue;
+    std::unordered_map<SocketFd, std::shared_ptr<Session<PollModule> > > sessions;
 
     PollModule poll_module(config, &event_queue, &sessions);
     poll_module._should_compress = true;
@@ -80,7 +80,7 @@ TEST(Poll_Module, Process_Compress_Correct_Update_Sessions) {
     poll_module._poll_fds_size = 21;
 
     for (int i = 0; i < 21; ++i) {
-        SharedPtr<Session<PollModule> > server_session = MakeShared<Session<PollModule> >(new TestSession<PollModule>(
+        std::shared_ptr<Session<PollModule> > server_session = MakeShared<Session<PollModule> >(new TestSession<PollModule>(
                 poll_module.GetNextSessionIndex(), &poll_module, SocketFd(i + 30)));
         poll_module.AddSession(i + 30, server_session);
     }

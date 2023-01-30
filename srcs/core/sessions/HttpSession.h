@@ -2,7 +2,6 @@
 
 #include "Response.h"
 #include "Request.h"
-#include "SharedPtr.h"
 #include "Session.h"
 #include "utilities.h"
 
@@ -23,11 +22,11 @@ namespace HttpSessionState {
 template<class CoreModule>
 class HttpSession : public Session<CoreModule> {
 public:
-    HttpSession(const SharedPtr<Config>& config, int core_module_index, CoreModule* core_module, SocketFd socket,
-                const SharedPtr<PortServersConfig>& server_config_in)
+    HttpSession(const std::shared_ptr<Config>& config, int core_module_index, CoreModule* core_module, SocketFd socket,
+                const std::shared_ptr<PortServersConfig>& server_config_in)
             : Session<CoreModule>(config, core_module_index, core_module, socket),
               port_servers_config(server_config_in),
-              request(MakeShared(new Request(port_servers_config->GetDefault()))),
+              request(std::make_shared<Request>(Request(port_servers_config->GetDefault()))),
               keep_alive(false),
               keep_alive_timeout(this->config->default_keep_alive_timeout_s),
               state(HttpSessionState::ReadRequest) {}
@@ -49,9 +48,9 @@ public:
     const std::string& GetName() const override;
 
 public:
-    SharedPtr<PortServersConfig> port_servers_config;
+    std::shared_ptr<PortServersConfig> port_servers_config;
 
-    SharedPtr<Request> request;
+    std::shared_ptr<Request> request;
 
     std::string response;
 

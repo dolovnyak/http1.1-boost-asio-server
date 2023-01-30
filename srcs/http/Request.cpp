@@ -3,10 +3,9 @@
 #include "HttpException.h"
 #include "HttpErrorPages.h"
 #include "Logging.h"
-#include "Optional.h"
 
 namespace {
-    std::string ParseMethod(const std::string& raw_method, const SharedPtr<ServerConfig>& server_config) {
+    std::string ParseMethod(const std::string& raw_method, const std::shared_ptr<ServerConfig>& server_config) {
         if (!IsTcharString(raw_method)) {
             throw BadFirstLine("Incorrect first line", server_config);
         }
@@ -14,7 +13,7 @@ namespace {
     }
 
     RequestTarget
-    ParseRequestTarget(const std::string& raw_request_target, const SharedPtr<ServerConfig>& server_config) {
+    ParseRequestTarget(const std::string& raw_request_target, const std::shared_ptr<ServerConfig>& server_config) {
         RequestTarget request_target;
 
         size_t path_end = raw_request_target.find_first_of('?');
@@ -55,7 +54,7 @@ namespace {
     }
 
     HttpVersion ParseHttpVersion(const std::string& raw_http_version,
-                                 const SharedPtr<ServerConfig>& server_config) {
+                                 const std::shared_ptr<ServerConfig>& server_config) {
         std::vector<std::string> tokens = SplitString(raw_http_version, "/");
         if (tokens.size() != 2 || tokens[0] != "HTTP") {
             throw BadHttpVersion("Incorrect HTTP version", server_config);
@@ -79,8 +78,8 @@ namespace {
     }
 }
 
-Request::Request(SharedPtr<ServerConfig> default_server_config)
-        : content_length(Optional<size_t>::nullopt),
+Request::Request(std::shared_ptr<ServerConfig> default_server_config)
+        : content_length(std::nullopt),
           is_cgi(false),
           server_config(default_server_config),
           _handle_state(RequestHandleState::HandleFirstLine),
@@ -96,7 +95,7 @@ void Request::Clear() {
     raw.clear();
     headers.clear();
     target.Clear();
-    content_length = Optional<size_t>::nullopt;
+    content_length = std::nullopt;
     is_cgi = false;
     /// keep alive, keep alive timeout and server config are not cleared
 
@@ -282,7 +281,7 @@ RequestHandleState::State Request::ParseBodyByContentLengthHandler() {
     }
 }
 
-RequestHandleStatus::Status Request::Handle(SharedPtr<std::string> raw_request_part) {
+RequestHandleStatus::Status Request::Handle(std::shared_ptr<std::string> raw_request_part) {
     raw += *raw_request_part;
     if (raw.size() > static_cast<size_t>(server_config->max_request_size)) {
         throw PayloadTooLarge("Payload too large", server_config);
@@ -367,9 +366,9 @@ void Request::ProcessRouteLocation() {
 
 
     while (true) {
-        for (std::vector<SharedPtr<Location> >::iterator it = server_config->locations.begin();
+        for (std::vector<std::shared_ptr<Location> >::iterator it = server_config->locations.begin();
              it != server_config->locations.end(); ++it) {
-            SharedPtr<Location> current_location = *it;
+            std::shared_ptr<Location> current_location = *it;
             if (current_location->location.compare(0, path_len, path) == 0) {
                 location = current_location;
                 return;
@@ -398,7 +397,7 @@ void Request::ProcessRouteLocation() {
 }
 
 
-void Request::ProcessHostHeader(SharedPtr<PortServersConfig> port_servers_config) {
+void Request::ProcessHostHeader(std::shared_ptr<PortServersConfig> port_servers_config) {
     HeaderIterator it = headers.find(HOST);
 
     if (it == headers.end()) {
@@ -548,7 +547,7 @@ void Request::ProcessMethod() {
 }
 
 
-void Request::Process(const SharedPtr<PortServersConfig>& port_servers_config) {
+void Request::Process(const std::shared_ptr<PortServersConfig>& port_servers_config) {
     /// never change order of these methods
 
     ProcessHttpVersion();

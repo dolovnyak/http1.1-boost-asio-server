@@ -20,4 +20,4 @@ struct std::hash<SocketFd> {
     }
 };
 
-int SetupServerSocket(int port, SharedPtr<Config> config);
+int SetupServerSocket(int port, std::shared_ptr<Config> config);

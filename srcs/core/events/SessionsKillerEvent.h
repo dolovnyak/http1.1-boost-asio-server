@@ -2,7 +2,6 @@
 
 #include "Event.h"
 #include "Session.h"
-#include "SharedPtr.h"
 #include "Http.h"
 #include "utilities.h"
 #include "HttpSession.h"
@@ -11,8 +10,8 @@
 template<class CoreModule>
 class SessionsKillerEvent : public Event {
 public:
-    SessionsKillerEvent(std::unordered_map<SocketFd, SharedPtr<Session<CoreModule> > >* sessions,
-                        std::queue<SharedPtr<Event> >* event_queue, int invoke_timeout)
+    SessionsKillerEvent(std::unordered_map<SocketFd, std::shared_ptr<Session<CoreModule> > >* sessions,
+                        std::queue<std::shared_ptr<Event> >* event_queue, int invoke_timeout)
             : _sessions(sessions),
               _event_queue(event_queue),
               _last_action_time(time(nullptr)),
@@ -27,8 +26,8 @@ public:
     bool Ready() const;
 
 private:
-    std::unordered_map<SocketFd, SharedPtr<Session<CoreModule> > >* _sessions;
-    std::queue<SharedPtr<Event> >* _event_queue;
+    std::unordered_map<SocketFd, std::shared_ptr<Session<CoreModule> > >* _sessions;
+    std::queue<std::shared_ptr<Event> >* _event_queue;
     time_t _last_action_time;
     int _invoke_delay;
 };

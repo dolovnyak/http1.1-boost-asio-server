@@ -1,4 +1,3 @@
-#include "../lib_mini_event/modules/poll_module/PollModule.h"
 #include "WebServer.h"
 
 int main(int argc, char** argv) {
@@ -8,13 +7,13 @@ int main(int argc, char** argv) {
     }
 
     try {
-        SharedPtr<Config> config = MakeShared(Config());
+        std::shared_ptr<Config> config = std::make_shared<Config>(Config);
         if (!config->Load(argv[1])) {
             LOG_ERROR("Failed to load config");
             exit(EXIT_FAILURE);
         }
 
-        WebServer<PollModule> web_server(config);
+        WebServer web_server(config);
         web_server.Run();
     }
     catch (const std::exception& e) {
