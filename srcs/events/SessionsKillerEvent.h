@@ -10,7 +10,7 @@
 template<class CoreModule>
 class SessionsKillerEvent : public Event {
 public:
-    SessionsKillerEvent(std::unordered_map<SocketFd, std::shared_ptr<Session<CoreModule> > >* sessions,
+    SessionsKillerEvent(std::unordered_map<boost::asio::ip::tcp::socket, std::shared_ptr<Session > >* sessions,
                         std::queue<std::shared_ptr<Event> >* event_queue, int invoke_timeout)
             : _sessions(sessions),
               _event_queue(event_queue),
@@ -26,7 +26,7 @@ public:
     bool Ready() const;
 
 private:
-    std::unordered_map<SocketFd, std::shared_ptr<Session<CoreModule> > >* _sessions;
+    std::unordered_map<boost::asio::ip::tcp::socket, std::shared_ptr<Session > >* _sessions;
     std::queue<std::shared_ptr<Event> >* _event_queue;
     time_t _last_action_time;
     int _invoke_delay;
@@ -42,7 +42,7 @@ template<class CoreModule>
 void SessionsKillerEvent<CoreModule>::Process() {
     _last_action_time = time(nullptr);
 
-    for (typename Session<CoreModule>::It it = _sessions->begin(); it != _sessions->end();) {
+    for (typename Session::It it = _sessions->begin(); it != _sessions->end();) {
         if (!it->second->available) {
             it = _sessions->erase(it);
             continue;
@@ -51,7 +51,7 @@ void SessionsKillerEvent<CoreModule>::Process() {
         switch (it->second->GetType()) {
 
             case SessionType::Http: {
-                HttpSession<CoreModule>* http_session = dynamic_cast<HttpSession<CoreModule>*>(it->second.Get());
+                HttpSession* http_session = dynamic_cast<HttpSession*>(it->second.Get());
 
                 if (http_session->keep_alive) {
                     if (difftime(time(nullptr), http_session->last_activity_time) > http_session->keep_alive_timeout) {
@@ -66,8 +66,8 @@ void SessionsKillerEvent<CoreModule>::Process() {
             }
 
             case SessionType::File: {
-                HttpFileSession<CoreModule>* file_session = dynamic_cast<HttpFileSession<CoreModule>*>(it->second.Get());
-                HttpSession<CoreModule>* main_http_session = dynamic_cast<HttpSession<CoreModule>*>(file_session->main_http_session.Get());
+                HttpFileSession* file_session = dynamic_cast<HttpFileSession*>(it->second.Get());
+                HttpSession* main_http_session = dynamic_cast<HttpSession*>(file_session->main_http_session.Get());
 
                 if (difftime(time(nullptr), it->second->last_activity_time) >
                     main_http_session->port_servers_config->hang_session_timeout_s) {

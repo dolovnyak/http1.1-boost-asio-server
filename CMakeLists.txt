@@ -13,7 +13,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 set(WS_LIB ${PROJECT_NAME}-lib)
 add_library(${WS_LIB}
         srcs/config/Config.cpp
-        srcs/core/sessions/HttpSession.cpp
+        srcs/sessions/HttpSession.cpp
         srcs/core/core_helpers.cpp
         srcs/http/Request.cpp
         srcs/http/Response.cpp
@@ -32,9 +32,9 @@ target_include_directories(${WS_LIB} PUBLIC
         srcs/cgi
         srcs/webserver
         srcs/core
-        srcs/core/events
+        srcs/events
         srcs/core/modules
-        srcs/core/sessions
+        srcs/sessions
         srcs/http
         srcs/http/errors
         srcs/http/resource_handlers

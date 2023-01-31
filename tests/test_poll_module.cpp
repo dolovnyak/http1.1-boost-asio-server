@@ -8,10 +8,10 @@
 #include <sys/socket.h>
 
 template<class CoreModule>
-class TestSession : public Session<CoreModule> {
+class TestSession : public Session {
 public:
-    TestSession(int core_module_index, CoreModule* core_module, SocketFd socket)
-            : Session<CoreModule>(core_module_index, core_module, socket) {}
+    TestSession(int core_module_index, CoreModule* core_module, boost::asio::ip::tcp::socket socket)
+            : Session(core_module_index, core_module, socket) {}
 
     ~TestSession() {}
 
@@ -36,7 +36,7 @@ public:
 TEST(Poll_Module, Process_Compress_Basic) {
     std::shared_ptr<Config> config = MakeShared(Config());
     std::queue<std::shared_ptr<Event> > event_queue;
-    std::unordered_map<SocketFd, std::shared_ptr<Session<PollModule> > > sessions;
+    std::unordered_map<boost::asio::ip::tcp::socket, std::shared_ptr<Session<PollModule> > > sessions;
 
     PollModule poll_module(config, &event_queue, &sessions);
     poll_module._should_compress = true;
@@ -72,7 +72,7 @@ TEST(Poll_Module, Process_Compress_Basic) {
 TEST(Poll_Module, Process_Compress_Correct_Update_Sessions) {
     std::shared_ptr<Config> config = MakeShared(Config());
     std::queue<std::shared_ptr<Event> > event_queue;
-    std::unordered_map<SocketFd, std::shared_ptr<Session<PollModule> > > sessions;
+    std::unordered_map<boost::asio::ip::tcp::socket, std::shared_ptr<Session<PollModule> > > sessions;
 
     PollModule poll_module(config, &event_queue, &sessions);
     poll_module._should_compress = true;
@@ -81,13 +81,13 @@ TEST(Poll_Module, Process_Compress_Correct_Update_Sessions) {
 
     for (int i = 0; i < 21; ++i) {
         std::shared_ptr<Session<PollModule> > server_session = MakeShared<Session<PollModule> >(new TestSession<PollModule>(
-                poll_module.GetNextSessionIndex(), &poll_module, SocketFd(i + 30)));
+                poll_module.GetNextSessionIndex(), &poll_module, boost::asio::ip::tcp::socket(i + 30)));
         poll_module.AddSession(i + 30, server_session);
     }
     ASSERT_EQ(poll_module._poll_index, 21);
 
     for (int i = 0; i < 5; ++i) {
-        Session<PollModule>::It session_it = sessions.find(SocketFd(i + 30));
+        Session<PollModule>::It session_it = sessions.find(boost::asio::ip::tcp::socket(i + 30));
 
         session_it->second->available = false;
         sessions.erase(session_it);

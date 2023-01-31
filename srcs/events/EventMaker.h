@@ -13,7 +13,7 @@
 template<class CoreModule>
 class EventMaker {
 public:
-    static std::shared_ptr<Event> MakeReadEvent(std::shared_ptr<Session<CoreModule> > session,
+    static std::shared_ptr<Event> MakeReadEvent(std::shared_ptr<Session > session,
                                           const std::shared_ptr<std::string>& incoming_data,
                                           std::queue<std::shared_ptr<Event> >* event_queue) {
         switch (session->GetType()) {
@@ -26,7 +26,7 @@ public:
         }
     }
 
-    static std::shared_ptr<Event> MakeReadZeroBytesEvent(std::shared_ptr<Session<CoreModule> > session,
+    static std::shared_ptr<Event> MakeReadZeroBytesEvent(std::shared_ptr<Session > session,
                                                    std::queue<std::shared_ptr<Event> >* event_queue) {
         switch (session->GetType()) {
             case SessionType::Http:
@@ -38,7 +38,7 @@ public:
         }
     }
 
-    static std::shared_ptr<Event> MakeAfterWriteEvent(std::shared_ptr<Session<CoreModule> > session,
+    static std::shared_ptr<Event> MakeAfterWriteEvent(std::shared_ptr<Session > session,
                                                 std::queue<std::shared_ptr<Event> >* event_queue) {
         switch (session->GetType()) {
             case SessionType::Http:

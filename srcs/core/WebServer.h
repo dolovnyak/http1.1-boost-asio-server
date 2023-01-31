@@ -11,18 +11,23 @@
 #include <unordered_map>
 
 class WebServer {
+private:
+    std::shared_ptr<Config> _config;
+    std::unordered_map<boost::asio::ip::tcp::socket, std::shared_ptr<Session>> _sessions;
+
+    boost::asio::io_service _io_service;
+    boost::asio::ip::tcp::acceptor _acceptor;
+
 public:
     WebServer(const std::shared_ptr<Config>& config)
-            : _config(config) {
+            : _config(config), _io_service(), _acceptor(_io_service) {
 
 
-        for (PortServersIt it = _config->port_servers_configs.begin();
-             it != _config->port_servers_configs.end(); ++it) {
-            int socket = SetupServerSocket(it->second.port, _config);
+        for (auto & port_servers_config : _config->port_servers_configs) {
+            int socket = SetupServerSocket(port_servers_config.second.port, _config);
 
             std::shared_ptr<Session> server_session = MakeShared<Session>(
-                    new ServerSession<CoreModule>(
-                            _core_module.GetNextSessionIndex(), &_core_module, SocketFd(socket), it->second));
+                    new ServerSession(_core_module.GetNextSessionIndex(), &_core_module, boost::asio::ip::tcp::socket(socket), it->second));
 
             _core_module.AddSession(socket, server_session);
         }
@@ -35,11 +40,4 @@ public:
     void Run() {
         _io_service.run();
     }
-
-private:
-    std::shared_ptr<Config> _config;
-    std::unordered_map<SocketFd, std::shared_ptr<Session>> _sessions;
-
-    boost::asio::io_service _io_service;
-    boost::asio::ip::tcp::acceptor _acceptor;
 };

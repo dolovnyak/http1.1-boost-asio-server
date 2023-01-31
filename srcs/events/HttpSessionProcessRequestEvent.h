@@ -12,7 +12,7 @@
 template<class CoreModule>
 class HttpSessionProcessRequestEvent : public Event {
 public:
-    HttpSessionProcessRequestEvent(const std::shared_ptr<Session<CoreModule> >& session,
+    HttpSessionProcessRequestEvent(const std::shared_ptr<Session >& session,
                                    std::queue<std::shared_ptr<Event> >* event_queue)
             : _packaged_http_session(session), _event_queue(event_queue) {}
 
@@ -28,9 +28,9 @@ private:
 
     void RunFilePipeline();
 
-    std::shared_ptr<Session<CoreModule> > _packaged_http_session;
+    std::shared_ptr<Session > _packaged_http_session;
 
-    HttpSession<CoreModule>* _http_session;
+    HttpSession* _http_session;
 
     std::queue<std::shared_ptr<Event> >* _event_queue;
 };
@@ -110,9 +110,9 @@ void HttpSessionProcessRequestEvent<CoreModule>::RunFilePipeline() {
         throw std::runtime_error("Failed to set socket non blocking");
     }
 
-    std::shared_ptr<Session<CoreModule> > file_session = MakeShared<Session<CoreModule> >(
-            new HttpFileSession<CoreModule>(_packaged_http_session->core_module->GetNextSessionIndex(),
-                                            _packaged_http_session->core_module, SocketFd(fd),
+    std::shared_ptr<Session > file_session = MakeShared<Session >(
+            new HttpFileSession(_packaged_http_session->core_module->GetNextSessionIndex(),
+                                            _packaged_http_session->core_module, boost::asio::ip::tcp::socket(fd),
                                             _packaged_http_session));
 
     _http_session->core_module->AddSession(fd, file_session);  /// core_module will invoke read events for this file fd
@@ -126,7 +126,7 @@ void HttpSessionProcessRequestEvent<CoreModule>::Process() {
         return;
     }
 
-    _http_session = dynamic_cast<HttpSession<CoreModule>*>(_packaged_http_session.Get());
+    _http_session = dynamic_cast<HttpSession*>(_packaged_http_session.Get());
     if (_http_session == nullptr) {
         LOG_ERROR(GetName(), " on non-http session");
         return;

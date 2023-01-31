@@ -12,7 +12,7 @@
 template<class CoreModule>
 class HttpSessionReadEvent : public Event {
 public:
-    HttpSessionReadEvent(const std::shared_ptr<Session<CoreModule> >& session,
+    HttpSessionReadEvent(const std::shared_ptr<Session >& session,
                          const std::shared_ptr<std::string>& incoming_data,
                          std::queue<std::shared_ptr<Event> >* event_queue)
             : _packaged_http_session(session),
@@ -26,10 +26,10 @@ public:
     void Process() OVERRIDE;
 
 private:
-    std::shared_ptr<Session<CoreModule> > _packaged_http_session;
+    std::shared_ptr<Session > _packaged_http_session;
     std::shared_ptr<std::string> _incoming_data;
     std::queue<std::shared_ptr<Event> >* _event_queue;
-    HttpSession<CoreModule>* _http_session;
+    HttpSession* _http_session;
 };
 
 template<class CoreModule>
@@ -45,7 +45,7 @@ void HttpSessionReadEvent<CoreModule>::Process() {
         return;
     }
 
-    _http_session = dynamic_cast<HttpSession<CoreModule>*>(_packaged_http_session.Get());
+    _http_session = dynamic_cast<HttpSession*>(_packaged_http_session.Get());
     if (_http_session == nullptr) {
         LOG_ERROR(GetName(), " on non-http _http_session");
         return;
