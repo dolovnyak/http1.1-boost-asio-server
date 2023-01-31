@@ -4,25 +4,24 @@
 #include "utilities.h"
 #include "Config.h"
 
-template<class CoreModule>
-class ServerSession : public Session<CoreModule> {
+class ServerSession : public Session {
 public:
-    ServerSession(const std::shared_ptr<Config>& config, int core_module_index, CoreModule* core_module, SocketFd socket,
+    ServerSession(const std::shared_ptr<Config>& config, boost::asio::ip::tcp::socket socket,
                   const std::shared_ptr<ServerConfig>& server_config)
-            : Session<CoreModule>(config, core_module_index, core_module, socket),
+            : Session(config, std::move(socket)),
               server_config(server_config) {}
 
     ~ServerSession() {}
 
-    bool ShouldCloseAfterResponse() const OVERRIDE {
+    bool ShouldCloseAfterResponse() const override {
         throw std::logic_error("ServerSession::GetResponseData() should not be called");
     }
 
-    const std::string& GetResponseData() const OVERRIDE {
+    const std::string& GetResponseData() const override {
         throw std::logic_error("ServerSession::GetResponseData() should not be called");
     }
 
-    const std::string& GetName() const OVERRIDE {
+    const std::string& GetName() const override {
         static std::string kName = "ServerSession";
         return kName;
     }

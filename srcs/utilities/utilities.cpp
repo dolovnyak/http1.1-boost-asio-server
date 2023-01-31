@@ -67,7 +67,7 @@ std::string GetCurrentDateTimeString() {
     struct tm* timeinfo = localtime(&rawtime);
     char buffer[80];
     strftime(buffer, sizeof(buffer), "%a, %d %b %Y %H:%M:%S %Z", timeinfo);
-    return std::string(buffer);
+    return {buffer};
 }
 
 int ParseInt(const std::string& value, int base) {
@@ -95,8 +95,8 @@ bool IsTchar(char c) {
 }
 
 bool IsTcharString(const std::string& str) {
-    for (size_t i = 0; i < str.size(); ++i) {
-        if (!IsTchar(str[i])) {
+    for (char i : str) {
+        if (!IsTchar(i)) {
             return false;
         }
     }

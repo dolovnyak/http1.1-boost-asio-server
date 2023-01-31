@@ -3,12 +3,6 @@
 #include <string>
 #include <vector>
 
-#ifdef _STANDARD98
-#define OVERRIDE
-#else
-#define OVERRIDE override
-#endif
-
 #define READ_BUFFER_SIZE 4096
 
 struct EnumClassHash

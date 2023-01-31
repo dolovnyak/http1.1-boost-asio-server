@@ -13,7 +13,7 @@
 template<class CoreModule>
 class HttpFileSessionReadEvent : public Event {
 public:
-    HttpFileSessionReadEvent(const std::shared_ptr<Session<CoreModule>>& session, const std::shared_ptr<std::string>& incoming_data, std::queue<std::shared_ptr<Event> >* event_queue)
+    HttpFileSessionReadEvent(const std::shared_ptr<Session>& session, const std::shared_ptr<std::string>& incoming_data, std::queue<std::shared_ptr<Event> >* event_queue)
             : _packaged_file_session(session),
               _incoming_data(incoming_data),
               _event_queue(event_queue) {}
@@ -25,8 +25,8 @@ public:
     void Process() OVERRIDE;
 
 private:
-    std::shared_ptr<Session<CoreModule> > _packaged_file_session;
-    HttpFileSession<CoreModule>* _file_session;
+    std::shared_ptr<Session > _packaged_file_session;
+    HttpFileSession* _file_session;
     std::shared_ptr<std::string> _incoming_data;
     std::queue<std::shared_ptr<Event> >* _event_queue;
 };
@@ -38,7 +38,7 @@ void HttpFileSessionReadEvent<CoreModule>::Process() {
         return;
     }
 
-    _file_session = dynamic_cast<HttpFileSession<CoreModule>*>(_packaged_file_session.Get());
+    _file_session = dynamic_cast<HttpFileSession*>(_packaged_file_session.Get());
     if (_file_session == nullptr) {
         LOG_ERROR(GetName(), " on non-file _file_session");
         return;
