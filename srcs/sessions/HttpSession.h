@@ -22,7 +22,7 @@ namespace HttpSessionState {
 class HttpSession : public Session {
 public:
     HttpSession(const std::shared_ptr<Config>& config, boost::asio::ip::tcp::socket socket,
-                const std::shared_ptr<PortServersConfig>& server_config_in)
+                const std::shared_ptr<ServersConfigs>& server_config_in)
             : Session(config, std::move(socket)),
               port_servers_config(server_config_in),
               request(std::make_shared<Request>(Request(port_servers_config->GetDefault()))),
@@ -63,7 +63,7 @@ public:
     }
 
 public:
-    std::shared_ptr<PortServersConfig> port_servers_config;
+    std::shared_ptr<ServersConfigs> port_servers_config;
 
     std::shared_ptr<Request> request;
 

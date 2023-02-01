@@ -51,7 +51,7 @@ public:
              const std::string& title,
              const std::vector<Http::Header>& headers,
              const std::string& body) {
-        response = Http::ToString(http_version) + " " + std::to_string(code) + " " + title + "\r\n";
+        response = Http::ToString(http_version) + " " + std::to_string(static_cast<int>(code)) + " " + title + "\r\n";
         for (const auto& header: headers) {
             response += header.key + ": " + header.value + "\r\n";
         }

@@ -4,6 +4,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#define READ_BUFFER_SIZE 4096
+
 std::string StripString(const std::string& str) {
     std::string::const_iterator start_it = str.cbegin();
     std::string::const_reverse_iterator end_it = str.crbegin();

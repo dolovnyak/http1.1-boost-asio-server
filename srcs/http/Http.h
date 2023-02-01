@@ -34,17 +34,17 @@ namespace Http {
         std::string value;
     };
 
-    enum Method {
-        UNKNOWN = 0,
-        GET,
-        HEAD,
-        POST,
-        DELETE,
-        PUT,
-        CONNECT,
-        OPTIONS,
-        TRACE,
-        PATCH
+    enum class Method {
+        Unknown = 0,
+        Get,
+        Head,
+        Post,
+        Delete,
+        Put,
+        Connect,
+        Options,
+        Trace,
+        Patch
     };
 
     enum Version {
@@ -52,7 +52,7 @@ namespace Http {
         Http1_1,
     };
 
-    enum Code {
+    enum class Code {
         OK = 200,
         BadRequest = 400,
         NotFound = 404,
@@ -62,6 +62,7 @@ namespace Http {
         InternalServerError = 500,
         NotImplemented = 501,
         HttpVersionNotSupported = 505,
+        OutOfRange = 600
     };
 
     Method GetMethod(const std::string& method);

@@ -23,13 +23,13 @@ public:
             : _config(config), _io_service(), _acceptor(_io_service) {
 
 
-        for (auto & port_servers_config : _config->port_servers_configs) {
-            int socket = SetupServerSocket(port_servers_config.second.port, _config);
+        boost::asio::ip::tcp::socket socket(_io_service);
+        for (auto & server_config : _config->servers_configs->_server_configs) {
+            socket.connect(boost::asio::ip::address::from_string(server_config.))
+            int socket = SetupServerSocket(server_config.second.port, _config);
 
-            std::shared_ptr<Session> server_session = MakeShared<Session>(
-                    new ServerSession(_core_module.GetNextSessionIndex(), &_core_module, boost::asio::ip::tcp::socket(socket), it->second));
-
-            _core_module.AddSession(socket, server_session);
+            std::shared_ptr<Session> server_session = std::make_shared<Session>(
+                    ServerSession(boost::asio::ip::tcp::socket(socket), it->second));
         }
 
         if (_sessions.empty()) {

@@ -71,7 +71,7 @@ public:
 
     RequestHandleStatus::Status Handle(std::shared_ptr<std::string> raw_request_part);
 
-    void Process(const std::shared_ptr<PortServersConfig>& port_servers_config);
+    void Process(const std::shared_ptr<ServersConfigs>& port_servers_config);
 
     void AddHeader(const std::string& key, const std::string& value);
 
@@ -133,7 +133,7 @@ private: /// handle helpers
 private: /// process helpers
     void ProcessHttpVersion();
 
-    void ProcessHostHeader(std::shared_ptr<PortServersConfig> port_servers_config);
+    void ProcessHostHeader(std::shared_ptr<ServersConfigs> port_servers_config);
 
     void ProcessContentTypeHeader();
 

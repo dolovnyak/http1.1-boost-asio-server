@@ -30,7 +30,7 @@
   * **autoindex** `default: false` - on/off directory listing. Behave according to [intersected location fields rules](#intersected-location-fields-rules)
   * **methods** `default: no one` - array of available methods for this location. Other will forbidden.
   * **cgi_path** - `default: none (cgi off)` - path to cgi script which will be execute for this location. Behave according to [intersected location fields rules](#intersected-location-fields-rules)
-  * **upload_path** `default: none (uploading off)` - path to the directory where to upload files when a PUT request arrives. Behave according to [intersected location fields rules](#intersected-location-fields-rules)
+  * **upload_path** `default: none (uploading off)` - path to the directory where to upload files when a Put request arrives. Behave according to [intersected location fields rules](#intersected-location-fields-rules)
   * **return** `default: none` - "http_error_code" or "http_redirect_code url". if url start with "/" it's local path and we need to construct correct url. In other case we consider that url is correct global url. Behave according to [intersected location fields rules](#intersected-location-fields-rules)
  
 ## Default server rules:
@@ -82,11 +82,11 @@ There are 4 location fields that cause different behavior and conflict with each
   * file name not_happy.bad_extension in Yeah 
 
 Setup the configuration file as follow:
-- / must answer to GET request ONLY
-- /put_test/* must answer to PUT request and save files to a directory of your choice
-- any file with .bla as extension must answer to POST request by calling the cgi_test executable
-- /post_body must answer anything to POST request with a maxBody of 100
-- /directory/ must answer to GET request and the root of it would be the repository YoupiBanane and if no file are requested, it should search for youpi.bad_extension files
+- / must answer to Get request ONLY
+- /put_test/* must answer to Put request and save files to a directory of your choice
+- any file with .bla as extension must answer to Post request by calling the cgi_test executable
+- /post_body must answer anything to Post request with a maxBody of 100
+- /directory/ must answer to Get request and the root of it would be the repository YoupiBanane and if no file are requested, it should search for youpi.bad_extension files
 
 
 Хедеры поддерживаемые на данный момент:
