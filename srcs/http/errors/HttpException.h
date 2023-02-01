@@ -22,7 +22,7 @@ public:
         _error_response = other._error_response;
     }
 
-    std::shared_ptr<Response> GetErrorResponse() const noexcept {
+    [[nodiscard]] std::shared_ptr<Response> GetErrorResponse() const noexcept {
         return _error_response;
     }
 
@@ -32,7 +32,7 @@ public:
 
     ~HttpException() noexcept {}
 
-    const char* what() const noexcept {
+    [[nodiscard]] const char* what() const noexcept {
         return _message.c_str();
     }
 
@@ -46,43 +46,43 @@ private:
 class BadRequest : public HttpException {
 public:
     BadRequest(const std::string& message, const std::shared_ptr<ServerConfig>& server_config)
-            : HttpException(message, Http::BadRequest, "Bad request", false, server_config) {}
+            : HttpException(message, Http::Code::BadRequest, "Bad request", false, server_config) {}
 };
 
 class BadHttpVersion : public HttpException {
 public:
     BadHttpVersion(const std::string& message, const std::shared_ptr<ServerConfig>& server_config)
-            : HttpException(message, Http::BadRequest, "Bad HTTP version", false, server_config) {}
+            : HttpException(message, Http::Code::BadRequest, "Bad HTTP version", false, server_config) {}
 };
 
 class BadFirstLine : public HttpException {
 public:
     BadFirstLine(const std::string& message, const std::shared_ptr<ServerConfig>& server_config)
-            : HttpException(message, Http::BadRequest, "Bad first line", false, server_config) {}
+            : HttpException(message, Http::Code::BadRequest, "Bad first line", false, server_config) {}
 };
 
 class BadHeader : public HttpException {
 public:
     BadHeader(const std::string& message, const std::shared_ptr<ServerConfig>& server_config)
-            : HttpException(message, Http::BadRequest, "Bad header", false, server_config) {}
+            : HttpException(message, Http::Code::BadRequest, "Bad header", false, server_config) {}
 };
 
 class BadContentLength : public HttpException {
 public:
     BadContentLength(const std::string& message, const std::shared_ptr<ServerConfig>& server_config)
-            : HttpException(message, Http::BadRequest, "Bad content length", false, server_config) {}
+            : HttpException(message, Http::Code::BadRequest, "Bad content length", false, server_config) {}
 };
 
 class BadChunkSize : public HttpException {
 public:
     BadChunkSize(const std::string& message, const std::shared_ptr<ServerConfig>& server_config)
-            : HttpException(message, Http::BadRequest, "Bad chunk size", false, server_config) {}
+            : HttpException(message, Http::Code::BadRequest, "Bad chunk size", false, server_config) {}
 };
 
 class BadChunkBody : public HttpException {
 public:
     BadChunkBody(const std::string& message, const std::shared_ptr<ServerConfig>& server_config)
-            : HttpException(message, Http::BadRequest, "Bad chunk body", false, server_config) {}
+            : HttpException(message, Http::Code::BadRequest, "Bad chunk body", false, server_config) {}
 };
 
 
@@ -90,7 +90,7 @@ public:
 class NotFound : public HttpException {
 public:
     NotFound(const std::string& message, const std::shared_ptr<ServerConfig>& server_config)
-            : HttpException(message, Http::NotFound, "Not found", true, server_config) {}
+            : HttpException(message, Http::Code::NotFound, "Not found", true, server_config) {}
 };
 
 
@@ -98,7 +98,7 @@ public:
 class MethodNotAllowed : public HttpException {
 public:
     MethodNotAllowed(const std::string& message, const std::shared_ptr<ServerConfig>& server_config)
-            : HttpException(message, Http::MethodNotAllowed, "Method not allowed", true, server_config) {}
+            : HttpException(message, Http::Code::MethodNotAllowed, "Method not allowed", true, server_config) {}
 };
 
 
@@ -106,7 +106,7 @@ public:
 class LengthRequired : public HttpException {
 public:
     LengthRequired(const std::string& message, const std::shared_ptr<ServerConfig>& server_config)
-            : HttpException(message, Http::LengthRequired, "Length required", false, server_config) {}
+            : HttpException(message, Http::Code::LengthRequired, "Length required", false, server_config) {}
 };
 
 
@@ -115,7 +115,7 @@ class PayloadTooLarge : public HttpException {
 public:
     PayloadTooLarge(const std::string& message,
                     const std::shared_ptr<ServerConfig>& server_config)
-            : HttpException(message, Http::PayloadTooLarge, "Payload too large", false, server_config) {}
+            : HttpException(message, Http::Code::PayloadTooLarge, "Payload too large", false, server_config) {}
 };
 
 
@@ -124,7 +124,7 @@ class InternalServerError : public HttpException {
 public:
     InternalServerError(const std::string& message,
                         const std::shared_ptr<ServerConfig>& server_config)
-            : HttpException(message, Http::InternalServerError, "Internal server error", false, server_config) {}
+            : HttpException(message, Http::Code::InternalServerError, "Internal server error", false, server_config) {}
 };
 
 
@@ -132,14 +132,14 @@ public:
 class NotImplemented : public HttpException {
 public:
     NotImplemented(const std::string& message, const std::shared_ptr<ServerConfig>& server_config)
-            : HttpException(message, Http::NotImplemented, "Not implemented", true, server_config) {}
+            : HttpException(message, Http::Code::NotImplemented, "Not implemented", true, server_config) {}
 };
 
 class UnsupportedTransferEncoding : public HttpException {
 public:
     UnsupportedTransferEncoding(const std::string& message,
                                 const std::shared_ptr<ServerConfig>& server_config)
-            : HttpException(message, Http::NotImplemented, "Unsupported transfer encoding", false, server_config) {}
+            : HttpException(message, Http::Code::NotImplemented, "Unsupported transfer encoding", false, server_config) {}
 };
 
 /// 505
@@ -147,6 +147,6 @@ class HttpVersionNotSupported : public HttpException {
 public:
     HttpVersionNotSupported(const std::string& message,
                             const std::shared_ptr<ServerConfig>& server_config)
-            : HttpException(message, Http::HttpVersionNotSupported, "HTTP version not supported", false,
+            : HttpException(message, Http::Code::HttpVersionNotSupported, "HTTP version not supported", false,
                             server_config) {}
 };

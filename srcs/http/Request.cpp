@@ -89,7 +89,7 @@ Request::Request(std::shared_ptr<ServerConfig> default_server_config)
 
 void Request::Clear() {
     raw_method.clear();
-    method = Http::Method::UNKNOWN;
+    method = Http::Method::Unknown;
     raw_http_version = HttpVersion();
     body.clear();
     raw.clear();
@@ -397,7 +397,7 @@ void Request::ProcessRouteLocation() {
 }
 
 
-void Request::ProcessHostHeader(std::shared_ptr<PortServersConfig> port_servers_config) {
+void Request::ProcessHostHeader(std::shared_ptr<ServersConfigs> port_servers_config) {
     HeaderIterator it = headers.find(HOST);
 
     if (it == headers.end()) {
@@ -513,12 +513,12 @@ void Request::ProcessAuthorizationHeader() {
 void Request::ProcessMethod() {
     method = Http::GetMethod(raw_method);
     switch (method) {
-        case Http::Method::GET:
-        case Http::Method::HEAD:
+        case Http::Method::Get:
+        case Http::Method::Head:
             break;
 
 
-        case Http::Method::POST: {
+        case Http::Method::Post: {
             if (!content_length.HasValue()) {
                 throw LengthRequired("Length required", server_config);
             }
@@ -528,26 +528,26 @@ void Request::ProcessMethod() {
             break;
         }
 
-        case Http::Method::DELETE: {
+        case Http::Method::Delete: {
             if (!is_cgi) {
                 throw MethodNotAllowed("Method not allowed", server_config);
             }
         }
 
-        case Http::Method::PUT:
-        case Http::Method::OPTIONS:
-        case Http::Method::CONNECT:
-        case Http::Method::TRACE:
-        case Http::Method::PATCH:
+        case Http::Method::Put:
+        case Http::Method::Options:
+        case Http::Method::Connect:
+        case Http::Method::Trace:
+        case Http::Method::Patch:
             throw NotImplemented("Method " + raw_method + " is not implemented", server_config);
 
-        case Http::Method::UNKNOWN:
+        case Http::Method::Unknown:
             throw MethodNotAllowed("Method not allowed", server_config);
     }
 }
 
 
-void Request::Process(const std::shared_ptr<PortServersConfig>& port_servers_config) {
+void Request::Process(const std::shared_ptr<ServersConfigs>& port_servers_config) {
     /// never change order of these methods
 
     ProcessHttpVersion();

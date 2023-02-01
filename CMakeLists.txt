@@ -13,6 +13,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 set(WS_LIB ${PROJECT_NAME}-lib)
 add_library(${WS_LIB}
         srcs/config/Config.cpp
+        srcs/config/ConfigParser.cpp
         srcs/sessions/HttpSession.cpp
         srcs/core/core_helpers.cpp
         srcs/http/Request.cpp
@@ -22,8 +23,6 @@ add_library(${WS_LIB}
         srcs/utilities/utilities.cpp
         srcs/utilities/Logging.cpp
         )
-
-add_subdirectory(libjtoc)
 
 target_include_directories(${WS_LIB} PUBLIC
         srcs
@@ -58,7 +57,7 @@ target_compile_definitions(${WS_LIB} PUBLIC -D_DEBUG)
 ################################################################################
 add_executable(${PROJECT_NAME}
         srcs/main.cpp
-        srcs/config/parse_config.cpp srcs/config/parse_config.h)
+        )
 target_link_libraries(${PROJECT_NAME} PUBLIC ${WS_LIB})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
@@ -75,7 +74,6 @@ add_subdirectory(googletest)
 add_executable(${WS_TESTS}
         tests/test_utilities.cpp
         tests/test_fsm_handle_request.cpp
-        tests/test_poll_module.cpp
         )
 
 target_link_libraries(${WS_TESTS}

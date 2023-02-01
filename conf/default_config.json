@@ -3,16 +3,15 @@
   "ReadBufferSize": 4096,
   "SessionsKillerDelay_s": 2,
   "HangSessionTimeout_s": 10,
-  "CoreTimeout_s": 1,
-  "ServerInstances": [
+  "Servers": [
     {
-      "Port": 80,
       "Name": "kabun1",
-      "Root": "/Users/sbecker/Desktop/projects/webserver-42/examples/cgi_checker1",
+      "Host": "127.0.0.1",
+      "Port": 80,
       "MaxBodySize" : 1000000,
       "MaxRequestSize" : 100000000,
       "KeepAliveTimeout_s" : 30,
-      "KeepAliveMaxTimeout_s" : 1800,
+      "MaxKeepAliveTimeout_s" : 1800,
       "Locations": [
         {
           "Location": "/",
@@ -29,19 +28,27 @@
     {
       "Port": 80,
       "Name": "kabun2",
-      "Root": "/Users/sbecker/Desktop/projects/webserver-42/examples/cgi_checker2",
       "MaxBodySize": 8096,
       "MaxRequestSize": 16384,
-      "ErrorPages": {
-        "404": "/error_pages/404.html",
-        "405": "/error_pages/405.html",
-        "500": "/error_pages/500.html"
-      },
+      "ErrorPages": [
+        {
+          "Code": 404,
+          "Path": "/error_pages/404.html"
+        },
+        {
+          "Code": 405,
+          "Path": "/error_pages/405.html"
+        },
+        {
+          "Code": 500,
+          "Path": "/error_pages/500.html"
+        }
+      ],
       "Locations": [
         {
           "Location": "/",
           "Root": "/",
-          "Autoindex": 1,
+          "Autoindex": true,
           "Index": "index.html",
           "AvailableMethods": [
             "GET",
@@ -49,7 +56,7 @@
           ]
         },
         {
-          "Location": ".php|.py|.rb|.pl|.cgi",
+          "Location": ".cgi",
           "Cgi-pass": "/Users/sbecker/Desktop/projects/webserver-42/examples/cgi_checker/cgi.php",
           "AvailableMethods": [
             "GET",

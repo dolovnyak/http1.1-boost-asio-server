@@ -1,4 +1,5 @@
 #include "WebServer.h"
+#include "ConfigParser.h"
 
 int main(int argc, char** argv) {
     if (argc != 2) {
@@ -7,11 +8,7 @@ int main(int argc, char** argv) {
     }
 
     try {
-        std::shared_ptr<Config> config = std::make_shared<Config>(Config);
-        if (!config->Load(argv[1])) {
-            LOG_ERROR("Failed to load config");
-            exit(EXIT_FAILURE);
-        }
+        std::shared_ptr<Config> config = std::make_shared<Config>(ConfigParser::Parse(argv[1]));
 
         WebServer web_server(config);
         web_server.Run();
