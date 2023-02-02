@@ -14,7 +14,7 @@
   * **ServerInstances** `required at least one server` - array of server instances.
 
 - ### Server instanse fields:
-  * **Host** `required`
+  * **Host** `required` - the рщые that this server is listening on.
   * **Port** `required` - the port that this server is listening on. Few servers may listen the same host:port. First server declared in config will be default. See [default server rules](#default-server-rules))
   * **Name** `required` - the name of the server which is used in the "host" request header. If few servers are listening one port, the desired server will be selected with the host header with the correct server_name:port" 
   * **ErrorPages** `default:`[`HttpErrorPages.cpp`](https://github.com/dolovnyak/webserver-42/blob/master/srcs/http/errors/HttpErrorPages.cpp) - array like {http_error_code, path}, where path either absolute path if it begin with "/", either relative root path. 
