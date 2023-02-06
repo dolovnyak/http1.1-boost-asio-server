@@ -1,11 +1,54 @@
 #include "Config.h"
 
-Location::Location(const std::string& location, const std::string& root,
-                   const bool autoindex, const std::string& index,
-                   const std::vector<std::string>& available_methods, const std::string& redirect)
-        : location(location), root(root),
-          autoindex(autoindex), index(index),
-          available_methods(), redirect(redirect) {
-/// cast available methods to Http::Method
+Location::Location(std::string location, std::string root,
+                   bool autoindex, std::string index,
+                   std::unordered_set<Http::Method> available_methods, std::string redirect)
+        : location(std::move(location)), root(std::move(root)),
+          autoindex(autoindex), index(std::move(index)),
+          available_methods(std::move(available_methods)), redirect(std::move(redirect)) {
 /// fill full_path
 }
+
+ServerConfig::ServerConfig(std::string name, std::string host, unsigned short port,
+                           const std::unordered_map<unsigned int, std::string>& error_pages, int max_body_size,
+                           int max_request_size,
+                           int default_keep_alive_timeout_s, int max_keep_alive_timeout_s,
+                           const std::vector<std::shared_ptr<Location>>& locations)
+        : name(std::move(name)), host(std::move(host)), port(port), error_pages(error_pages),
+          max_body_size(max_body_size), max_request_size(max_request_size),
+          default_keep_alive_timeout_s(default_keep_alive_timeout_s),
+          max_keep_alive_timeout_s(max_keep_alive_timeout_s),
+          locations(locations) {}
+
+EndpointConfig::EndpointConfig(std::string host, unsigned short port,
+                               std::vector<std::shared_ptr<ServerConfig>> servers)
+                               : host(std::move(host)), port(port), servers(std::move(servers))
+                               {}
+
+std::shared_ptr<ServerConfig> EndpointConfig::GetServerByNameOrDefault(const std::string& name) const {
+    for (const auto& server: servers) {
+        if (server->name == name) {
+            return server;
+        }
+    }
+
+    return GetDefaultServer();
+}
+
+std::shared_ptr<ServerConfig> EndpointConfig::GetDefaultServer() const {
+    if (servers.empty()) {
+        throw std::logic_error("GetDefaultServerConfig on empty server configs");
+    }
+    return servers[0];
+}
+
+Config::Config(unsigned int max_sessions_number,
+               unsigned int read_buffer_size,
+               unsigned int sessions_killer_delay_s,
+               unsigned int hang_session_timeout_s,
+               const std::vector<std::shared_ptr<EndpointConfig>>& endpoint_configs)
+        : max_sessions_number(max_sessions_number),
+          read_buffer_size(read_buffer_size),
+          sessions_killer_delay_s(sessions_killer_delay_s),
+          hang_session_timeout_s(hang_session_timeout_s),
+          endpoint_configs(endpoint_configs) {}

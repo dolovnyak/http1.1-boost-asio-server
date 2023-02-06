@@ -1,68 +1,109 @@
 #include "ConfigParser.h"
 #include "Config.h"
+#include "Logging.h"
 
 #include <boost/json/src.hpp>
-#include <boost/property_tree/ptree.hpp>
+#include <fstream>
 
-#include <boost/property_tree/json_parser.hpp>
 
 namespace {
     boost::json::value file_to_json(char const* filename) {
         std::ifstream file(filename);
-        if (!file.is_open()) {
-            throw std::runtime_error("Can't open json file");
-        }
+        if (!file.is_open()) { throw std::runtime_error("Can't open json file"); }
 
         boost::json::stream_parser p;
         boost::json::error_code ec;
-
         while (!file.eof()) {
             char buf[JSON_READ_BUFFER_SIZE];
             file.read(buf, sizeof(buf));
             size_t extracted_size = file.gcount();
-
-            std::string a(buf, extracted_size);
-
             p.write(buf, extracted_size, ec);
         }
 
-        if (ec) {
-            throw std::runtime_error("Can't parse json file");
-        }
-
+        if (ec) { throw std::runtime_error("Can't parse json file"); }
         p.finish(ec);
-
-        if (ec) {
-            throw std::runtime_error("Can't parse json file");
-        }
-
+        if (ec) { throw std::runtime_error("Can't parse json file"); }
         return p.release();
     }
 
     template<class T>
     T extract(const boost::json::object& obj, boost::json::string_view key, const T& default_value) {
-        auto it = obj.find(key);
-        if (it == obj.end()) {
-            return default_value;
+        try {
+            auto it = obj.find(key);
+            if (it == obj.end()) {
+                return default_value;
+            }
+            return boost::json::value_to<T>(obj.at(key));
         }
-        return boost::json::value_to<T>(obj.at(key));
+        catch (const boost::system::system_error& e) {
+            throw std::runtime_error("Error in field \"" + std::string(key)+ "\"\n");
+        }
+        catch (const std::exception& e) {
+            throw std::runtime_error("Error in field \"" + std::string(key)+ "\"\n" + std::string(e.what()));
+        }
     }
 
     template<class T>
     T extract(const boost::json::object& obj, boost::json::string_view key) {
-        return boost::json::value_to<T>(obj.at(key));
+        try {
+            return boost::json::value_to<T>(obj.at(key));
+        }
+        catch (const boost::system::system_error& e) {
+            throw std::runtime_error("Error in field \"" + std::string(key)+ "\"\n");
+        }
+        catch (const std::exception& e) {
+            throw std::runtime_error("Error in field \"" + std::string(key)+ "\"\n" + std::string(e.what()));
+        }
     }
 
     template<class Container>
     Container sequence_container_extract(const boost::json::object& obj, boost::json::string_view key) {
-        Container res;
-
-        const boost::json::array& arr = obj.at(key).as_array();
-
-        for (auto& arr_elem: arr) {
-            res.emplace_back(boost::json::value_to<typename Container::value_type>(arr_elem));
+        try {
+            Container res;
+            const boost::json::array& arr = obj.at(key).as_array();
+            for (auto& arr_elem: arr) {
+                res.emplace_back(boost::json::value_to<typename Container::value_type>(arr_elem));
+            }
+            return res;
         }
-        return res;
+        catch (const boost::system::system_error& e) {
+            throw std::runtime_error("Error in field \"" + std::string(key)+ "\"\n");
+        }
+        catch (const std::exception& e) {
+            throw std::runtime_error("Error in field \"" + std::string(key)+ "\"\n" + std::string(e.what()));
+        }
+    }
+
+    struct endpoint_hash {
+        std::size_t operator()(const std::pair<std::string, unsigned short>& pair) const {
+            return std::hash<std::string>()(pair.first + std::to_string(pair.second));
+        }
+    };
+
+    std::vector<std::shared_ptr<EndpointConfig>>
+    PackToEndpoints(std::vector<std::shared_ptr<ServerConfig>>&& server_configs) {
+        std::unordered_map<std::pair<std::string, unsigned short>, std::vector<std::shared_ptr<ServerConfig>>, endpoint_hash> servers_by_endpoint;
+        for (auto& server: server_configs) {
+            servers_by_endpoint[{server->host, server->port}].emplace_back(std::move(server));
+        }
+        std::vector<std::shared_ptr<EndpointConfig>> endpoints;
+        for (auto& server_by_endpoint: servers_by_endpoint) {
+            std::string host = server_by_endpoint.first.first;
+            unsigned short port = server_by_endpoint.first.second;
+            std::vector<std::shared_ptr<ServerConfig>>& servers = server_by_endpoint.second;
+            endpoints.emplace_back(std::make_shared<EndpointConfig>(host, port, std::move(servers)));
+        }
+        return endpoints;
+    }
+
+    std::unordered_set<Http::Method>
+    ToHandledMethods(std::vector<std::string>&& raw_methods) {
+        std::unordered_set<Http::Method> methods;
+        for (auto& raw_method: raw_methods) {
+            Http::Method method = Http::ToHttpMethod(raw_method);
+            methods.emplace(method);
+        }
+        return methods;
     }
 }
 
@@ -75,7 +116,7 @@ tag_invoke(const boost::json::value_to_tag<std::shared_ptr<Location>>&, boost::j
             extract<std::string>(obj, "Root"),
             extract<bool>(obj, "Autoindex"),
             extract<std::string>(obj, "Index"),
-            sequence_container_extract<std::vector<std::string>>(obj, "AvailableMethods"),
+            ToHandledMethods(sequence_container_extract<std::vector<std::string>>(obj, "AvailableMethods")),
             extract<std::string>(obj, "Redirect"));
 }
 
@@ -92,13 +133,11 @@ std::shared_ptr<ServerConfig>
 tag_invoke(const boost::json::value_to_tag<std::shared_ptr<ServerConfig>>&, boost::json::value const& json) {
     const boost::json::object& obj = json.as_object();
 
-    std::vector<int> a;
-
     return std::make_shared<ServerConfig>(
             extract<std::string>(obj, "Name"),
             extract<std::string>(obj, "Host"),
-            extract<unsigned int>(obj, "Port"),
-            extract<std::unordered_map<unsigned int, std::string>>(obj, "ErrorPages"),
+            extract<unsigned short>(obj, "Port"),
+            extract<std::unordered_map<unsigned int, std::string>>(obj, "ErrorPages", {}),
             extract<unsigned int>(obj, "MaxBodySize", DEFAULT_MAX_BODY_SIZE),
             extract<unsigned int>(obj, "MaxRequestSize", DEFAULT_MAX_REQUEST_SIZE),
             extract<unsigned int>(obj, "KeepAliveTimeout_s", DEFAULT_KEEP_ALIVE_TIMEOUT),
@@ -114,11 +153,16 @@ Config tag_invoke(const boost::json::value_to_tag<Config>&, const boost::json::v
             extract<unsigned int>(obj, "ReadBufferSize", DEFAULT_MAX_SESSIONS_NUMBER),
             extract<unsigned int>(obj, "SessionsKillerDelay_s", DEFAULT_MAX_SESSIONS_NUMBER),
             extract<unsigned int>(obj, "HangSessionTimeout_s", DEFAULT_MAX_SESSIONS_NUMBER),
-            sequence_container_extract<std::vector<std::shared_ptr<ServerConfig>>>(obj, "Servers")
+            PackToEndpoints(sequence_container_extract<std::vector<std::shared_ptr<ServerConfig>>>(obj, "Servers"))
     };
 }
 
 Config ConfigParser::Parse(const char* path) {
-    auto const json = file_to_json(path);
-    return boost::json::value_to<Config>(json);
+    try {
+        auto const json = file_to_json(path);
+        return boost::json::value_to<Config>(json);
+    }
+    catch (const std::exception& e) {
+        throw std::runtime_error("Parse config error:\n"+ std::string(e.what()));
+    }
 }

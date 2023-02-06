@@ -4,7 +4,7 @@
 #include <unordered_map>
 
 namespace Http {
-    Method GetMethod(const std::string& method) {
+    Method ToHttpMethod(const std::string& method) {
 
         static std::unordered_map<std::string, Method> methods_map = {
                 {"Get",     Method::Get},
@@ -19,7 +19,7 @@ namespace Http {
 
         auto it = methods_map.find(method);
         if (it == methods_map.end()) {
-            return Method::Unknown;
+            throw std::runtime_error("Method \"" + method + "\" is forbidden");
         }
         return it->second;
     }

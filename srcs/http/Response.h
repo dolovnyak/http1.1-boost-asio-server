@@ -16,7 +16,7 @@
 
 class Response {
 public:
-    static Response MakeErrorResponse(Http::Version http_version, Http::Code error_code, const std::string& error_title,
+    static std::shared_ptr<Response> MakeErrorResponse(Http::Code error_code, const std::string& error_title,
                                       const std::shared_ptr<ServerConfig>& server_config) {
 
         std::string body = GetHttpErrorPageByCode(error_code, server_config);
@@ -28,7 +28,7 @@ public:
                 Http::Header("Connection", "close")
         };
 
-        return {http_version, error_code, error_title, headers, body};
+        return std::make_shared<Response>(Http::Version::Http1_1, error_code, error_title, headers, body);
     }
 
     static Response MakeOkResponse(Http::Version http_version, const std::string& body,

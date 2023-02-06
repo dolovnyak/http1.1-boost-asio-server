@@ -14,10 +14,10 @@ set(WS_LIB ${PROJECT_NAME}-lib)
 add_library(${WS_LIB}
         srcs/config/Config.cpp
         srcs/config/ConfigParser.cpp
-        srcs/sessions/HttpSession.cpp
-        srcs/core/core_helpers.cpp
-        srcs/http/Request.cpp
-        srcs/http/Response.cpp
+        srcs/sessions/HttpSession/HttpSession.cpp
+        srcs/sessions/EndpointSession/EndpointSession.cpp
+        srcs/http/Request/RequestParser.cpp
+        srcs/http/Request/RequestHandler.cpp
         srcs/http/errors/HttpErrorPages.cpp
         srcs/http/Http.cpp
         srcs/utilities/utilities.cpp
@@ -30,27 +30,23 @@ target_include_directories(${WS_LIB} PUBLIC
         srcs/utilities
         srcs/cgi
         srcs/webserver
-        srcs/core
         srcs/events
         srcs/core/modules
         srcs/sessions
+        srcs/sessions/HttpSession
+        srcs/sessions/EndpointSession
         srcs/http
         srcs/http/errors
-        srcs/http/resource_handlers
-        libjtoc/include
+        srcs/http/Request
         )
 
-target_link_libraries(${WS_LIB} PUBLIC
-        ${LIB_MINI_EVENT}
-        jtoc
-        )
+target_compile_definitions(${WS_LIB} PUBLIC -D_DEBUG)
 
 # Boost asio
 find_package(Boost REQUIRED COMPONENTS system thread regex REQUIRED)
 target_include_directories(${WS_LIB} PUBLIC ${Boost_INCLUDE_DIR})
 target_link_libraries(${WS_LIB} LINK_PUBLIC ${Boost_LIBRARIES})
 
-target_compile_definitions(${WS_LIB} PUBLIC -D_DEBUG)
 
 ################################################################################
 # web-server target

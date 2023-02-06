@@ -15,7 +15,7 @@ public:
                   const std::shared_ptr<ServerConfig>& server_config)
             : _message(message),
               _keep_alive(keep_alive),
-              _error_response(std::make_shared(Response::MakeErrorResponse(error_code, error_title, server_config))) {}
+              _error_response(Response::MakeErrorResponse(error_code, error_title, server_config)) {}
 
     HttpException(const HttpException& other) noexcept {
         _message = other._message;
