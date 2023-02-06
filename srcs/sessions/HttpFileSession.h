@@ -6,7 +6,7 @@ class HttpFileSession : public Session {
 public:
     HttpFileSession(const std::shared_ptr<Config>& config, boost::asio::ip::tcp::socket socket,
                     const std::shared_ptr<Session>& main_session)
-            : Session(config, std::move(socket)),
+            : Session(config),
               main_http_session(main_session) {}
 
     ~HttpFileSession() {}

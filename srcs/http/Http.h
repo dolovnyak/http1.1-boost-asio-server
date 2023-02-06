@@ -35,7 +35,6 @@ namespace Http {
     };
 
     enum class Method {
-        Unknown = 0,
         Get,
         Head,
         Post,
@@ -65,7 +64,7 @@ namespace Http {
         OutOfRange = 600
     };
 
-    Method GetMethod(const std::string& method);
+    Method ToHttpMethod(const std::string& method);
 
     const std::string& ToString(Http::Version http_version);
 }

@@ -16,7 +16,7 @@
         {
           "Location": "/",
           "Root": "/",
-          "Autoindex": 0,
+          "Autoindex": false,
           "Index": "index.html",
           "AvailableMethods": [
             "GET",

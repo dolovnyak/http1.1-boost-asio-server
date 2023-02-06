@@ -2,9 +2,9 @@
 
 #include "Event.h"
 #include "Logging.h"
-#include "core_helpers.h"
-#include <boost/asio.hpp>
 
+#include <utility>
+#include <boost/asio.hpp>
 #include <queue>
 
 namespace SessionType {
@@ -22,25 +22,15 @@ public:
     typedef std::shared_ptr<Session> Ptr;
 
 public:
-    Session(const std::shared_ptr<Config>& config, boost::asio::ip::tcp::socket socket)
+    Session()
             : available(true),
-              last_activity_time(time(nullptr)),
-              config(config),
-              socket(std::move(socket)) {}
+              last_activity_time(time(nullptr)) {}
 
     virtual ~Session() {}
-
-    [[nodiscard]] virtual bool ShouldCloseAfterResponse() const = 0;
-
-    [[nodiscard]] virtual const std::string& GetResponseData() const = 0;
 
     [[nodiscard]] virtual const std::string& GetName() const = 0;
 
     [[nodiscard]] virtual SessionType::Type GetType() const = 0;
-
-    void Close() {
-        socket.close();
-    }
 
     void UpdateLastActivityTime() {
         last_activity_time = time(nullptr);
@@ -48,16 +38,14 @@ public:
 
 public:
     bool available;
-    time_t last_activity_time;
-    std::shared_ptr<Config> config;
-    boost::asio::ip::tcp::socket socket;
+    time_t last_activity_time; /// TODO change to std::chrono::time_point
 };
 
 
-void LogSession(Event* event, const std::shared_ptr<Session>& session) {
-    LOG_INFO(event->GetName(), " on ", session->GetName(), "_remote_ep_", session->socket.remote_endpoint());
-}
-
-void LogSession(const std::shared_ptr<Session>& session, const std::string& message) {
-    LOG_INFO(session->GetName(), "_remote_ep_", session->socket.remote_endpoint(), ": ", message);
-}
+//void LogSession(Event* event, const std::shared_ptr<Session>& session) {
+//    LOG_INFO(event->GetName(), " on ", session->GetName(), "_remote_ep_", session->socket.remote_endpoint());
+//}
+//
+//void LogSession(const std::shared_ptr<Session>& session, const std::string& message) {
+//    LOG_INFO(session->GetName(), "_remote_ep_", session->socket.remote_endpoint(), ": ", message);
+//}
