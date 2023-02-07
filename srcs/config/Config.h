@@ -24,40 +24,40 @@
 #define DEFAULT_HANG_SESSION_TIMEOUT 10 // 10 seconds
 
 struct Location {
-    Location(std::string location, std::string root,
-             bool autoindex, std::string index,
+    Location(std::string location, std::optional<std::string> root,
+             bool autoindex, std::optional<std::string> index,
              std::unordered_set<Http::Method> available_methods,
-             std::string redirect);
+             std::optional<std::string> redirect);
 
     const std::string location;
 
-    const std::string root;
+    const std::optional<std::string> root;
 
-    const std::string full_path;
+    const std::optional<std::string> full_path;
 
     const bool autoindex;
 
-    const std::string index;
+    const std::optional<std::string> index;
 
     const std::unordered_set<Http::Method> available_methods;
 
-    const std::string redirect;
+    const std::optional<std::string> redirect;
 };
 
 struct ServerConfig {
     ServerConfig(std::string name, std::string host, unsigned short port,
-                 const std::unordered_map<unsigned int, std::string>& error_pages, int max_body_size,
+                 std::unordered_map<Http::Code, std::string> error_pages, int max_body_size,
                  int max_request_size,
                  int default_keep_alive_timeout_s, int max_keep_alive_timeout_s,
                  const std::vector<std::shared_ptr<Location>>& locations);
 
-    std::string name;
+    const std::string name;
 
     const std::string host;
 
     const unsigned short port;
 
-    std::unordered_map<unsigned int, std::string> error_pages;
+    const std::unordered_map<Http::Code, std::string> error_pages;
 
     unsigned int max_body_size;
 

@@ -5,6 +5,10 @@
 #include <boost/json/src.hpp>
 #include <fstream>
 
+struct RawErrorPage {
+    unsigned int code;
+    std::string path;
+};
 
 namespace {
     boost::json::value file_to_json(char const* filename) {
@@ -27,50 +31,62 @@ namespace {
     }
 
     template<class T>
-    T extract(const boost::json::object& obj, boost::json::string_view key, const T& default_value) {
-        try {
-            auto it = obj.find(key);
-            if (it == obj.end()) {
-                return default_value;
-            }
-            return boost::json::value_to<T>(obj.at(key));
+    T extract(boost::json::string_view key, const boost::json::object& obj) {
+        auto it = obj.find(key);
+        if (it == obj.end()) {
+            throw std::runtime_error("required field \"" + std::string(key) + "\" is missing");
         }
-        catch (const boost::system::system_error& e) {
-            throw std::runtime_error("Error in field \"" + std::string(key)+ "\"\n");
-        }
-        catch (const std::exception& e) {
-            throw std::runtime_error("Error in field \"" + std::string(key)+ "\"\n" + std::string(e.what()));
-        }
+        return boost::json::value_to<T>(it->value());
     }
 
     template<class T>
-    T extract(const boost::json::object& obj, boost::json::string_view key) {
-        try {
-            return boost::json::value_to<T>(obj.at(key));
+    T extract_soft(boost::json::string_view key, const boost::json::object& obj, const T& default_value) {
+        auto it = obj.find(key);
+        if (it == obj.end()) {
+            return default_value;
         }
-        catch (const boost::system::system_error& e) {
-            throw std::runtime_error("Error in field \"" + std::string(key)+ "\"\n");
-        }
-        catch (const std::exception& e) {
-            throw std::runtime_error("Error in field \"" + std::string(key)+ "\"\n" + std::string(e.what()));
-        }
+        return boost::json::value_to<T>(it->value());
     }
 
     template<class Container>
-    Container sequence_container_extract(const boost::json::object& obj, boost::json::string_view key) {
+    Container sequence_container_extract(boost::json::string_view key, const boost::json::object& obj) {
+        auto it = obj.find(key);
+        if (it == obj.end()) {
+            throw std::runtime_error("required field \"" + std::string(key) + "\" is missing");
+        }
+        const boost::json::array& arr = it->value().as_array();
+        Container res;
+        for (auto& arr_elem: arr) {
+            res.emplace_back(boost::json::value_to<typename Container::value_type>(arr_elem));
+        }
+        return res;
+    }
+
+    template<class Container>
+    Container sequence_container_extract_soft(boost::json::string_view key, const boost::json::object& obj,
+                                              const Container& default_value) {
+        auto it = obj.find(key);
+        if (it == obj.end()) {
+            return default_value;
+        }
+        const boost::json::array& arr = it->value().as_array();
+        Container res;
+        for (auto& arr_elem: arr) {
+            res.emplace_back(boost::json::value_to<typename Container::value_type>(arr_elem));
+        }
+        return res;
+    }
+
+    template<class F, class ...Args>
+    auto exceptions_wrapper(F f, boost::json::string_view key, Args... args) {
         try {
-            Container res;
-            const boost::json::array& arr = obj.at(key).as_array();
-            for (auto& arr_elem: arr) {
-                res.emplace_back(boost::json::value_to<typename Container::value_type>(arr_elem));
-            }
-            return res;
+            return f(key, args...);
         }
         catch (const boost::system::system_error& e) {
-            throw std::runtime_error("Error in field \"" + std::string(key)+ "\"\n");
+            throw std::runtime_error("Error in field \"" + std::string(key) + "\"\n");
         }
         catch (const std::exception& e) {
-            throw std::runtime_error("Error in field \"" + std::string(key)+ "\"\n" + std::string(e.what()));
+            throw std::runtime_error("Error in field \"" + std::string(key) + "\"\n" + std::string(e.what()));
         }
     }
 
@@ -105,6 +121,15 @@ namespace {
         }
         return methods;
     }
+
+    std::unordered_map<Http::Code, std::string>
+    ToErrorPages(std::vector<RawErrorPage>&& raw_error_pages) {
+        std::unordered_map<Http::Code, std::string> error_pages;
+        for (auto& raw_error_page: raw_error_pages) {
+            error_pages.emplace(Http::ToHttpCode(raw_error_page.code), std::move(raw_error_page.path));
+        }
+        return error_pages;
+    }
 }
 
 std::shared_ptr<Location>
@@ -112,48 +137,52 @@ tag_invoke(const boost::json::value_to_tag<std::shared_ptr<Location>>&, boost::j
     const boost::json::object& obj = json.as_object();
 
     return std::make_shared<Location>(
-            extract<std::string>(obj, "Location"),
-            extract<std::string>(obj, "Root"),
-            extract<bool>(obj, "Autoindex"),
-            extract<std::string>(obj, "Index"),
-            ToHandledMethods(sequence_container_extract<std::vector<std::string>>(obj, "AvailableMethods")),
-            extract<std::string>(obj, "Redirect"));
+            exceptions_wrapper(extract<std::string>, "Location", obj),
+            exceptions_wrapper(extract_soft<std::optional<std::string>>, "Root", obj, std::nullopt),
+            exceptions_wrapper(extract_soft<bool>, "Autoindex", obj, false),
+            exceptions_wrapper(extract_soft<std::optional<std::string>>, "Index", obj, std::nullopt),
+            ToHandledMethods(exceptions_wrapper(sequence_container_extract_soft<std::vector<std::string>>,
+                                                "AvailableMethods", obj, std::vector<std::string>())),
+            exceptions_wrapper(extract_soft<std::optional<std::string>>, "Redirect", obj, std::nullopt));
 }
 
-std::pair<unsigned int, std::string>
-tag_invoke(const boost::json::value_to_tag<std::pair<unsigned int, std::string>>&,
-           boost::json::value const& json) {
+RawErrorPage
+tag_invoke(const boost::json::value_to_tag<RawErrorPage>&, const boost::json::value& json) {
     const boost::json::object& obj = json.as_object();
 
-    return {extract<unsigned int>(obj, "Code"),
-            extract<std::string>(obj, "Path")};
+    return {exceptions_wrapper(extract<unsigned int>, "Code", obj),
+            exceptions_wrapper(extract<std::string>, "Path", obj)};
 }
 
 std::shared_ptr<ServerConfig>
-tag_invoke(const boost::json::value_to_tag<std::shared_ptr<ServerConfig>>&, boost::json::value const& json) {
+tag_invoke(const boost::json::value_to_tag<std::shared_ptr<ServerConfig>>&, const boost::json::value& json) {
     const boost::json::object& obj = json.as_object();
 
     return std::make_shared<ServerConfig>(
-            extract<std::string>(obj, "Name"),
-            extract<std::string>(obj, "Host"),
-            extract<unsigned short>(obj, "Port"),
-            extract<std::unordered_map<unsigned int, std::string>>(obj, "ErrorPages", {}),
-            extract<unsigned int>(obj, "MaxBodySize", DEFAULT_MAX_BODY_SIZE),
-            extract<unsigned int>(obj, "MaxRequestSize", DEFAULT_MAX_REQUEST_SIZE),
-            extract<unsigned int>(obj, "KeepAliveTimeout_s", DEFAULT_KEEP_ALIVE_TIMEOUT),
-            extract<unsigned int>(obj, "MaxKeepAliveTimeout_s", DEFAULT_MAX_KEEP_ALIVE_TIMEOUT),
-            sequence_container_extract<std::vector<std::shared_ptr<Location>>>(obj, "Locations"));
+            exceptions_wrapper(extract<std::string>, "Name", obj),
+            exceptions_wrapper(extract<std::string>, "Host", obj),
+            exceptions_wrapper(extract<unsigned short>, "Port", obj),
+            ToErrorPages(exceptions_wrapper(
+                    sequence_container_extract_soft<std::vector<RawErrorPage>>, "ErrorPages",
+                    obj, std::vector<RawErrorPage>())),
+            exceptions_wrapper(extract_soft<unsigned int>, "MaxBodySize", obj, DEFAULT_MAX_BODY_SIZE),
+            exceptions_wrapper(extract_soft<unsigned int>, "MaxRequestSize", obj, DEFAULT_MAX_REQUEST_SIZE),
+            exceptions_wrapper(extract_soft<unsigned int>, "KeepAliveTimeout_s", obj, DEFAULT_KEEP_ALIVE_TIMEOUT),
+            exceptions_wrapper(extract_soft<unsigned int>, "MaxKeepAliveTimeout_s", obj,
+                               DEFAULT_MAX_KEEP_ALIVE_TIMEOUT),
+            exceptions_wrapper(sequence_container_extract<std::vector<std::shared_ptr<Location>>>, "Locations", obj));
 }
 
 Config tag_invoke(const boost::json::value_to_tag<Config>&, const boost::json::value& json) {
     const boost::json::object& obj = json.as_object();
 
     return {
-            extract<unsigned int>(obj, "MaxSessionsNumber", DEFAULT_MAX_SESSIONS_NUMBER),
-            extract<unsigned int>(obj, "ReadBufferSize", DEFAULT_MAX_SESSIONS_NUMBER),
-            extract<unsigned int>(obj, "SessionsKillerDelay_s", DEFAULT_MAX_SESSIONS_NUMBER),
-            extract<unsigned int>(obj, "HangSessionTimeout_s", DEFAULT_MAX_SESSIONS_NUMBER),
-            PackToEndpoints(sequence_container_extract<std::vector<std::shared_ptr<ServerConfig>>>(obj, "Servers"))
+            exceptions_wrapper(extract_soft<unsigned int>, "MaxSessionsNumber", obj, DEFAULT_MAX_SESSIONS_NUMBER),
+            exceptions_wrapper(extract_soft<unsigned int>, "ReadBufferSize", obj, DEFAULT_MAX_SESSIONS_NUMBER),
+            exceptions_wrapper(extract_soft<unsigned int>, "SessionsKillerDelay_s", obj, DEFAULT_MAX_SESSIONS_NUMBER),
+            exceptions_wrapper(extract_soft<unsigned int>, "HangSessionTimeout_s", obj, DEFAULT_MAX_SESSIONS_NUMBER),
+            PackToEndpoints(exceptions_wrapper(
+                    sequence_container_extract<std::vector<std::shared_ptr<ServerConfig>>>, "Servers", obj))
     };
 }
 
@@ -163,6 +192,6 @@ Config ConfigParser::Parse(const char* path) {
         return boost::json::value_to<Config>(json);
     }
     catch (const std::exception& e) {
-        throw std::runtime_error("Parse config error:\n"+ std::string(e.what()));
+        throw std::runtime_error("Parse config error\n" + std::string(e.what()));
     }
 }

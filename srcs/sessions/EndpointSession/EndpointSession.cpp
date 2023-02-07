@@ -32,8 +32,8 @@ EndpointSession::HandleAccept(const std::shared_ptr<HttpSession>& http_session, 
 }
 
 void EndpointSession::AsyncAccept(const std::shared_ptr<HttpSession>& http_session) {
-    auto accept_lambda = [http_session, endpoint_session = this->shared_from_this()](auto&& PH1) {
-        return endpoint_session->HandleAccept(http_session, std::forward<decltype(PH1)>(PH1));
+    auto accept_lambda = [http_session, this](auto&& PH1) {
+        return HandleAccept(http_session, std::forward<decltype(PH1)>(PH1));
     };
     _acceptor.async_accept(http_session->GetSocketAsReference(), accept_lambda);
 }

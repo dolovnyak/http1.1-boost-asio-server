@@ -21,7 +21,7 @@ std::string StripString(const std::string& str) {
     if (start_it == str.cbegin() && end_it == str.crbegin())
         return str;
 
-    return std::string(start_it, end_it.base());
+    return {start_it, end_it.base()};
 }
 
 std::vector<std::string> SplitString(const std::string& str, const std::string& delimiters) {
@@ -63,6 +63,12 @@ std::string ToLower(const std::string& str) {
     return result;
 }
 
+std::string ToUpper(const std::string& str) {
+    std::string result;
+    std::transform(str.begin(), str.end(), std::back_inserter(result), std::toupper);
+    return result;
+}
+
 std::string GetCurrentDateTimeString() {
     time_t rawtime;
     time(&rawtime);
@@ -97,8 +103,8 @@ bool IsTchar(char c) {
 }
 
 bool IsTcharString(const std::string& str) {
-    for (char i : str) {
-        if (!IsTchar(i)) {
+    for (char c : str) {
+        if (!IsTchar(c)) {
             return false;
         }
     }
@@ -120,8 +126,8 @@ bool IsHexDigit(char c) {
 }
 
 bool IsHexDigitString(const std::string& str) {
-    for (size_t i = 0; i < str.size(); ++i) {
-        if (!IsHexDigit(str[i])) {
+    for (char c : str) {
+        if (!IsHexDigit(c)) {
             return false;
         }
     }
@@ -196,8 +202,8 @@ bool IsObsText(char c) {
 }
 
 bool IsFieldContent(const std::string& str) {
-    for (size_t i = 0; i < str.size(); ++i) {
-        if (!isprint(str[i]) && !IsObsText(str[i]) && str[i] != '\t') {
+    for (char c : str) {
+        if (!isprint(c) && !IsObsText(c) && c != '\t') {
             return false;
         }
     }
@@ -205,8 +211,8 @@ bool IsFieldContent(const std::string& str) {
 }
 
 bool IsPositiveNumberString(const std::string& str) {
-    for (size_t i = 0; i < str.size(); ++i) {
-        if (!isdigit(str[i])) {
+    for (char c : str) {
+        if (!isdigit(c)) {
             return false;
         }
     }

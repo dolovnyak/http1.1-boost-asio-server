@@ -43,7 +43,7 @@ public:
         keep_alive ? headers.emplace_back("Connection", "keep-alive")
                    : headers.emplace_back("Connection", "close");
 
-        return {http_version, Http::Code::OK, "OK", headers, body};
+        return {http_version, Http::Code::Ok, "OK", headers, body};
     }
 
     Response(Http::Version http_version,
