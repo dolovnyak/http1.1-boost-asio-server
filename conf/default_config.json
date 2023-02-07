@@ -7,7 +7,7 @@
     {
       "Name": "kabun1",
       "Host": "127.0.0.1",
-      "Port": 80,
+      "Port": 1025,
       "MaxBodySize" : 1000000,
       "MaxRequestSize" : 100000000,
       "KeepAliveTimeout_s" : 30,
@@ -26,8 +26,9 @@
       ]
     },
     {
-      "Port": 80,
+      "Port": 1025,
       "Name": "kabun2",
+      "Host": "127.0.0.1",
       "MaxBodySize": 8096,
       "MaxRequestSize": 16384,
       "ErrorPages": [

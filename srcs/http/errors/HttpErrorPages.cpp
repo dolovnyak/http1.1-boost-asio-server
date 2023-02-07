@@ -354,11 +354,11 @@ const std::string& GetHttpErrorPageByCode(Http::Code code) {
 }
 
 std::string GetHttpErrorPageByCode(Http::Code code, const std::shared_ptr<ServerConfig>& server_config) {
-    const std::unordered_map<unsigned int, std::string>::iterator& page_path_it = server_config->error_pages.find(static_cast<unsigned int>(code));
+    auto it = server_config->error_pages.find(code);
 
-    if (page_path_it != server_config->error_pages.end()) {
+    if (it != server_config->error_pages.end()) {
         std::string error_page;
-        if (ReadFile(page_path_it->second, error_page)) {
+        if (ReadFile(it->second, error_page)) {
             return error_page;
         }
     }

@@ -52,7 +52,7 @@ namespace Http {
     };
 
     enum class Code {
-        OK = 200,
+        Ok = 200,
         BadRequest = 400,
         NotFound = 404,
         MethodNotAllowed = 405,
@@ -61,10 +61,11 @@ namespace Http {
         InternalServerError = 500,
         NotImplemented = 501,
         HttpVersionNotSupported = 505,
-        OutOfRange = 600
     };
 
     Method ToHttpMethod(const std::string& method);
+
+    Code ToHttpCode(unsigned int code);
 
     const std::string& ToString(Http::Version http_version);
 }

@@ -25,8 +25,6 @@ public:
 
     void HandleAccept(const std::shared_ptr<HttpSession>& http_session, const boost::system::error_code& err);
 
-    ~EndpointSession() {}
-
     [[nodiscard]] const std::string& GetName() const override {
         static std::string kName = "EndpointSession";
         return kName;
