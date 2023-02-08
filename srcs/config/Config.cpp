@@ -43,12 +43,10 @@ std::shared_ptr<ServerConfig> EndpointConfig::GetDefaultServer() const {
 }
 
 Config::Config(unsigned int max_sessions_number,
-               unsigned int read_buffer_size,
                unsigned int sessions_killer_delay_s,
                unsigned int hang_session_timeout_s,
                const std::vector<std::shared_ptr<EndpointConfig>>& endpoint_configs)
         : max_sessions_number(max_sessions_number),
-          read_buffer_size(read_buffer_size),
           sessions_killer_delay_s(sessions_killer_delay_s),
           hang_session_timeout_s(hang_session_timeout_s),
           endpoint_configs(endpoint_configs) {}

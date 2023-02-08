@@ -20,7 +20,11 @@ public:
             : _config(config), _io_context() {
 
         for (auto& endpoint_config: _config->endpoint_configs) {
-            _endpoint_sessions.emplace_back(EndpointSession::CreateAsPtr(config, endpoint_config, _io_context));
+            auto endpoint_session = EndpointSession::CreateAsPtr(config, endpoint_config, _io_context);
+            _endpoint_sessions.emplace_back(endpoint_session);
+
+            /// start accepting new connections (separated with constructor because of enable_shared_from_this restrictions
+            endpoint_session->AsyncAccept(HttpSession::CreateAsPtr(config, endpoint_config, _io_context));
         }
 
         if (_endpoint_sessions.empty()) {

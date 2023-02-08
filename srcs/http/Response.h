@@ -23,7 +23,7 @@ public:
         std::vector<Http::Header> headers = {
                 Http::Header("Content-Type", "text/html, charset=utf-8"),
                 Http::Header("Content-Length", std::to_string(body.size())),
-                Http::Header("Server", WEBSERVER_NAME),
+                Http::Header("Server", server_config->name),
                 Http::Header("Date", GetCurrentDateTimeString()),
                 Http::Header("Connection", "close")
         };
@@ -36,7 +36,7 @@ public:
         std::vector<Http::Header> headers = {
                 Http::Header("Content-Type", "text/html, charset=utf-8"),
                 Http::Header("Content-Length", std::to_string(body.size())),
-                Http::Header("Server", WEBSERVER_NAME),
+                Http::Header("Server", server_config->name),
                 Http::Header("Date", GetCurrentDateTimeString())
         };
 

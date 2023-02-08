@@ -178,7 +178,6 @@ Config tag_invoke(const boost::json::value_to_tag<Config>&, const boost::json::v
 
     return {
             exceptions_wrapper(extract_soft<unsigned int>, "MaxSessionsNumber", obj, DEFAULT_MAX_SESSIONS_NUMBER),
-            exceptions_wrapper(extract_soft<unsigned int>, "ReadBufferSize", obj, DEFAULT_MAX_SESSIONS_NUMBER),
             exceptions_wrapper(extract_soft<unsigned int>, "SessionsKillerDelay_s", obj, DEFAULT_MAX_SESSIONS_NUMBER),
             exceptions_wrapper(extract_soft<unsigned int>, "HangSessionTimeout_s", obj, DEFAULT_MAX_SESSIONS_NUMBER),
             PackToEndpoints(exceptions_wrapper(
