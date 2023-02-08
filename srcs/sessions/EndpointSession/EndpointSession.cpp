@@ -21,19 +21,20 @@ EndpointSession::EndpointSession(const std::shared_ptr<Config>& config,
     _acceptor.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
     _acceptor.bind(_endpoint);
     _acceptor.listen();
-    AsyncAccept(HttpSession::CreateAsPtr(config, endpoint_config, io_context));
 }
 
 void
-EndpointSession::HandleAccept(const std::shared_ptr<HttpSession>& http_session, const boost::system::error_code& err) {
-    /// TODO start reading on http_session
-    LOG_DEBUG("Accept new");
-    AsyncAccept(HttpSession::CreateAsPtr(_config, _endpoint_config, _io_context));
+EndpointSession::HandleAccept(const std::shared_ptr<HttpSession>& http_session, const boost::system::error_code& error) {
+    if (!error) {
+        LOG_DEBUG("Accept new http session");
+        http_session->AsyncRead();
+        AsyncAccept(HttpSession::CreateAsPtr(_config, _endpoint_config, _io_context));
+    }
 }
 
 void EndpointSession::AsyncAccept(const std::shared_ptr<HttpSession>& http_session) {
-    auto accept_lambda = [http_session, this](auto&& PH1) {
-        return HandleAccept(http_session, std::forward<decltype(PH1)>(PH1));
+    auto accept_lambda = [http_session, this_ptr = shared_from_this()](const boost::system::error_code& err) {
+        return this_ptr->HandleAccept(http_session, err);
     };
     _acceptor.async_accept(http_session->GetSocketAsReference(), accept_lambda);
 }

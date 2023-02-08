@@ -1,5 +1,7 @@
 #include "RequestHandler.h"
 
+
+
 void RequestHandler::HandleRouteLocation() {
     ///TODO
 //    /// для _endpoint_config.
@@ -40,7 +42,7 @@ void RequestHandler::HandleRouteLocation() {
 }
 
 void RequestHandler::HandleConnectionHeader() {
-    /// TODO:w
+    /// TODO
 //    auto it = headers.find(CONNECTION);
 //
 //    if (it != headers.end()) {
@@ -153,8 +155,6 @@ void RequestHandler::HandleHttpMethod() {
 
 void RequestHandler::Handle() {
     /// never change order of these methods
-
-    /// this http_method set location for request or throw exception
     HandleRouteLocation();
     HandleContentTypeHeader();
     HandleContentLengthHeader();
@@ -165,3 +165,5 @@ void RequestHandler::Handle() {
     HandleCookiesHeader();
     HandleHttpMethod();
 }
+
+RequestHandler::RequestHandler(const std::shared_ptr<Request>& request) : _request(request){ }

@@ -2,6 +2,8 @@
 
 #include "Request.h"
 #include "RequestParser.h"
+#include "RequestHandler.h"
+#include "Response.h"
 #include "Session.h"
 #include "utilities.h"
 
@@ -33,7 +35,9 @@ private:
 
     unsigned int _keep_alive_timeout;
 
-    HttpSessionState _state; /// TODO maybe del
+    std::array<char, READ_BUFFER_SIZE> _buffer;
+
+    HttpSessionState _state;
 
 public:
     static std::shared_ptr<HttpSession> CreateAsPtr(
@@ -43,7 +47,13 @@ public:
 
     [[nodiscard]] boost::asio::ip::tcp::socket& GetSocketAsReference();
 
-    void HandleRead(const boost::system::error_code& e, std::size_t bytes_transferred);
+    void AsyncRead();
+
+    void AsyncWrite(const std::shared_ptr<Response>& response);
+
+    void HandleRead(const boost::system::error_code& error, std::size_t bytes_transferred);
+
+    void HandleWrite(const boost::system::error_code& error, size_t bytes_transferred);
 
     [[nodiscard]] SessionType::Type GetType() const override {
         return SessionType::Http;
@@ -59,16 +69,3 @@ private:
                 const std::shared_ptr<EndpointConfig>& endpoint_config,
                 boost::asio::io_context& io_context);
 };
-
-
-//void SendDataToClient(const std::string& processed_response, bool should_keep_alive) {
-////        this->response = processed_response;
-//    this->_keep_alive = should_keep_alive;
-//    _state = HttpSessionState::ResponseToClient;
-//    /// TODO
-//}
-//
-//void Clear() {
-////        response.clear();
-//    _state = HttpSessionState::ReadRequest;
-//}

@@ -8,10 +8,9 @@
 #include <unordered_set>
 #include <unordered_map>
 
-#define WEBSERVER_NAME "Webserver-42"
+#define READ_BUFFER_SIZE 8192
 
 #define DEFAULT_MAX_SESSIONS_NUMBER 1024
-#define DEFAULT_READ_BUFFER_SIZE 4096
 
 #define DEFAULT_SESSION_KILLER_DELAY 2 // 2 seconds
 #define DEFAULT_CORE_TIMEOUT 1 // 1 seconds
@@ -90,14 +89,11 @@ public:
 class Config {
 public:
     Config(unsigned int max_sessions_number,
-           unsigned int read_buffer_size,
            unsigned int sessions_killer_delay_s,
            unsigned int hang_session_timeout_s,
            const std::vector<std::shared_ptr<EndpointConfig>>& endpoint_configs);
 
     const unsigned int max_sessions_number;
-
-    const unsigned int read_buffer_size;
 
     const unsigned int sessions_killer_delay_s;
 

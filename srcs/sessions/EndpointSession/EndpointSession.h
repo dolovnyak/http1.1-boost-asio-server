@@ -23,7 +23,7 @@ public:
 
     void AsyncAccept(const std::shared_ptr<HttpSession>& http_session);
 
-    void HandleAccept(const std::shared_ptr<HttpSession>& http_session, const boost::system::error_code& err);
+    void HandleAccept(const std::shared_ptr<HttpSession>& http_session, const boost::system::error_code& error);
 
     [[nodiscard]] const std::string& GetName() const override {
         static std::string kName = "EndpointSession";

@@ -56,7 +56,7 @@ private:
 public:
     RequestParser(const std::shared_ptr<EndpointConfig>& endpoint_config);
 
-    RequestParseResult Parse(const std::shared_ptr<std::string>& raw_request_part);
+    RequestParseResult Parse(std::string_view raw_request_part);
 
 private:
     RequestParseState ParseFirstLineHandler();

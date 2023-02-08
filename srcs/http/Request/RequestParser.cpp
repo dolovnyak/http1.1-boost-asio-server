@@ -252,8 +252,8 @@ RequestParseState RequestParser::ParseFirstLineHandler() {
     return RequestParseState::HandleHeader;
 }
 
-RequestParseResult RequestParser::Parse(const std::shared_ptr<std::string>& raw_request_part) {
-    _raw_request += *raw_request_part;
+RequestParseResult RequestParser::Parse(std::string_view raw_request_part) {
+    _raw_request += raw_request_part;
     if (_raw_request.size() > static_cast<size_t>(GetServerConfig()->max_request_size)) {
         throw PayloadTooLarge("Payload too large", GetServerConfig());
     }
