@@ -8,9 +8,6 @@
 ## Config:
 - ### Config common fields:
   * **MaxSessionsNumber** `default: 1024` - how many simultaneous connections the server can handle. (the user must take into account the limitation on sockets in the operating system)
-  * **ReadBufferSize** `default: 4096` - buffer size when server is reading from socket.
-  * **CoreTimeous_s** `default: 1 s` - timeout for poll or epoll when event queue is empty. (if queue isn't empty, timeout is 0) 
-  * **SessionsKillerDelay_s** `default: 2 s` - delay for task who kills hung or keep-alive sessions by timeout. It's recommended to set it larger and multiple of CoreTimeout_s because otherwise delay may be longer.
   * **ServerInstances** `required at least one server` - array of server instances.
 
 - ### Server instanse fields:
