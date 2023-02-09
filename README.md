@@ -42,7 +42,7 @@ If several servers listen on the same host:port, then the first one in the confi
 * If the priority is different, then locations with a higher priority will always be selected first, for example, if you set the location /images/cat.jpg with priority 1 and /images with priority 2, then location for /images/cat.jpg will never selected.
 
 ## Intersected location fields rules:
-There are 4 location fields that cause different behavior and conflict with each other. It's `Cgi-pass`, `Index`, `Redirect` and `Autoindex`. For now we will never allow more than one of them to be enabled at the same location.
+There are 4 location fields that cause different behavior and conflict with each other. It's `Cgi-pass`, `Index`, `Return` and `Autoindex`. For now we will never allow more than one of them to be enabled at the same location.
 
 ------------------------------------------------
 ------------------------------------------------
