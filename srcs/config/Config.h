@@ -22,25 +22,46 @@
 #define DEFAULT_MAX_KEEP_ALIVE_TIMEOUT 1800 // 30 minutes
 #define DEFAULT_HANG_SESSION_TIMEOUT 10 // 10 seconds
 
+enum class LocationType {
+    Path,
+    Prefix
+};
+
+struct HttpReturn {
+    Http::Code code;
+    std::optional<std::string> redirect;
+};
+
 struct Location {
-    Location(std::string location, std::optional<std::string> root,
-             bool autoindex, std::optional<std::string> index,
+    Location(std::string location,
+             std::optional<std::string> root,
+             std::optional<std::string> cgi_path,
+             std::optional<std::string> index,
+             std::optional<HttpReturn> http_return,
+             bool autoindex,
              std::unordered_set<Http::Method> available_methods,
-             std::optional<std::string> redirect);
+             unsigned int priority);
 
     const std::string location;
 
     const std::optional<std::string> root;
 
-    const std::optional<std::string> full_path;
-
-    const bool autoindex;
+    const std::optional<std::string> cgi_path;
 
     const std::optional<std::string> index;
 
+    const std::optional<HttpReturn> http_return;
+
+    const bool autoindex;
+
     const std::unordered_set<Http::Method> available_methods;
 
-    const std::optional<std::string> redirect;
+    const unsigned int priority;
+
+    LocationType GetType();
+
+private:
+    LocationType _type;
 };
 
 struct ServerConfig {
@@ -89,15 +110,9 @@ public:
 class Config {
 public:
     Config(unsigned int max_sessions_number,
-           unsigned int sessions_killer_delay_s,
-           unsigned int hang_session_timeout_s,
            const std::vector<std::shared_ptr<EndpointConfig>>& endpoint_configs);
 
     const unsigned int max_sessions_number;
-
-    const unsigned int sessions_killer_delay_s;
-
-    const unsigned int hang_session_timeout_s;
 
     const std::vector<std::shared_ptr<EndpointConfig>> endpoint_configs;
 };

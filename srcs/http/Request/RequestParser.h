@@ -4,6 +4,8 @@
 
 #include <optional>
 
+namespace Http {
+
 enum class RequestParseStatus {
     Finish = 0,
     WaitMoreData,
@@ -32,26 +34,26 @@ private:
 
     std::optional<std::shared_ptr<ServerConfig>> _matched_server_config;
 
-    RequestParseState _parse_state;
+    RequestParseState _parse_state = RequestParseState::HandleFirstLine;
 
-    size_t _parsed_size;
+    size_t _parsed_size{0};
 
-    size_t _chunk_body_size;
+    size_t _chunk_body_size{0};
 
     /// TODO limit size on this and on _http_headers and on body
-    std::string _raw_request;
+    std::string _raw_request{};
 
     Http::Method _http_method;
 
     Http::Version _http_version;
 
-    std::string _body;
+    std::string _body{};
 
-    std::unordered_map<std::string, std::vector<std::string>> _http_headers;
+    std::unordered_map<std::string, std::vector<std::string>> _http_headers{};
 
     RequestTarget _target;
 
-    std::optional<size_t> _content_length;
+    std::optional<size_t> _content_length{std::nullopt};
 
 public:
     RequestParser(const std::shared_ptr<EndpointConfig>& endpoint_config);
@@ -59,6 +61,7 @@ public:
     RequestParseResult Parse(std::string_view raw_request_part);
 
 private:
+
     RequestParseState ParseFirstLineHandler();
 
     RequestParseState ParseHeaderHandler();
@@ -82,3 +85,4 @@ private:
     void Reset();
 };
 
+}

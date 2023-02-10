@@ -18,7 +18,8 @@ add_library(${WS_LIB}
         srcs/sessions/EndpointSession/EndpointSession.cpp
         srcs/http/Request/RequestParser.cpp
         srcs/http/Request/RequestHandler.cpp
-        srcs/http/errors/HttpErrorPages.cpp
+        srcs/http/Request/CgiHandler.cpp
+        srcs/http/errors/ErrorPages.cpp
         srcs/http/Http.cpp
         srcs/utilities/utilities.cpp
         srcs/utilities/Logging.cpp
@@ -30,8 +31,6 @@ target_include_directories(${WS_LIB} PUBLIC
         srcs/utilities
         srcs/cgi
         srcs/webserver
-        srcs/events
-        srcs/core/modules
         srcs/sessions
         srcs/sessions/HttpSession
         srcs/sessions/EndpointSession

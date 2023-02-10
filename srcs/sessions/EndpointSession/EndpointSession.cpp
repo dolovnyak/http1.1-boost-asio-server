@@ -16,7 +16,6 @@ EndpointSession::EndpointSession(const std::shared_ptr<Config>& config,
           _acceptor(io_context),
           _endpoint(boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(endpoint_config->host),
                                                    endpoint_config->port)) {
-
     _acceptor.open(_endpoint.protocol());
     _acceptor.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
     _acceptor.bind(_endpoint);
@@ -27,7 +26,7 @@ void
 EndpointSession::HandleAccept(const std::shared_ptr<HttpSession>& http_session, const boost::system::error_code& error) {
     if (!error) {
         LOG_DEBUG("Accept new http session");
-        http_session->AsyncRead();
+        http_session->AsyncReadRequest();
         AsyncAccept(HttpSession::CreateAsPtr(_config, _endpoint_config, _io_context));
     }
 }

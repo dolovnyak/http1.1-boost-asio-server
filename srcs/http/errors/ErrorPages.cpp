@@ -1,4 +1,4 @@
-#include "HttpErrorPages.h"
+#include "ErrorPages.h"
 
 #include <unordered_map>
 
@@ -219,37 +219,6 @@ namespace {
             "</body>" CRLF
             "</html>" CRLF;
 
-
-    const std::string k495 =
-            "<html>" CRLF
-            "<head><title>400 The SSL certificate error</title></head>" CRLF
-            "<body>" CRLF
-            "<center><h1>400 Bad Request</h1></center>" CRLF
-            "<center>The SSL certificate error</center>" CRLF
-            "</body>" CRLF
-            "</html>" CRLF;
-
-
-    const std::string k496 =
-            "<html>" CRLF
-            "<head><title>400 No required SSL certificate was sent</title></head>" CRLF
-            "<body>" CRLF
-            "<center><h1>400 Bad Request</h1></center>" CRLF
-            "<center>No required SSL certificate was sent</center>" CRLF
-            "</body>" CRLF
-            "</html>" CRLF;
-
-
-    const std::string k497 =
-            "<html>" CRLF
-            "<head><title>400 The plain HTTP request was sent to HTTPS port</title></head>" CRLF
-            "<body>" CRLF
-            "<center><h1>400 Bad Request</h1></center>" CRLF
-            "<center>The plain HTTP request was sent to HTTPS port</center>" CRLF
-            "</body>" CRLF
-            "</html>" CRLF;
-
-
     const std::string k500 =
             "<html>" CRLF
             "<head><title>500 Internal Server Error</title></head>" CRLF
@@ -313,47 +282,50 @@ namespace {
             "</html>" CRLF;
 }
 
+namespace Http {
 
 const std::string& GetHttpErrorPageByCode(Http::Code code) {
-    static std::unordered_map<unsigned int, std::string> error_pages = {
-            {400, k400},
-            {401, k401},
-            {402, k402},
-            {403, k403},
-            {404, k404},
-            {405, k405},
-            {406, k406},
-            {408, k408},
-            {409, k409},
-            {410, k410},
-            {411, k411},
-            {412, k412},
-            {413, k413},
-            {414, k414},
-            {415, k415},
-            {416, k416},
-            {421, k421},
-            {429, k429},
-            {494, k494},
-            {495, k495},
-            {496, k496},
-            {497, k497},
-            {500, k500},
-            {501, k501},
-            {502, k502},
-            {503, k503},
-            {504, k504},
-            {505, k505},
-            {507, k507}
+    static std::unordered_map<Http::Code, std::string> error_pages = {
+            {Http::Code::MovedPermanently, k301},
+            {Http::Code::Found, k302},
+            {Http::Code::SeeOther, k303},
+            {Http::Code::TemporaryRedirect, k307},
+            {Http::Code::PermanentRedirect, k308},
+            {Http::Code::BadRequest, k400},
+            {Http::Code::AuthorizationRequired, k401},
+            {Http::Code::PaymentRequired, k402},
+            {Http::Code::Forbidden, k403},
+            {Http::Code::NotFound, k404},
+            {Http::Code::MethodNotAllowed, k405},
+            {Http::Code::NotAcceptable, k406},
+            {Http::Code::RequestTimeout, k408},
+            {Http::Code::Conflict, k409},
+            {Http::Code::Gone, k410},
+            {Http::Code::LengthRequired, k411},
+            {Http::Code::PreconditionFailed, k412},
+            {Http::Code::PayloadTooLarge, k413},
+            {Http::Code::UriTooLarge, k414},
+            {Http::Code::UnsupportedMedia, k415},
+            {Http::Code::RequestedRangeNotSatisfiable, k416},
+            {Http::Code::MisdirectedRequest, k421},
+            {Http::Code::TooManyRequests, k429},
+            {Http::Code::HeaderOrCookieTooLarge, k494},
+            {Http::Code::InternalServerError, k500},
+            {Http::Code::NotImplemented, k501},
+            {Http::Code::BadGateway, k502},
+            {Http::Code::TemporarilyUnavailable, k503},
+            {Http::Code::GatewayTimeout, k504},
+            {Http::Code::HttpVersionNotSupported, k505},
+            {Http::Code::InsufficientStorage, k507}
     };
-    const std::unordered_map<unsigned int, std::string>::iterator& it = error_pages.find(static_cast<unsigned int>(code));
+    auto it = error_pages.find(code);
     if (it != error_pages.end()) {
         return it->second;
     }
     throw std::logic_error("Unknown http error code");
 }
 
-std::string GetHttpErrorPageByCode(Http::Code code, const std::shared_ptr<ServerConfig>& server_config) {
+std::string GetErrorPageByCode(Http::Code code, const std::shared_ptr<ServerConfig>& server_config) {
     auto it = server_config->error_pages.find(code);
 
     if (it != server_config->error_pages.end()) {
@@ -364,4 +336,6 @@ std::string GetHttpErrorPageByCode(Http::Code code, const std::shared_ptr<Server
     }
 
     return GetHttpErrorPageByCode(code);
+}
+
 }

@@ -8,6 +8,8 @@
 #include <utility>
 #include <vector>
 
+namespace Http {
+
 struct RequestTarget {
     std::string path;
     std::string directory_path;
@@ -56,3 +58,5 @@ public:
 
     RequestTarget target;
 };
+
+}

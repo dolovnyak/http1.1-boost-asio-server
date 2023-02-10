@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Http.h"
-#include "HttpErrorPages.h"
+#include "ErrorPages.h"
 
 /// У респонса должен быть набор базовых хедеров:
 /// Date
@@ -10,40 +10,53 @@
 /// Content-Length
 /// Connection: (keep-alive или close)
 
-/// При error response все есть внутри кроме имени сервера, его надо пробрасывать.
-
-/// у респонса будет конструктор, который будет принимать статус ответа, тайтл, вектор хедеров и тело.
+namespace Http {
 
 class Response {
 public:
-    static std::shared_ptr<Response> MakeErrorResponse(Http::Code error_code, const std::string& error_title,
-                                      const std::shared_ptr<ServerConfig>& server_config) {
-
-        std::string body = GetHttpErrorPageByCode(error_code, server_config);
-        std::vector<Http::Header> headers = {
-                Http::Header("Content-Type", "text/html, charset=utf-8"),
-                Http::Header("Content-Length", std::to_string(body.size())),
-                Http::Header("Server", server_config->name),
-                Http::Header("Date", GetCurrentDateTimeString()),
-                Http::Header("Connection", "close")
-        };
-
-        return std::make_shared<Response>(Http::Version::Http1_1, error_code, error_title, headers, body);
+    static std::shared_ptr<Response> MakeErrorResponse(Http::Code error_code, const std::string& title,
+                                                       const std::shared_ptr<ServerConfig>& server_config,
+                                                       const std::vector<Http::Header>& additional_headers) {
+        return MakeResponse(error_code, title, GetErrorPageByCode(error_code, server_config),
+                            server_config, additional_headers, false);
     }
 
-    static Response MakeOkResponse(Http::Version http_version, const std::string& body,
-                                   const std::shared_ptr<ServerConfig>& server_config, bool keep_alive) {
+    static std::shared_ptr<Response> MakeSuccessResponse(Http::Code code, const std::string& body,
+                                                  const std::shared_ptr<ServerConfig>& server_config,
+                                                  const std::vector<Http::Header>& additional_headers,
+                                                  bool keep_alive) {
+        return MakeResponse(code, ToString(code), body, server_config, additional_headers, keep_alive);
+    }
+
+    static std::shared_ptr<Response> MakeRedirectResponse(Http::Code code,
+                                                         const std::shared_ptr<ServerConfig>& server_config,
+                                                         std::optional<std::string> redirect,
+                                                         bool keep_alive) {
+        std::vector<Header> headers;
+        if (redirect.has_value()) {
+            headers.emplace_back("Location", redirect.value());
+        }
+        return MakeResponse(code, ToString(code), "", server_config, headers, keep_alive);
+    }
+
+    static std::shared_ptr<Response> MakeResponse(Http::Code code, const std::string& title, const std::string& body,
+                                                  const std::shared_ptr<ServerConfig>& server_config,
+                                                  const std::vector<Http::Header>& additional_headers,
+                                                  bool keep_alive) {
         std::vector<Http::Header> headers = {
                 Http::Header("Content-Type", "text/html, charset=utf-8"),
                 Http::Header("Content-Length", std::to_string(body.size())),
                 Http::Header("Server", server_config->name),
                 Http::Header("Date", GetCurrentDateTimeString())
         };
+        for (auto& header: additional_headers) {
+            headers.emplace_back(header);
+        }
 
         keep_alive ? headers.emplace_back("Connection", "keep-alive")
                    : headers.emplace_back("Connection", "close");
 
-        return {http_version, Http::Code::Ok, "OK", headers, body};
+        return std::make_shared<Response>(Http::Version::Http1_1, code, title, headers, body);
     }
 
     Response(Http::Version http_version,
@@ -61,3 +74,5 @@ public:
 
     std::string response;
 };
+
+}
