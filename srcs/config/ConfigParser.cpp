@@ -133,13 +133,10 @@ namespace {
 
     std::vector<std::shared_ptr<Location>> ToSortedLocations(std::vector<std::shared_ptr<Location>>&& locations) {
         auto compare = [](const std::shared_ptr<Location>& left, const std::shared_ptr<Location>& right) {
-            if (left->priority > right->priority) {
-                return true;
-            }
             if (left->GetType() == LocationType::Prefix) {
-                return true;
+                return false;
             }
-            return false;
+            return true;
         };
         std::sort(locations.begin(), locations.end(), compare);
         return locations;
@@ -168,8 +165,7 @@ tag_invoke(const boost::json::value_to_tag<std::shared_ptr<Location>>&, boost::j
             exceptions_wrapper(extract_soft<std::optional<HttpReturn>>, "Return", obj, std::nullopt),
             exceptions_wrapper(extract_soft<bool>, "Autoindex", obj, false),
             ToHandledMethods(exceptions_wrapper(sequence_container_extract_soft<std::vector<std::string>>,
-                                                "AvailableMethods", obj, std::vector<std::string>())),
-            exceptions_wrapper(extract_soft<int>, "Priority", obj, 0));
+                                                "AvailableMethods", obj, std::vector<std::string>())));
 }
 
 RawErrorPage

@@ -39,8 +39,7 @@ struct Location {
              std::optional<std::string> index,
              std::optional<HttpReturn> http_return,
              bool autoindex,
-             std::unordered_set<Http::Method> available_methods,
-             unsigned int priority);
+             std::unordered_set<Http::Method> available_methods);
 
     const std::string location;
 
@@ -55,8 +54,6 @@ struct Location {
     const bool autoindex;
 
     const std::unordered_set<Http::Method> available_methods;
-
-    const unsigned int priority;
 
     LocationType GetType();
 

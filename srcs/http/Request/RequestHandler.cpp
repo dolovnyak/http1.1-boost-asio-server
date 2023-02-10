@@ -29,7 +29,7 @@ void RequestHandler::HandleRouteLocation() {
                 }
 
                 case LocationType::Path: {
-                    if (path.compare(0, path_len, current_location->location)) {
+                    if (path.compare(0, path_len, current_location->location) == 0) {
                         _matched_location = current_location;
                         return;
                     }

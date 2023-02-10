@@ -6,8 +6,8 @@
       "Name": "kabun1",
       "Host": "0.0.0.0",
       "Port": 1025,
-      "MaxBodySize" : 1000000,
-      "MaxRequestSize" : 100000000,
+      "MaxBodySize" : 10000,
+      "MaxRequestSize" : 1000000,
       "KeepAliveTimeout_s" : 30,
       "MaxKeepAliveTimeout_s" : 1800,
       "Locations": [
@@ -16,9 +16,7 @@
           "Root": "/Users/dolov/Desktop/Projects/webserver-42/examples/YoupiBanane",
           "Autoindex": false,
           "Index": "index.html",
-          "AvailableMethods": [
-            "GET"
-          ]
+          "AvailableMethods": ["GET"]
         },
         {
           "Location": "/put_test",
@@ -45,7 +43,7 @@
         {
           "Location": "/directory/",
           "Root": "/Users/dolov/Desktop/Projects/webserver-42/examples/YoupiBanane",
-          "Autoindex": true ,
+          "Index": "youpi.bad_extension",
           "MaxBodySize": 100,
           "AvailableMethods": [
             "POST"
@@ -53,8 +51,6 @@
         }
       ]
     },
-
-
     {
       "Port": 1026,
       "Name": "kabun2",
