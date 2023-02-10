@@ -78,6 +78,16 @@ std::string GetCurrentDateTimeString() {
     return {buffer};
 }
 
+std::string UnitePaths(const std::string& path1, const std::string& path2) {
+    if (path1.back() == '/' && path2.front() == '/') {
+        return path1.substr(0, path1.size() - 1) + path2;
+    }
+    else if (path1.back() != '/' && path2.front() != '/') {
+        return path1 + "/" + path2;
+    }
+    return path1 + path2;
+}
+
 int ParseInt(const std::string& value, int base) {
     return std::stoi(value, nullptr, base);
 }
