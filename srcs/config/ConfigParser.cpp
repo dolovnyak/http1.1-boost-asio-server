@@ -130,6 +130,30 @@ namespace {
         }
         return error_pages;
     }
+
+    std::vector<std::shared_ptr<Location>> ToSortedLocations(std::vector<std::shared_ptr<Location>>&& locations) {
+        auto compare = [](const std::shared_ptr<Location>& left, const std::shared_ptr<Location>& right) {
+            if (left->priority > right->priority) {
+                return true;
+            }
+            if (left->GetType() == LocationType::Prefix) {
+                return true;
+            }
+            return false;
+        };
+        std::sort(locations.begin(), locations.end(), compare);
+        return locations;
+    }
+}
+
+HttpReturn tag_invoke(const boost::json::value_to_tag<HttpReturn>&, boost::json::value const& json) {
+    const boost::json::object& obj = json.as_object();
+    unsigned int http_code = exceptions_wrapper(extract<unsigned int>, "Code", obj);
+    std::optional<std::string> redirect = exceptions_wrapper(extract_soft<std::optional<std::string>>, "Redirect", obj, std::nullopt);
+    if (redirect.has_value() && (http_code < 300 || http_code > 399)) {
+        throw std::runtime_error("redirect field only for redirect codes");
+    }
+    return {Http::ToHttpCode(http_code), redirect};
 }
 
 std::shared_ptr<Location>
@@ -139,11 +163,13 @@ tag_invoke(const boost::json::value_to_tag<std::shared_ptr<Location>>&, boost::j
     return std::make_shared<Location>(
             exceptions_wrapper(extract<std::string>, "Location", obj),
             exceptions_wrapper(extract_soft<std::optional<std::string>>, "Root", obj, std::nullopt),
-            exceptions_wrapper(extract_soft<bool>, "Autoindex", obj, false),
+            exceptions_wrapper(extract_soft<std::optional<std::string>>, "Cgi-path", obj, std::nullopt),
             exceptions_wrapper(extract_soft<std::optional<std::string>>, "Index", obj, std::nullopt),
+            exceptions_wrapper(extract_soft<std::optional<HttpReturn>>, "Return", obj, std::nullopt),
+            exceptions_wrapper(extract_soft<bool>, "Autoindex", obj, false),
             ToHandledMethods(exceptions_wrapper(sequence_container_extract_soft<std::vector<std::string>>,
                                                 "AvailableMethods", obj, std::vector<std::string>())),
-            exceptions_wrapper(extract_soft<std::optional<std::string>>, "Redirect", obj, std::nullopt));
+            exceptions_wrapper(extract_soft<int>, "Priority", obj, 0));
 }
 
 RawErrorPage
@@ -170,7 +196,8 @@ tag_invoke(const boost::json::value_to_tag<std::shared_ptr<ServerConfig>>&, cons
             exceptions_wrapper(extract_soft<unsigned int>, "KeepAliveTimeout_s", obj, DEFAULT_KEEP_ALIVE_TIMEOUT),
             exceptions_wrapper(extract_soft<unsigned int>, "MaxKeepAliveTimeout_s", obj,
                                DEFAULT_MAX_KEEP_ALIVE_TIMEOUT),
-            exceptions_wrapper(sequence_container_extract<std::vector<std::shared_ptr<Location>>>, "Locations", obj));
+            ToSortedLocations(exceptions_wrapper(
+                    sequence_container_extract<std::vector<std::shared_ptr<Location>>>, "Locations", obj)));
 }
 
 Config tag_invoke(const boost::json::value_to_tag<Config>&, const boost::json::value& json) {
@@ -178,8 +205,6 @@ Config tag_invoke(const boost::json::value_to_tag<Config>&, const boost::json::v
 
     return {
             exceptions_wrapper(extract_soft<unsigned int>, "MaxSessionsNumber", obj, DEFAULT_MAX_SESSIONS_NUMBER),
-            exceptions_wrapper(extract_soft<unsigned int>, "SessionsKillerDelay_s", obj, DEFAULT_MAX_SESSIONS_NUMBER),
-            exceptions_wrapper(extract_soft<unsigned int>, "HangSessionTimeout_s", obj, DEFAULT_MAX_SESSIONS_NUMBER),
             PackToEndpoints(exceptions_wrapper(
                     sequence_container_extract<std::vector<std::shared_ptr<ServerConfig>>>, "Servers", obj))
     };

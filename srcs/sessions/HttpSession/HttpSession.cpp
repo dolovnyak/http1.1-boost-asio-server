@@ -1,14 +1,14 @@
 #include "HttpSession.h"
-#include "HttpException.h"
+#include "Exception.h"
 
 #include <boost/bind.hpp>
 
 const std::string& ToString(HttpSessionState state) {
     static std::unordered_map<HttpSessionState, std::string> kStateToString = {
-            {HttpSessionState::ReadRequest,      "ReadRequest"},
-            {HttpSessionState::ProcessRequest,   "ProcessRequest"},
-            {HttpSessionState::ProcessResource,  "ProcessResource"},
-            {HttpSessionState::ResponseToClient, "ResponseToClient"}
+            {HttpSessionState::ReadRequest,   "ReadRequest"},
+            {HttpSessionState::HandleRequest, "HandleRequest"},
+            {HttpSessionState::ProcessFile,   "ProcessFile"},
+            {HttpSessionState::ProcessCgi,    "ProcessCgi"},
     };
     return kStateToString[state];
 }
@@ -25,14 +25,15 @@ HttpSession::HttpSession(const std::shared_ptr<Config>& config,
                          boost::asio::io_context& io_context)
         : _endpoint_config(endpoint_config),
           _server_config(std::nullopt),
+          _io_context(io_context),
           _socket(io_context),
           _request_parser(endpoint_config),
           _keep_alive(false),
           _keep_alive_timeout(endpoint_config->GetDefaultServer()->default_keep_alive_timeout_s),
           _state(HttpSessionState::ReadRequest) {}
 
-void HttpSession::HandleRead(const boost::system::error_code& error,
-                             std::size_t bytes_transferred) {
+void HttpSession::HandleReadRequest(const boost::system::error_code& error,
+                                    std::size_t bytes_transferred) {
     if (!error) {
         if (!available) {
             LOG_INFO("Read on closed connection");
@@ -40,33 +41,42 @@ void HttpSession::HandleRead(const boost::system::error_code& error,
         }
 
         if (_state != HttpSessionState::ReadRequest) {
-            LOG_INFO("Read on wrong session state");
+            LOG_INFO("Read on wrong session state: \"", ToString(_state), "\"");
             return;
         }
 
         try {
-            RequestParseResult result = _request_parser.Parse(std::string_view(_buffer.data(), bytes_transferred));
+            Http::RequestParseResult parse_result = _request_parser.Parse(
+                    std::string_view(_buffer.data(), bytes_transferred));
 
-            switch (result.status) {
-                case RequestParseStatus::Finish: {
-                    _state = HttpSessionState::ProcessRequest;
-                    RequestHandler handler(result.request.value());
-                    handler.Handle();
+            switch (parse_result.status) {
+
+                case Http::RequestParseStatus::WaitMoreData: {
+                    AsyncReadRequest();
+                    break;
                 }
 
-                case RequestParseStatus::WaitMoreData:
-                    AsyncRead();
-                    return;
+                case Http::RequestParseStatus::Finish: {
+                    _state = HttpSessionState::HandleRequest;
+                    _server_config = parse_result.request.value()->server_config;
+
+                    Http::RequestHandler handler(parse_result.request.value());
+                    Http::HandleResult handle_result = handler.Handle();
+
+                    _keep_alive = true; /// TODO change session after handling request
+                    AsyncWriteResponse(handle_result.response);
+                }
             }
         }
-        catch (const HttpException& e) {
-            AsyncWrite(e.GetErrorResponse());
-            LOG_INFO("HttpException: ", e.what());
+        catch (const Http::Exception& e) {
+            AsyncWriteResponse(e.GetErrorResponse());
+            LOG_INFO("Exception: ", e.what());
         }
         catch (const std::exception& e) {
             LOG_ERROR("Unexpected exception: ", e.what());
-            AsyncWrite(Response::MakeErrorResponse(Http::Code::InternalServerError, "Internal server error",
-                                                   _endpoint_config->GetDefaultServer()));
+            AsyncWriteResponse(
+                    Http::Response::MakeErrorResponse(Http::Code::InternalServerError, "Internal server error",
+                                                      _endpoint_config->GetDefaultServer(), {}));
         }
     }
     else if (error != boost::asio::error::operation_aborted) {
@@ -74,35 +84,38 @@ void HttpSession::HandleRead(const boost::system::error_code& error,
     }
 }
 
-void HttpSession::HandleWrite(const boost::system::error_code& error, size_t bytes_transferred) {
+void HttpSession::HandleWriteResponse(const boost::system::error_code& error, size_t bytes_transferred) {
+    LOG_INFO("HandleWriteResponse");
     if (!error) {
-        // Initiate graceful connection closure.
-        boost::system::error_code ignored_ec;
-        _socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
-        _socket.close();
+        if (!_keep_alive) {
+            boost::system::error_code ignored_ec;
+            _socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
+            _socket.close();
+        }
+        AsyncReadRequest();
     }
-
-    if (error != boost::asio::error::operation_aborted) {
+    else if (error != boost::asio::error::operation_aborted) {
         /// close session
     }
 }
 
-void HttpSession::AsyncWrite(const std::shared_ptr<Response>& response) {
+void HttpSession::AsyncWriteResponse(const std::shared_ptr<Http::Response>& response) {
+    LOG_INFO("AsyncWriteResponse");
     auto write_lambda = [this_ptr = shared_from_this()](const boost::system::error_code& error_code,
                                                         size_t bytes_transferred) {
-        this_ptr->HandleWrite(error_code, bytes_transferred);
+        this_ptr->HandleWriteResponse(error_code, bytes_transferred);
     };
 
     /// TODO change std::string response on boost buffer
     boost::asio::async_write(_socket, boost::asio::buffer(response->response), write_lambda);
 }
 
-void HttpSession::AsyncRead() {
+void HttpSession::AsyncReadRequest() {
+    LOG_INFO("AsyncReadRequest");
     auto read_lambda = [this_ptr = shared_from_this()](const boost::system::error_code& error_code,
                                                        std::size_t bytes_transferred) {
-        this_ptr->HandleRead(error_code, bytes_transferred);
+        this_ptr->HandleReadRequest(error_code, bytes_transferred);
     };
-
     _socket.async_read_some(boost::asio::buffer(_buffer), read_lambda);
 }
 

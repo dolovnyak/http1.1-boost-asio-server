@@ -1,12 +1,10 @@
 {
   "MaxSessionsNumber": 2048,
-  "ReadBufferSize": 4096,
   "SessionsKillerDelay_s": 2,
-  "HangSessionTimeout_s": 10,
   "Servers": [
     {
       "Name": "kabun1",
-      "Host": "127.0.0.1",
+      "Host": "0.0.0.0",
       "Port": 1025,
       "MaxBodySize" : 1000000,
       "MaxRequestSize" : 100000000,
@@ -15,20 +13,52 @@
       "Locations": [
         {
           "Location": "/",
-          "Root": "/",
+          "Root": "/Users/dolov/Desktop/Projects/webserver-42/examples/YoupiBanane",
           "Autoindex": false,
           "Index": "index.html",
           "AvailableMethods": [
-            "GET",
+            "GET"
+          ]
+        },
+        {
+          "Location": "/put_test",
+          "Cgi-pass": "save_file.cgi",
+          "AvailableMethods": [
+            "PUT"
+          ]
+        },
+        {
+          "Location": ".bla",
+          "Cgi-pass": "cgi_test.cgi",
+          "AvailableMethods": [
+            "POST"
+          ]
+        },
+        {
+          "Location": "/post_body",
+          "Cgi-pass": "something.cgi",
+          "MaxBodySize": 100,
+          "AvailableMethods": [
+            "POST"
+          ]
+        },
+        {
+          "Location": "/directory/",
+          "Root": "/Users/dolov/Desktop/Projects/webserver-42/examples/YoupiBanane",
+          "Autoindex": true ,
+          "MaxBodySize": 100,
+          "AvailableMethods": [
             "POST"
           ]
         }
       ]
     },
+
+
     {
-      "Port": 1025,
+      "Port": 1026,
       "Name": "kabun2",
-      "Host": "127.0.0.1",
+      "Host": "0.0.0.0",
       "MaxBodySize": 8096,
       "MaxRequestSize": 16384,
       "ErrorPages": [
@@ -49,16 +79,16 @@
         {
           "Location": "/",
           "Root": "/",
-          "Autoindex": true,
           "Index": "index.html",
           "AvailableMethods": [
             "GET",
             "POST"
-          ]
+          ],
+          "Priority": 2
         },
         {
           "Location": ".cgi",
-          "Cgi-pass": "/Users/sbecker/Desktop/projects/webserver-42/examples/cgi_checker/cgi.php",
+          "Cgi-path": "/Users/sbecker/Desktop/projects/webserver-42/examples/cgi_checker/cgi.php",
           "AvailableMethods": [
             "GET",
             "POST"
@@ -66,16 +96,20 @@
         },
         {
           "Location": "/upload",
-          "Root": "/cgi-bin/upload.py",
           "AvailableMethods": [
-            "GET",
-            "POST",
-            "DELETE"
-          ]
+            "POST"
+          ],
+          "Cgi-path": "/Users/dolov/Desktop/Projects/webserver-42/examples/cgi_checker/simple_cgi.py"
         },
         {
           "Location": "/images/kitty.jpg",
-          "Redirect": "/images/kitty2.jpg"
+          "AvailableMethods": [
+            "GET"
+          ],
+          "Return": {
+            "Code": 301,
+            "Redirect": "/images/kitty2.jpg"
+          }
         }
       ]
     }

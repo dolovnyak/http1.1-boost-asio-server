@@ -1,8 +1,7 @@
 #pragma once
 
 #include "Config.h"
-#include "Event.h"
-#include "sessions/EndpointSession/EndpointSession.h"
+#include "EndpointSession.h"
 #include "Http.h"
 
 #include <boost/asio.hpp>

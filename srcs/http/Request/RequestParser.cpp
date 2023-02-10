@@ -1,20 +1,20 @@
 #include "RequestParser.h"
-#include "HttpException.h"
-#include "HttpErrorPages.h"
+#include "Exception.h"
+#include "ErrorPages.h"
 #include "utilities.h"
 #include "Logging.h"
 
 namespace {
     Http::Method ParseHttpMethod(const std::string& raw_method, const std::shared_ptr<ServerConfig>& server_config) {
         if (!IsTcharString(raw_method)) {
-            throw BadFirstLine("Incorrect first line", server_config);
+            throw Http::BadFirstLine("Incorrect first line", server_config);
         }
         return Http::ToHttpMethod(raw_method);
     }
 
-    RequestTarget
+    Http::RequestTarget
     ParseRequestTarget(const std::string& raw_request_target, const std::shared_ptr<ServerConfig>& server_config) {
-        RequestTarget request_target;
+        Http::RequestTarget request_target;
 
         size_t path_end = raw_request_target.find_first_of('?');
 
@@ -44,10 +44,10 @@ namespace {
 
 
         if (!IsAbsolutePath(request_target.path)) {
-            throw BadFirstLine("Incorrect first line", server_config);
+            throw Http::BadFirstLine("Incorrect first line", server_config);
         }
         if (!IsQueryString(request_target.query_string)) {
-            throw BadFirstLine("Incorrect first line", server_config);
+            throw Http::BadFirstLine("Incorrect first line", server_config);
         }
 
         return request_target;
@@ -57,12 +57,12 @@ namespace {
                                    const std::shared_ptr<ServerConfig>& server_config) {
         std::vector<std::string> tokens = SplitString(raw_http_version, "/");
         if (tokens.size() != 2 || tokens[0] != "HTTP") {
-            throw BadHttpVersion("Incorrect HTTP version", server_config);
+            throw Http::BadHttpVersion("Incorrect HTTP version", server_config);
         }
 
         std::vector<std::string> version_tokens = SplitString(tokens[1], ".");
         if (version_tokens.size() != 2) {
-            throw BadHttpVersion("Incorrect HTTP version", server_config);
+            throw Http::BadHttpVersion("Incorrect HTTP version", server_config);
         }
 
         int major, minor;
@@ -71,15 +71,17 @@ namespace {
             minor = ParsePositiveInt(version_tokens[1]);
         }
         catch (const std::exception& e) {
-            throw BadHttpVersion("Incorrect HTTP version" + std::string(e.what()), server_config);
+            throw Http::BadHttpVersion("Incorrect HTTP version" + std::string(e.what()), server_config);
         }
 
         if (major == 1 && minor == 0) { return Http::Http1_0; }
         else if (major == 1 && minor == 1) { return Http::Http1_1; }
-        else { throw HttpVersionNotSupported("HTTP version not supported", server_config); }
+        else { throw Http::VersionNotSupported("HTTP version not supported", server_config); }
     }
 
 }
+
+namespace Http {
 
 RequestParseState RequestParser::ParseBodyByContentLengthHandler() {
     /// need _raw_request size without CRLF
@@ -366,4 +368,6 @@ void RequestParser::SetMatchedServerConfig(const std::string& server_name) {
 
 std::shared_ptr<ServerConfig> RequestParser::GetServerConfig() {
     return _matched_server_config.value_or(_endpoint_config->GetDefaultServer());
+}
+
 }

@@ -12,9 +12,9 @@
 
 enum class HttpSessionState {
     ReadRequest = 0,
-    ProcessRequest,
-    ProcessResource,
-    ResponseToClient
+    HandleRequest,
+    ProcessFile,
+    ProcessCgi
 };
 
 const std::string& ToString(HttpSessionState state);
@@ -27,9 +27,11 @@ private:
 
     std::optional<std::shared_ptr<ServerConfig>> _server_config;
 
+    boost::asio::io_context& _io_context;
+
     boost::asio::ip::tcp::socket _socket;
 
-    RequestParser _request_parser;
+    Http::RequestParser _request_parser;
 
     bool _keep_alive;
 
@@ -47,13 +49,15 @@ public:
 
     [[nodiscard]] boost::asio::ip::tcp::socket& GetSocketAsReference();
 
-    void AsyncRead();
+    void AsyncReadRequest();
 
-    void AsyncWrite(const std::shared_ptr<Response>& response);
+    void AsyncWriteResponse(const std::shared_ptr<Http::Response>& response);
 
-    void HandleRead(const boost::system::error_code& error, std::size_t bytes_transferred);
+    void HandleReadRequest(const boost::system::error_code& error, std::size_t bytes_transferred);
 
-    void HandleWrite(const boost::system::error_code& error, size_t bytes_transferred);
+    void HandleWriteResponse(const boost::system::error_code& error, size_t bytes_transferred);
+
+    void HandleReadFile(const boost::system::error_code& error, std::size_t bytes_transferred);
 
     [[nodiscard]] SessionType::Type GetType() const override {
         return SessionType::Http;
