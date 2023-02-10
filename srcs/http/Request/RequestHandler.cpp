@@ -31,6 +31,7 @@ void RequestHandler::HandleRouteLocation() {
                 case LocationType::Path: {
                     if (path.compare(0, path_len, current_location->location) == 0) {
                         _matched_location = current_location;
+                        _path_after_matching = path.substr(0, path_len - current_location->location.size());
                         return;
                     }
                     break;
@@ -190,25 +191,29 @@ std::shared_ptr<Response> RequestHandler::ProcessRequest() {
         if (!_matched_location->root.has_value()) {
             throw NotFound("There is no root in location", _request->server_config);
         }
-        std::string file_path = _matched_location->root.value() + _request->target.path;
+
         std::string result;
+        std::string path = UnitePaths(_matched_location->root.value(), _path_after_matching);
+        /// if target is directory
+        if (_request->target.path == _request->target.directory_path) {
+            if (_matched_location->index.has_value()) {
+                std::string index_file_path = UnitePaths(path, _matched_location->index.value());
+                if (ReadFile(index_file_path, result)) {
+                    return Response::MakeSuccessResponse(Http::Code::Ok, result, _request->server_config, {}, _keep_alive);
+                }
+                result = {};
+            }
 
-        /// try find and read file
-        if (ReadFile(file_path, result)) {
-            return Response::MakeSuccessResponse(Http::Code::Ok, result, _request->server_config, {}, _keep_alive);
-        }
-
-        /// if there is no file - try open index
-        if (_matched_location->index.has_value()) {
-            file_path = _matched_location->root.value() + _request->target.directory_path + _matched_location->index.value();
-            if (ReadFile(file_path, result)) {
-                return Response::MakeSuccessResponse(Http::Code::Ok, result, _request->server_config, {}, _keep_alive);
+            if (_matched_location->autoindex) {
+                /// Process autoindex
             }
         }
 
-        /// if there is no index - but threre is autoindex return this
+        /// try find and read file
+        if (ReadFile(path, result)) {
+            return Response::MakeSuccessResponse(Http::Code::Ok, result, _request->server_config, {}, _keep_alive);
+        }
 
-        /// else throw not found error
         throw NotFound("", _request->server_config);
     }
 };

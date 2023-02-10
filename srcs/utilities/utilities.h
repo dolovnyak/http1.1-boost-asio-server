@@ -15,6 +15,8 @@ std::string ToUpper(const std::string& str);
 
 std::string GetCurrentDateTimeString();
 
+std::string UnitePaths(const std::string& path1, const std::string& path2);
+
 int ParseInt(const std::string& value, int base = 10);
 
 int ParsePositiveInt(const std::string& value, int base = 10);

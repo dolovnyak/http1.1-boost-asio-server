@@ -18,6 +18,8 @@ private:
 
     std::string _content_type;
 
+    std::string _path_after_matching;
+
     bool _keep_alive;
 
 public:
