@@ -6,11 +6,10 @@ Location::Location(std::string location,
                    std::optional<std::string> index,
                    std::optional<HttpReturn> http_return,
                    bool autoindex,
-                   std::unordered_set<Http::Method> available_methods,
-                   unsigned int priority)
+                   std::unordered_set<Http::Method> available_methods)
         : location(std::move(location)), root(std::move(root)),
           cgi_path(std::move(cgi_path)), index(std::move(index)), http_return(std::move(http_return)),
-          autoindex(autoindex), available_methods(std::move(available_methods)), priority(priority) {
+          autoindex(autoindex), available_methods(std::move(available_methods)) {
     int forbidden_intersected_fields = 0;
     forbidden_intersected_fields += this->cgi_path.has_value();
     forbidden_intersected_fields += this->index.has_value();
