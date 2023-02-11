@@ -20,28 +20,16 @@ namespace {
 
         if (path_end == std::string::npos) {
             request_target.path = raw_request_target;
-            request_target.directory_path = raw_request_target.substr(0, raw_request_target.find_last_of('/') + 1);
             request_target.query_string = "";
         }
         else {
             request_target.path = raw_request_target.substr(0, path_end);
-            request_target.directory_path = request_target.path
-                    .substr(0, request_target.path.find_last_of('/') + 1);
             request_target.query_string = raw_request_target.substr(path_end + 1);
         }
-
-        if (request_target.path != request_target.directory_path) {
-            request_target.file_name = request_target.path.substr(request_target.path.find_last_of('/') + 1);
-            if (request_target.file_name.find('.') != std::string::npos) {
-                request_target.extension = request_target.file_name.substr(
-                        request_target.file_name.find_last_of('.') + 1);
-            }
+        size_t pos = request_target.path.find_last_of('.');
+        if (pos != std::string::npos) {
+            request_target.extension = request_target.path.substr(pos);
         }
-        else {
-            request_target.file_name = "";
-            request_target.extension = "";
-        }
-
 
         if (!IsAbsolutePath(request_target.path)) {
             throw Http::BadFirstLine("Incorrect first line", server_config);

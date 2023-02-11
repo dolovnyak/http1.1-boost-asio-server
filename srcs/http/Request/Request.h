@@ -12,15 +12,11 @@ namespace Http {
 
 struct RequestTarget {
     std::string path;
-    std::string directory_path;
-    std::string file_name;
     std::string extension;
     std::string query_string;
 
     void Clear() {
         path.clear();
-        directory_path.clear();
-        file_name.clear();
         extension.clear();
         query_string.clear();
     }

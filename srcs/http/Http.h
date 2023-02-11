@@ -10,6 +10,8 @@
 
 #define WEBSERVER_NAME "DolovServer/1.0"
 
+#define PATH_TO_SAVE_CGI_KEY "PATH_TO_SAVE"
+
 #define CONTENT_LENGTH "content-length"
 #define CONTENT_TYPE "content-type"
 

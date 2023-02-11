@@ -22,20 +22,24 @@
 #define DEFAULT_MAX_KEEP_ALIVE_TIMEOUT 1800 // 30 minutes
 #define DEFAULT_HANG_SESSION_TIMEOUT 10 // 10 seconds
 
-enum class LocationType {
-    Path,
-    Prefix
-};
-
 struct HttpReturn {
     Http::Code code;
     std::optional<std::string> redirect;
 };
 
+struct ExtensionInterceptor {
+    ExtensionInterceptor(std::string extension,
+                         std::string cgi_path,
+                         std::unordered_set<Http::Method> available_methods);
+    const std::string extension;
+    const std::string cgi_path;
+    const std::unordered_set<Http::Method> available_methods;
+};
+
 struct Location {
     Location(std::string location,
              std::optional<std::string> root,
-             std::optional<std::string> cgi_path,
+             std::optional<std::string> upload_path,
              std::optional<std::string> index,
              std::optional<HttpReturn> http_return,
              bool autoindex,
@@ -45,7 +49,7 @@ struct Location {
 
     const std::optional<std::string> root;
 
-    const std::optional<std::string> cgi_path;
+    const std::optional<std::string> upload_path;
 
     const std::optional<std::string> index;
 
@@ -54,18 +58,15 @@ struct Location {
     const bool autoindex;
 
     const std::unordered_set<Http::Method> available_methods;
-
-    LocationType GetType();
-
-private:
-    LocationType _type;
 };
 
 struct ServerConfig {
     ServerConfig(std::string name, std::string host, unsigned short port,
+                 std::string cgi_uploader_path,
                  std::unordered_map<Http::Code, std::string> error_pages, int max_body_size,
                  int max_request_size,
                  int default_keep_alive_timeout_s, int max_keep_alive_timeout_s,
+                 const std::vector<std::shared_ptr<ExtensionInterceptor>>& extensions_interceptors,
                  const std::vector<std::shared_ptr<Location>>& locations);
 
     const std::string name;
@@ -73,6 +74,8 @@ struct ServerConfig {
     const std::string host;
 
     const unsigned short port;
+
+    const std::string cgi_uploader_path;
 
     const std::unordered_map<Http::Code, std::string> error_pages;
 
@@ -83,6 +86,8 @@ struct ServerConfig {
     unsigned int default_keep_alive_timeout_s;
 
     unsigned int max_keep_alive_timeout_s;
+
+    std::vector<std::shared_ptr<ExtensionInterceptor>> extensions_interceptors;
 
     std::vector<std::shared_ptr<Location>> locations;
 };

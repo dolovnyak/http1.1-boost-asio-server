@@ -63,7 +63,9 @@ void HttpSession::HandleReadRequest(const boost::system::error_code& error,
                     Http::RequestHandler handler(parse_result.request.value());
                     Http::HandleResult handle_result = handler.Handle();
 
-                    _keep_alive = true; /// TODO change session after handling request
+                    _keep_alive = handle_result.keep_alive;
+                    /// TODO set keep alive timer
+
                     AsyncWriteResponse(handle_result.response);
                 }
             }
@@ -92,6 +94,7 @@ void HttpSession::HandleWriteResponse(const boost::system::error_code& error, si
             _socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
             _socket.close();
         }
+        _state = HttpSessionState::ReadRequest;
         AsyncReadRequest();
     }
     else if (error != boost::asio::error::operation_aborted) {

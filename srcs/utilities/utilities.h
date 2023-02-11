@@ -52,3 +52,9 @@ bool IsIpv4(const std::string& str);
 bool SetSocketNonBlocking(int socket);
 
 bool ReadFile(const std::string& path, std::string& result);
+
+bool IsFile(const std::string& path);
+
+bool IsExecutableFile(const std::string& path);
+
+bool IsDirectory(const std::string& path);
