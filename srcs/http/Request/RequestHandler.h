@@ -8,6 +8,7 @@ namespace Http {
 struct HandleResult {
     std::shared_ptr<Request> handled_request;
     std::shared_ptr<Response> response;
+    bool keep_alive;
 };
 
 class RequestHandler {
@@ -44,11 +45,9 @@ private:
 
     void HandleRouteLocation();
 
+    std::shared_ptr<Response> HandleHttpMethod();
+
     void HandleAuthorizationHeader();
-
-    void HandleHttpMethod();
-
-    std::shared_ptr<Response> ProcessRequest();
 };
 
 }

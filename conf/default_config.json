@@ -10,43 +10,56 @@
       "MaxRequestSize" : 1000000,
       "KeepAliveTimeout_s" : 30,
       "MaxKeepAliveTimeout_s" : 1800,
+      "CgiUploaderPath": "a",
+      "ExtensionInterceptors" : [
+        {
+          "Extension": ".bla",
+          "Cgi-path": "/Users/dolov/Desktop/Projects/webserver-42/examples/cgi_checker/cgi_tester",
+          "OnMethods": [
+            "POST"
+          ]
+        }
+      ],
       "Locations": [
+        {
+          "Location": "/kaban",
+          "Root": "/Users/dolov/Desktop/Projects/webserver-42/examples/YoupiBanane/kaban",
+          "AvailableMethods": [
+            "POST"
+          ]
+        },
         {
           "Location": "/",
           "Root": "/Users/dolov/Desktop/Projects/webserver-42/examples/YoupiBanane",
-          "Autoindex": false,
-          "Index": "index.html",
-          "AvailableMethods": ["GET"]
+          "Index": "youpi.bad_extension",
+          "AvailableMethods": [
+            "GET"
+          ]
         },
         {
           "Location": "/put_test",
-          "Cgi-pass": "save_file.cgi",
+          "Upload": "/Users/dolov/Desktop/Projects/webserver-42/examples/YoupiBanane",
           "AvailableMethods": [
             "PUT"
           ]
         },
         {
-          "Location": ".bla",
-          "Cgi-pass": "cgi_test.cgi",
-          "AvailableMethods": [
-            "POST"
-          ]
-        },
-        {
           "Location": "/post_body",
-          "Cgi-pass": "something.cgi",
+          "Return": {
+            "Code": 200
+          },
           "MaxBodySize": 100,
           "AvailableMethods": [
             "POST"
           ]
         },
         {
-          "Location": "/directory/",
+          "Location": "/directory",
           "Root": "/Users/dolov/Desktop/Projects/webserver-42/examples/YoupiBanane",
           "Index": "youpi.bad_extension",
           "MaxBodySize": 100,
           "AvailableMethods": [
-            "POST"
+            "GET"
           ]
         }
       ]
@@ -57,6 +70,7 @@
       "Host": "0.0.0.0",
       "MaxBodySize": 8096,
       "MaxRequestSize": 16384,
+      "CgiUploaderPath": "a",
       "ErrorPages": [
         {
           "Code": 404,
@@ -81,14 +95,6 @@
             "POST"
           ],
           "Priority": 2
-        },
-        {
-          "Location": ".cgi",
-          "Cgi-path": "/Users/sbecker/Desktop/projects/webserver-42/examples/cgi_checker/cgi.php",
-          "AvailableMethods": [
-            "GET",
-            "POST"
-          ]
         },
         {
           "Location": "/upload",

@@ -1,6 +1,7 @@
 #include "utilities.h"
 
 #include <sys/ioctl.h>
+#include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
 
@@ -307,4 +308,28 @@ bool ReadFile(const std::string& path, std::string& result) {
         result.append(buff, read_bytes);
     }
     return true;
+}
+
+bool IsFile(const std::string& path) {
+    struct stat path_stat{};
+    if (stat(path.c_str(), &path_stat) != 0) {
+        return false;
+    }
+    return S_ISREG(path_stat.st_mode);
+}
+
+bool IsExecutableFile(const std::string& path) {
+    struct stat path_stat{};
+    if (stat(path.c_str(), &path_stat) != 0) {
+        return false;
+    }
+    return (S_IXUSR & path_stat.st_mode) || (S_IEXEC & path_stat.st_mode);
+}
+
+bool IsDirectory(const std::string& path) {
+    struct stat path_stat{};
+    if (stat(path.c_str(), &path_stat) != 0) {
+        return false;
+    }
+    return S_ISDIR(path_stat.st_mode);
 }
