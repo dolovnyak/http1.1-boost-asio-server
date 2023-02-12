@@ -15,6 +15,8 @@ class RequestHandler {
 private:
     std::shared_ptr<Request> _request;
 
+    std::optional<std::shared_ptr<ExtensionInterceptor>> _matched_interceptor;
+
     std::shared_ptr<Location> _matched_location;
 
     std::string _content_type;

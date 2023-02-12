@@ -12,81 +12,70 @@
 
 namespace Http {
 
+
+/// default response with body
+/// default response without body
+
 class Response {
 public:
-    static std::shared_ptr<Response> MakeErrorResponse(Http::Code error_code, const std::string& title,
-                                                       const std::shared_ptr<ServerConfig>& server_config,
-                                                       const std::vector<Http::Header>& additional_headers) {
-        return MakeResponse(error_code, title, GetErrorPageByCode(error_code, server_config),
-                            server_config, additional_headers, false);
+    static std::vector<Http::Header> GetDefaultHeaders(const std::shared_ptr<ServerConfig>& server_config) {
+        return {Header("Server", server_config->name),
+                Header("Date", GetCurrentDateTimeString()),
+                Header("Content-Type", "text/html, charset=utf-8")};
     }
 
-    static std::shared_ptr<Response> MakeSuccessGetResponse(const std::string& body,
-                                                            const std::shared_ptr<ServerConfig>& server_config,
-                                                            bool keep_alive) {
-        return MakeResponse(Code::Ok, ToString(Code::Ok), body, server_config, {}, keep_alive);
-    }
-
-    static std::shared_ptr<Response> MakeSuccessHeadResponse(const std::shared_ptr<ServerConfig>& server_config,
-                                                             bool keep_alive) {
-        std::vector<Http::Header> headers = {
-                Http::Header("Content-Type", "text/html, charset=utf-8"),
-                Http::Header("Server", server_config->name),
-                Http::Header("Date", GetCurrentDateTimeString())
-        };
-
-        keep_alive ? headers.emplace_back("Connection", "keep-alive")
-                   : headers.emplace_back("Connection", "close");
-
-        return std::make_shared<Response>(Http::Version::Http1_1, Code::Ok, ToString(Code::Ok), headers, "");
-    }
-
-    static std::shared_ptr<Response> MakeRedirectResponse(Http::Code code,
-                                                          const std::shared_ptr<ServerConfig>& server_config,
-                                                          std::optional<std::string> redirect,
-                                                          bool keep_alive) {
-        std::vector<Header> headers;
-        if (redirect.has_value()) {
-            headers.emplace_back("Location", redirect.value());
-        }
-        return MakeResponse(code, ToString(code), "", server_config, headers, keep_alive);
-    }
-
-    static std::shared_ptr<Response> MakeResponse(Http::Code code, const std::string& title, const std::string& body,
-                                                  const std::shared_ptr<ServerConfig>& server_config,
-                                                  const std::vector<Http::Header>& additional_headers,
-                                                  bool keep_alive) {
-        std::vector<Http::Header> headers = {
-                Http::Header("Content-Type", "text/html, charset=utf-8"),
-                Http::Header("Content-Length", std::to_string(body.size())),
-                Http::Header("Server", server_config->name),
-                Http::Header("Date", GetCurrentDateTimeString())
-        };
-        for (auto& header: additional_headers) {
-            headers.emplace_back(header);
+    static std::shared_ptr<Response> MakeDefaultWithBody(const std::shared_ptr<ServerConfig>& server_config,
+                                                         Code code, std::string title, std::string body,
+                                                         bool keep_alive) {
+        std::vector<Header> headers = GetDefaultHeaders(server_config);
+        headers.emplace_back("Content-Length", std::to_string(body.size()));
+        if (keep_alive) {
+            headers.emplace_back("Connection", "keep-alive");
         }
 
-        keep_alive ? headers.emplace_back("Connection", "keep-alive")
-                   : headers.emplace_back("Connection", "close");
-
-        return std::make_shared<Response>(Http::Version::Http1_1, code, title, headers, body);
+        return std::make_shared<Response>(code, std::move(title), std::move(headers), std::move(body));
     }
 
-    Response(Http::Version http_version,
-             Http::Code code,
-             const std::string& title,
-             const std::vector<Http::Header>& headers,
-             const std::string& body) {
-        response = Http::ToString(http_version) + " " + std::to_string(static_cast<int>(code)) + " " + title + "\r\n";
-        for (const auto& header: headers) {
-            response += header.key + ": " + header.value + "\r\n";
+    static std::shared_ptr<Response> MakeDefaultWithoutBody(const std::shared_ptr<ServerConfig>& server_config,
+                                                            Code code, std::string title, bool keep_alive) {
+        std::vector<Header> headers = GetDefaultHeaders(server_config);
+        if (keep_alive) {
+            headers.emplace_back("Connection", "keep-alive");
         }
-        response += "\r\n";
-        response += body;
-        response += "\r\n";
+        return std::make_shared<Response>(code, std::move(title), std::move(headers), std::nullopt);
     }
 
-    std::string response;
+    Response(Http::Code code,
+             std::string title,
+             std::vector<Http::Header> headers,
+             std::optional<std::string> body)
+            : _version(Http1_1), _code(code),
+              _title(std::move(title)), _headers(std::move(headers)), _body(std::move(body)) {}
+
+    std::string Extract() {
+        std::string res =
+                Http::ToString(_version) + " " + std::to_string(static_cast<int>(_code)) + " " + _title + "\r\n";
+        for (const auto& header: _headers) {
+            res += header.key + ": " + header.value + "\r\n";
+        }
+        res += "\r\n";
+
+        if (_body.has_value() && !_body.value().empty()) {
+            res += _body.value();
+        }
+        return res;
+    }
+
+    void AddHeader(Header new_header) {
+        _headers.emplace_back(std::move(new_header));
+    }
+
+private:
+    Version _version;
+    Code _code;
+    std::string _title;
+    std::vector<Header> _headers;
+    std::optional<std::string> _body;
 };
 
 }

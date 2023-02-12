@@ -6,11 +6,10 @@
       "Name": "kabun1",
       "Host": "0.0.0.0",
       "Port": 1025,
-      "MaxBodySize" : 10000,
-      "MaxRequestSize" : 1000000,
       "KeepAliveTimeout_s" : 30,
       "MaxKeepAliveTimeout_s" : 1800,
-      "CgiUploaderPath": "a",
+      "CgiUploaderPath": "/Users/dolov/Desktop/Projects/webserver-42/examples/YoupiBanane/kaban/uploader.py",
+      "CgiDeleterPath": "/Users/dolov/Desktop/Projects/webserver-42/examples/YoupiBanane/kaban/deleter.py",
       "ExtensionInterceptors" : [
         {
           "Extension": ".bla",
@@ -38,7 +37,7 @@
         },
         {
           "Location": "/put_test",
-          "Upload": "/Users/dolov/Desktop/Projects/webserver-42/examples/YoupiBanane",
+          "Root": "/Users/dolov/Desktop/Projects/webserver-42/examples/YoupiBanane",
           "AvailableMethods": [
             "PUT"
           ]
@@ -48,6 +47,7 @@
           "Return": {
             "Code": 200
           },
+          "Root": "/Users/dolov/Desktop/Projects/webserver-42/examples/YoupiBanane",
           "MaxBodySize": 100,
           "AvailableMethods": [
             "POST"
@@ -61,57 +61,6 @@
           "AvailableMethods": [
             "GET"
           ]
-        }
-      ]
-    },
-    {
-      "Port": 1026,
-      "Name": "kabun2",
-      "Host": "0.0.0.0",
-      "MaxBodySize": 8096,
-      "MaxRequestSize": 16384,
-      "CgiUploaderPath": "a",
-      "ErrorPages": [
-        {
-          "Code": 404,
-          "Path": "/error_pages/404.html"
-        },
-        {
-          "Code": 405,
-          "Path": "/error_pages/405.html"
-        },
-        {
-          "Code": 500,
-          "Path": "/error_pages/500.html"
-        }
-      ],
-      "Locations": [
-        {
-          "Location": "/",
-          "Root": "/",
-          "Index": "index.html",
-          "AvailableMethods": [
-            "GET",
-            "POST"
-          ],
-          "Priority": 2
-        },
-        {
-          "Location": "/upload",
-          "AvailableMethods": [
-            "POST"
-          ],
-          "Cgi-path": "/Users/dolov/Desktop/Projects/webserver-42/examples/cgi_checker/simple_cgi.py"
-        },
-        {
-          "Location": "/images/kitty.jpg",
-          "AvailableMethods": [
-            "GET"
-          ],
-          "Return": {
-            "Code": 301,
-            "Redirect": "/images/kitty2.jpg"
-          }
         }
       ]
     }

@@ -8,12 +8,8 @@ namespace {
 
 std::string ProcessHeadGet(const std::shared_ptr<Location>& matched_location, const std::shared_ptr<Request>& request,
                            const std::string& path_after_matching, bool should_read) {
-    if (!matched_location->root.has_value()) {
-        throw NotFound("There is no root in location", request->server_config);
-    }
-
     std::string result;
-    std::string path = UnitePaths(matched_location->root.value(), path_after_matching);
+    std::string path = UnitePaths(matched_location->root, path_after_matching);
 
     if (IsFile(path)) {
         if (!should_read) {
@@ -47,39 +43,19 @@ std::string ProcessHeadGet(const std::shared_ptr<Location>& matched_location, co
     throw NotFound("File not found", request->server_config);
 }
 
-std::shared_ptr<Response> ProcessPost(const std::shared_ptr<Location>& matched_location,
-                                      const std::shared_ptr<Request>& request, const std::string& path_after_matching,
-                                      const std::string& content_type) {
-
-    std::string path = UnitePaths(matched_location->root.value(), path_after_matching);
-    if (IsExecutableFile(path)) {
-        std::string result = CgiHandler::Handle(request, matched_location, content_type, path, {});
-        return Response::MakeSuccessGetResponse(result, request->server_config, true);
-    }
-    throw NotFound("Script not found", request->server_config);
-}
-
-std::shared_ptr<Response> ProcessPut(const std::shared_ptr<Location>& matched_location,
-                                     const std::shared_ptr<Request>& request,
-                                     const std::string& content_type) {
-    if (matched_location->upload_path.has_value()) {
-        throw NotAcceptable("There is no path to upload", request->server_config);
-    }
-
-    if (IsExecutableFile(request->server_config->cgi_uploader_path)) {
-        std::string result = CgiHandler::Handle(
-                request, matched_location, content_type, request->server_config->cgi_uploader_path,
-                {EnvironmentVariable(PATH_TO_SAVE_CGI_KEY, matched_location->upload_path.value())});
-        return Response::MakeSuccessGetResponse(result, request->server_config, true);
-    }
-    throw InternalServerError("Uploader script not executable", request->server_config);
-}
-
 }
 
 void RequestHandler::HandleRouteLocation() {
     std::string path = _request->target.path;
     size_t path_len = path.size();
+
+    for (auto& interceptor: _request->server_config->extensions_interceptors) {
+        if (interceptor->extension == _request->target.extension &&
+            interceptor->on_methods.find(_request->http_method) != interceptor->on_methods.end()) {
+            _matched_interceptor = interceptor;
+            return;
+        }
+    }
 
     while (true) {
         for (const auto& current_location: _request->server_config->locations) {
@@ -182,8 +158,12 @@ void RequestHandler::HandleContentLengthHeader() {
             break;
     }
 
-    /// TODO check max body
-//    if (_request->content_length.value_or(0) > _matched_location)
+    if (_matched_interceptor.has_value()) {
+        return;
+    }
+    if (_request->content_length.value_or(0) > _matched_location->max_body_size) {
+        throw PayloadTooLarge("body larger than max_body_size", _request->server_config);
+    }
 }
 
 void RequestHandler::HandleCookiesHeader() {
@@ -195,38 +175,63 @@ void RequestHandler::HandleAuthorizationHeader() {
 }
 
 std::shared_ptr<Response> RequestHandler::HandleHttpMethod() {
-    /// check ExtensionInterceptors if there is no then process methods
-    /// если расширение этого файла есть в ExtensionInterceptor - то даже если файла не существует вызвать обработчик cgi-path этого перехватывателя
+    /// handle interceptors
+    if (_matched_interceptor.has_value()) {
+        std::string script_path = _matched_interceptor.value()->cgi_path;
+        CgiHandler handler(_request, _content_type, script_path, {});
+        return handler.Handle();
+    }
 
+    /// handle methods
     auto it = _matched_location->available_methods.find(_request->http_method);
     if (it == _matched_location->available_methods.end()) {
         throw MethodNotAllowed("", _request->server_config);
     }
 
-    /// check if matched location has return code if it has then return it
-
+    /// handle Http Return
+    if (_matched_location->http_return.has_value()) {
+        auto headers = Response::GetDefaultHeaders(_request->server_config);
+        if (_matched_location->http_return->redirect.has_value()) {
+            headers.emplace_back(LOCATION_KEY, _matched_location->http_return->redirect.value());
+        }
+        return Response::MakeDefaultWithBody(_request->server_config,
+                                             _matched_location->http_return->code,
+                                             ToString(_matched_location->http_return->code),
+                                             "", _keep_alive);
+    }
 
     switch (*it) {
         case Http::Method::Get: {
             std::string body = ProcessHeadGet(_matched_location, _request, _path_after_matching, true);
-            return Response::MakeSuccessGetResponse(body, _request->server_config, _keep_alive);
+            return Response::MakeDefaultWithBody(_request->server_config, Code::Ok, ToString(Code::Ok), std::move(body),
+                                                 _keep_alive);
         }
 
         case Http::Method::Head: {
             ProcessHeadGet(_matched_location, _request, _path_after_matching, false);
-            return Response::MakeSuccessHeadResponse(_request->server_config, _keep_alive);
+            return Response::MakeDefaultWithoutBody(_request->server_config, Code::Ok, ToString(Code::Ok), _keep_alive);
         }
 
         case Http::Method::Post: {
-            return ProcessPost(_matched_location, _request, _path_after_matching, _content_type);
-        }
-
-        case Http::Method::Delete: {
-            /// если файл есть - удалить
+            std::string script_path = UnitePaths(_matched_location->root, _path_after_matching);
+            CgiHandler handler(_request, _content_type, script_path, {});
+            return handler.Handle();
         }
 
         case Http::Method::Put: {
-            ProcessPut(_matched_location, _request, _content_type);
+            std::string upload_path = UnitePaths(_matched_location->root, _path_after_matching);
+            EnvironmentVariable upload_path_var(CGI_KEY_PATH_TO_CATION, upload_path);
+            std::string script_uploader_path = _request->server_config->cgi_uploader_path;
+            CgiHandler handler(_request, _content_type, script_uploader_path, {upload_path_var});
+            return handler.Handle();
+        }
+
+        case Http::Method::Delete: {
+            std::string delete_path = UnitePaths(_matched_location->root, _path_after_matching);
+            EnvironmentVariable delete_path_var(CGI_KEY_PATH_TO_CATION, delete_path);
+            std::string script_deleter_path = _request->server_config->cgi_deleter_path;
+            CgiHandler handler(_request, _content_type, script_deleter_path, {delete_path_var});
+            return handler.Handle();
         }
 
         case Http::Method::Options:
@@ -237,32 +242,6 @@ std::shared_ptr<Response> RequestHandler::HandleHttpMethod() {
                                  _request->server_config);
     }
 }
-
-//std::shared_ptr<Response> RequestHandler::HandleRequest() {
-//    if (_matched_location->http_return.has_value()) {
-//        switch (Http::GetCodeType(_matched_location->http_return->code)) {
-//            case CodeType::Informational:
-//            case CodeType::Success:
-//                return Response::MakeSuccessResponse(
-//                        _matched_location->http_return->code, "", _request->server_config, {}, _keep_alive);
-//
-//            case CodeType::Redirection: {
-//                return Response::MakeRedirectResponse(_matched_location->http_return->code,
-//                                                      _request->server_config,
-//                                                      _matched_location->http_return->redirect,
-//                                                      _keep_alive);
-//            }
-//
-//            case CodeType::ClientError:
-//            case CodeType::ServerError:
-//                auto& exception = Http::Exception::GetByCode(_matched_location->http_return->code,
-//                                                             _request->server_config);
-//                return exception.GetErrorResponse();
-//        }
-//    }
-//    else {
-//    }
-//}
 
 HandleResult RequestHandler::Handle() {
     /// Never change order of these methods

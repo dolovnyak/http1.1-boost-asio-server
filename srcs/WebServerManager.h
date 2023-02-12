@@ -23,7 +23,8 @@ public:
             _endpoint_sessions.emplace_back(endpoint_session);
 
             /// start accepting new connections (separated with constructor because of enable_shared_from_this restrictions
-            endpoint_session->AsyncAccept(HttpSession::CreateAsPtr(config, endpoint_config, _io_context));
+            endpoint_session->AsyncAccept(
+                    HttpSession::CreateAsPtr(config, endpoint_config, _io_context, endpoint_session->manager));
         }
 
         if (_endpoint_sessions.empty()) {

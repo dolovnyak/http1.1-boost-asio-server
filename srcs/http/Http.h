@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <utility>
 
 #define CR                  (char) '\r'
 #define LF                  (char) '\n'
@@ -10,12 +11,14 @@
 
 #define WEBSERVER_NAME "DolovServer/1.0"
 
-#define PATH_TO_SAVE_CGI_KEY "PATH_TO_SAVE"
+#define CGI_KEY_PATH_TO_CATION "PATH_TO_ACTION"
 
 #define CONTENT_LENGTH "content-length"
 #define CONTENT_TYPE "content-type"
 
 #define DEFAULT_CONTENT_TYPE "text/html, charset=utf-8"
+
+#define LOCATION_KEY "Location"
 
 #define TRANSFER_ENCODING "transfer-encoding"
 #define CHUNKED "chunked"
@@ -34,8 +37,8 @@ namespace Http {
 
     class Header {
     public:
-        Header(const std::string& key, const std::string& value)
-                : key(key), value(value) {}
+        Header(std::string key, std::string value)
+                : key(std::move(key)), value(std::move(value)) {}
 
         std::string key;
         std::string value;

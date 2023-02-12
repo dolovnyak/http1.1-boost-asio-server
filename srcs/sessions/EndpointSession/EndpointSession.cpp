@@ -26,8 +26,13 @@ void
 EndpointSession::HandleAccept(const std::shared_ptr<HttpSession>& http_session, const boost::system::error_code& error) {
     if (!error) {
         LOG_DEBUG("Accept new http session");
+        manager.AddSession(http_session);
         http_session->AsyncReadRequest();
-        AsyncAccept(HttpSession::CreateAsPtr(_config, _endpoint_config, _io_context));
+        AsyncAccept(HttpSession::CreateAsPtr(_config, _endpoint_config, _io_context, manager));
+    }
+    else {
+        LOG_WARNING("Error, \"", error.message(), "\" on HandleAccept");
+        AsyncAccept(HttpSession::CreateAsPtr(_config, _endpoint_config, _io_context, manager));
     }
 }
 
