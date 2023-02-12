@@ -6,7 +6,6 @@ class SessionManager {
 public:
     void CloseSession(const std::shared_ptr<HttpSession>& session) {
         _sessions.erase(session);
-        LOG_INFO("Sessions nums: ", _sessions.size());
     }
 
     void AddSession(const std::shared_ptr<HttpSession>& session) {

@@ -68,7 +68,5 @@ std::shared_ptr<ServerConfig> EndpointConfig::GetDefaultServer() const {
     return servers[0];
 }
 
-Config::Config(unsigned int max_sessions_number,
-               const std::vector<std::shared_ptr<EndpointConfig>>& endpoint_configs)
-        : max_sessions_number(max_sessions_number),
-          endpoint_configs(endpoint_configs) {}
+Config::Config(const std::vector<std::shared_ptr<EndpointConfig>>& endpoint_configs)
+        : endpoint_configs(endpoint_configs) {}

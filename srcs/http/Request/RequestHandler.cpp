@@ -98,31 +98,30 @@ void RequestHandler::HandleConnectionHeader() {
 }
 
 void RequestHandler::HandleKeepAliveHeader() {
-    /// TODO
     /// keep-alive change session
-//    _keep_alive_timeout = _endpoint_config->default_keep_alive_timeout_s;  /// default value
-//
-//    auto it = headers.find(KEEP_ALIVE);
-//    if (it == headers.end()) {
-//        return;
-//    }
-//
-//    const std::string& value = it->second.back();
-//
-//    std::vector<std::string> tokens = SplitString(value, ",");
-//
-//    for (const auto& token: tokens) {
-//        std::string parameter = StripString(token);
-//        std::vector<std::string> parameter_tokens = SplitString(parameter, "=");
-//
-//        if (parameter_tokens.size() == 2) {
-//            if (ToLower(parameter_tokens[0]) == TIMEOUT && IsPositiveNumberString(parameter_tokens[1])) {
-//                _keep_alive_timeout = std::min(_endpoint_config->max_keep_alive_timeout_s,
-//                                              static_cast<unsigned int>(ParsePositiveInt(parameter_tokens[1])));
-//            }
-//        }
-//        /// MAX parameter is outdated and not supported
-//    }
+    _keep_alive_timeout = _request->server_config->default_keep_alive_timeout_s;  /// default value
+
+    auto it = _request->http_headers.find(KEEP_ALIVE);
+    if (it == _request->http_headers.end()) {
+        return;
+    }
+
+    const std::string& value = it->second.back();
+
+    std::vector<std::string> tokens = SplitString(value, ",");
+
+    for (const auto& token: tokens) {
+        std::string parameter = StripString(token);
+        std::vector<std::string> parameter_tokens = SplitString(parameter, "=");
+
+        if (parameter_tokens.size() == 2) {
+            if (ToLower(parameter_tokens[0]) == TIMEOUT && IsPositiveNumberString(parameter_tokens[1])) {
+                _keep_alive_timeout = std::min(_request->server_config->max_keep_alive_timeout_s,
+                                              static_cast<unsigned int>(ParsePositiveInt(parameter_tokens[1])));
+            }
+        }
+        /// MAX parameter is outdated and not supported
+    }
 }
 
 void RequestHandler::HandleAcceptHeader() {
@@ -153,7 +152,7 @@ void RequestHandler::HandleContentLengthHeader() {
         }
 
         case Http::Method::Delete:
-        case Http::Method::Put: /// TODO maybe it's need length too
+        case Http::Method::Put:
         default:
             break;
     }
@@ -256,7 +255,7 @@ HandleResult RequestHandler::Handle() {
     HandleAuthorizationHeader();
 
     std::shared_ptr<Response> response = HandleHttpMethod();
-    return {_request, response, _keep_alive};
+    return {_request, response, _keep_alive, _keep_alive_timeout};
 }
 
 RequestHandler::RequestHandler(
