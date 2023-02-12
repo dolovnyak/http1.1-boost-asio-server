@@ -1,5 +1,6 @@
 #include "HttpSession.h"
 #include "Exception.h"
+#include "SessionManager.h"
 
 #include <boost/bind.hpp>
 
@@ -16,21 +17,27 @@ const std::string& ToString(HttpSessionState state) {
 std::shared_ptr<HttpSession> HttpSession::CreateAsPtr(
         const std::shared_ptr<Config>& config,
         const std::shared_ptr<EndpointConfig>& endpoint_config,
-        boost::asio::io_context& io_context) {
-    return std::shared_ptr<HttpSession>(new HttpSession(config, endpoint_config, io_context));
+        boost::asio::io_context& io_context,
+        SessionManager& session_manager) {
+    return std::shared_ptr<HttpSession>(new HttpSession(config, endpoint_config, io_context, session_manager));
 }
 
 HttpSession::HttpSession(const std::shared_ptr<Config>& config,
                          const std::shared_ptr<EndpointConfig>& endpoint_config,
-                         boost::asio::io_context& io_context)
-        : _endpoint_config(endpoint_config),
+                         boost::asio::io_context& io_context,
+                         SessionManager& session_manager)
+        : _config(config),
+          _endpoint_config(endpoint_config),
           _server_config(std::nullopt),
           _io_context(io_context),
+          _session_manager(session_manager),
           _socket(io_context),
           _request_parser(endpoint_config),
           _keep_alive(false),
           _keep_alive_timeout(endpoint_config->GetDefaultServer()->default_keep_alive_timeout_s),
-          _state(HttpSessionState::ReadRequest) {}
+          _state(HttpSessionState::ReadRequest) {
+    LOG_INFO("HttpSession Created");
+}
 
 void HttpSession::HandleReadRequest(const boost::system::error_code& error,
                                     std::size_t bytes_transferred) {
@@ -41,7 +48,7 @@ void HttpSession::HandleReadRequest(const boost::system::error_code& error,
         }
 
         if (_state != HttpSessionState::ReadRequest) {
-            LOG_INFO("Read on wrong session state: \"", ToString(_state), "\"");
+            LOG_WARNING("Read on wrong session state: \"", ToString(_state), "\"");
             return;
         }
 
@@ -73,32 +80,43 @@ void HttpSession::HandleReadRequest(const boost::system::error_code& error,
         catch (const Http::Exception& e) {
             AsyncWriteResponse(e.GetErrorResponse());
             LOG_INFO("Exception: ", e.what());
+            _state = HttpSessionState::HandleRequest;
+            _request_parser.Reset();
         }
         catch (const std::exception& e) {
             LOG_ERROR("Unexpected exception: ", e.what());
             AsyncWriteResponse(
-                    Http::Response::MakeErrorResponse(Http::Code::InternalServerError, "Internal server error",
-                                                      _endpoint_config->GetDefaultServer(), {}));
+                    Http::Response::MakeDefaultWithBody(
+                            _endpoint_config->GetDefaultServer(),
+                            Http::Code::InternalServerError, ToString(Http::Code::InternalServerError),
+                            GetErrorPageByCode(Http::Code::InternalServerError, _endpoint_config->GetDefaultServer()),
+                            false));
+            _state = HttpSessionState::HandleRequest;
+            _request_parser.Reset();
         }
     }
     else if (error != boost::asio::error::operation_aborted) {
-        /// close session
+        LOG_WARNING("Error, \"", error.message(), "\" on HandleReadRequest");
+        Close();
     }
 }
 
 void HttpSession::HandleWriteResponse(const boost::system::error_code& error, size_t bytes_transferred) {
+    std::ignore = bytes_transferred;
     LOG_INFO("HandleWriteResponse");
     if (!error) {
         if (!_keep_alive) {
             boost::system::error_code ignored_ec;
             _socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
-            _socket.close();
+            Close();
+            return;
         }
         _state = HttpSessionState::ReadRequest;
         AsyncReadRequest();
     }
     else if (error != boost::asio::error::operation_aborted) {
-        /// close session
+        LOG_WARNING("Error on HandleWriteResponse");
+        Close();
     }
 }
 
@@ -109,19 +127,26 @@ void HttpSession::AsyncWriteResponse(const std::shared_ptr<Http::Response>& resp
         this_ptr->HandleWriteResponse(error_code, bytes_transferred);
     };
 
-    /// TODO change std::string response on boost buffer
-    boost::asio::async_write(_socket, boost::asio::buffer(response->response), write_lambda);
+    boost::asio::async_write(_socket, boost::asio::buffer(response->Extract()), write_lambda);
 }
 
 void HttpSession::AsyncReadRequest() {
     LOG_INFO("AsyncReadRequest");
-    auto read_lambda = [this_ptr = shared_from_this()](const boost::system::error_code& error_code,
-                                                       std::size_t bytes_transferred) {
-        this_ptr->HandleReadRequest(error_code, bytes_transferred);
+    auto read_lambda = [this_weak_ptr = weak_from_this()](const boost::system::error_code& error_code,
+                                                          std::size_t bytes_transferred) {
+        auto this_ptr = this_weak_ptr.lock();
+        if (this_ptr) {
+            this_ptr->HandleReadRequest(error_code, bytes_transferred);
+        }
     };
     _socket.async_read_some(boost::asio::buffer(_buffer), read_lambda);
 }
 
 boost::asio::ip::tcp::socket& HttpSession::GetSocketAsReference() {
     return _socket;
+}
+
+void HttpSession::Close() {
+    _session_manager.CloseSession(shared_from_this());
+    _socket.close();
 }

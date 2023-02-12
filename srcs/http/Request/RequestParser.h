@@ -60,6 +60,8 @@ public:
 
     RequestParseResult Parse(std::string_view raw_request_part);
 
+    void Reset();
+
 private:
 
     RequestParseState ParseFirstLineHandler();
@@ -82,7 +84,6 @@ private:
 
     std::shared_ptr<ServerConfig> GetServerConfig();
 
-    void Reset();
 };
 
 }

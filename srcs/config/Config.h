@@ -15,8 +15,8 @@
 #define DEFAULT_SESSION_KILLER_DELAY 2 // 2 seconds
 #define DEFAULT_CORE_TIMEOUT 1 // 1 seconds
 
-#define DEFAULT_MAX_BODY_SIZE 100000000 // 100 MB
-#define DEFAULT_MAX_REQUEST_SIZE 200000000 // 200 MB
+#define DEFAULT_MAX_BODY_SIZE 10000000000
+#define DEFAULT_MAX_REQUEST_SIZE 20000000000
 
 #define DEFAULT_KEEP_ALIVE_TIMEOUT 60 // 60 seconds
 #define DEFAULT_MAX_KEEP_ALIVE_TIMEOUT 1800 // 30 minutes
@@ -33,23 +33,21 @@ struct ExtensionInterceptor {
                          std::unordered_set<Http::Method> available_methods);
     const std::string extension;
     const std::string cgi_path;
-    const std::unordered_set<Http::Method> available_methods;
+    const std::unordered_set<Http::Method> on_methods;
 };
 
 struct Location {
     Location(std::string location,
-             std::optional<std::string> root,
-             std::optional<std::string> upload_path,
+             std::string root,
              std::optional<std::string> index,
              std::optional<HttpReturn> http_return,
              bool autoindex,
-             std::unordered_set<Http::Method> available_methods);
+             std::unordered_set<Http::Method> available_methods,
+             unsigned int max_body_size);
 
     const std::string location;
 
-    const std::optional<std::string> root;
-
-    const std::optional<std::string> upload_path;
+    const std::string root;
 
     const std::optional<std::string> index;
 
@@ -58,11 +56,13 @@ struct Location {
     const bool autoindex;
 
     const std::unordered_set<Http::Method> available_methods;
+
+    unsigned int max_body_size;
 };
 
 struct ServerConfig {
     ServerConfig(std::string name, std::string host, unsigned short port,
-                 std::string cgi_uploader_path,
+                 std::string cgi_uploader_path, std::string cgi_deleter_path,
                  std::unordered_map<Http::Code, std::string> error_pages, int max_body_size,
                  int max_request_size,
                  int default_keep_alive_timeout_s, int max_keep_alive_timeout_s,
@@ -76,6 +76,8 @@ struct ServerConfig {
     const unsigned short port;
 
     const std::string cgi_uploader_path;
+
+    const std::string cgi_deleter_path;
 
     const std::unordered_map<Http::Code, std::string> error_pages;
 

@@ -3,20 +3,20 @@
 ExtensionInterceptor::ExtensionInterceptor(std::string extension, std::string cgi_path,
                                            std::unordered_set<Http::Method> available_methods)
         : extension(std::move(extension)), cgi_path(std::move(cgi_path)),
-          available_methods(std::move(available_methods)) {}
+          on_methods(std::move(available_methods)) {}
 
 Location::Location(std::string location,
-                   std::optional<std::string> root,
-                   std::optional<std::string> upload_path,
+                   std::string root,
                    std::optional<std::string> index,
                    std::optional<HttpReturn> http_return,
                    bool autoindex,
-                   std::unordered_set<Http::Method> available_methods)
-        : location(std::move(location)), root(std::move(root)), upload_path(std::move(upload_path)),
+                   std::unordered_set<Http::Method> available_methods,
+                   unsigned int max_body_size)
+        : location(std::move(location)), root(std::move(root)),
           index(std::move(index)), http_return(std::move(http_return)),
-          autoindex(autoindex), available_methods(std::move(available_methods)) {
+          autoindex(autoindex), available_methods(std::move(available_methods)),
+          max_body_size(max_body_size) {
     int forbidden_intersected_fields = 0;
-    forbidden_intersected_fields += this->upload_path.has_value();
     forbidden_intersected_fields += this->index.has_value();
     forbidden_intersected_fields += this->http_return.has_value();
     forbidden_intersected_fields += this->autoindex;
@@ -32,17 +32,19 @@ Location::Location(std::string location,
 }
 
 ServerConfig::ServerConfig(std::string name, std::string host, unsigned short port,
-                           std::string cgi_uploader_path,
+                           std::string cgi_uploader_path, std::string cgi_deleter_path,
                            std::unordered_map<Http::Code, std::string> error_pages, int max_body_size,
                            int max_request_size,
                            int default_keep_alive_timeout_s, int max_keep_alive_timeout_s,
                            const std::vector<std::shared_ptr<ExtensionInterceptor>>& extensions_interceptors,
                            const std::vector<std::shared_ptr<Location>>& locations)
-        : name(std::move(name)), host(std::move(host)), port(port), cgi_uploader_path(std::move(cgi_uploader_path)),
+        : name(std::move(name)), host(std::move(host)), port(port),
+          cgi_uploader_path(std::move(cgi_uploader_path)), cgi_deleter_path(std::move(cgi_deleter_path)),
           error_pages(std::move(error_pages)),
           max_body_size(max_body_size), max_request_size(max_request_size),
           default_keep_alive_timeout_s(default_keep_alive_timeout_s),
           max_keep_alive_timeout_s(max_keep_alive_timeout_s),
+          extensions_interceptors(extensions_interceptors),
           locations(locations) {}
 
 EndpointConfig::EndpointConfig(std::string host, unsigned short port,

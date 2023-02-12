@@ -307,6 +307,7 @@ bool ReadFile(const std::string& path, std::string& result) {
         }
         result.append(buff, read_bytes);
     }
+    close(fd);
     return true;
 }
 

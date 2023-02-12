@@ -19,6 +19,8 @@ enum class HttpSessionState {
 
 const std::string& ToString(HttpSessionState state);
 
+class SessionManager;
+
 class HttpSession : public Session, public std::enable_shared_from_this<HttpSession> {
 private:
     std::shared_ptr<Config> _config;
@@ -28,6 +30,8 @@ private:
     std::optional<std::shared_ptr<ServerConfig>> _server_config;
 
     boost::asio::io_context& _io_context;
+
+    SessionManager& _session_manager;
 
     boost::asio::ip::tcp::socket _socket;
 
@@ -45,7 +49,12 @@ public:
     static std::shared_ptr<HttpSession> CreateAsPtr(
             const std::shared_ptr<Config>& config,
             const std::shared_ptr<EndpointConfig>& endpoint_config,
-            boost::asio::io_context& io_context);
+            boost::asio::io_context& io_context,
+            SessionManager& session_manager);
+
+    ~HttpSession() {
+        LOG_INFO("Http session destroyed");
+    }
 
     [[nodiscard]] boost::asio::ip::tcp::socket& GetSocketAsReference();
 
@@ -59,9 +68,7 @@ public:
 
     void HandleReadFile(const boost::system::error_code& error, std::size_t bytes_transferred);
 
-    [[nodiscard]] SessionType::Type GetType() const override {
-        return SessionType::Http;
-    }
+    void Close();
 
     [[nodiscard]] const std::string& GetName() const override {
         static std::string kName = "HttpSession";
@@ -71,5 +78,6 @@ public:
 private:
     HttpSession(const std::shared_ptr<Config>& config,
                 const std::shared_ptr<EndpointConfig>& endpoint_config,
-                boost::asio::io_context& io_context);
+                boost::asio::io_context& io_context,
+                SessionManager& session_manager);
 };

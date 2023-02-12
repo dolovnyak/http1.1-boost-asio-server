@@ -164,13 +164,13 @@ tag_invoke(const boost::json::value_to_tag<std::shared_ptr<Location>>&, boost::j
     }
     return std::make_shared<Location>(
             std::move(location),
-            exceptions_wrapper(extract_soft<std::optional<std::string>>, "Root", obj, std::nullopt),
-            exceptions_wrapper(extract_soft<std::optional<std::string>>, "Upload", obj, std::nullopt),
+            exceptions_wrapper(extract<std::string>, "Root", obj),
             exceptions_wrapper(extract_soft<std::optional<std::string>>, "Index", obj, std::nullopt),
             exceptions_wrapper(extract_soft<std::optional<HttpReturn>>, "Return", obj, std::nullopt),
             exceptions_wrapper(extract_soft<bool>, "Autoindex", obj, false),
             ToHandledMethods(exceptions_wrapper(sequence_container_extract_soft<std::vector<std::string>>,
-                                                "AvailableMethods", obj, std::vector<std::string>())));
+                                                "AvailableMethods", obj, std::vector<std::string>())),
+            exceptions_wrapper(extract_soft<unsigned int>, "MaxBodySize", obj, DEFAULT_MAX_BODY_SIZE));
 }
 
 RawErrorPage
@@ -201,6 +201,7 @@ tag_invoke(const boost::json::value_to_tag<std::shared_ptr<ServerConfig>>&, cons
             exceptions_wrapper(extract<std::string>, "Host", obj),
             exceptions_wrapper(extract<unsigned short>, "Port", obj),
             exceptions_wrapper(extract<std::string>, "CgiUploaderPath", obj),
+            exceptions_wrapper(extract<std::string>, "CgiDeleterPath", obj),
             ToErrorPages(exceptions_wrapper(
                     sequence_container_extract_soft<std::vector<RawErrorPage>>, "ErrorPages",
                     obj, std::vector<RawErrorPage>())),

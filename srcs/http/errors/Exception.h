@@ -11,14 +11,18 @@ namespace Http {
 
 class Exception : public std::exception {
 public:
-    Exception(std::string  message,
+    Exception(std::string message,
               Http::Code error_code,
               const std::string& error_title,
               bool keep_alive,
               const std::shared_ptr<ServerConfig>& server_config)
             : _message(std::move(message)),
               _keep_alive(keep_alive),
-              _error_response(Response::MakeErrorResponse(error_code, error_title, server_config, {})) {}
+              _error_response(
+                      Http::Response::MakeDefaultWithBody(server_config,
+                                                          error_code,
+                                                          error_title,
+                                                          GetErrorPageByCode(error_code, server_config), _keep_alive)) {}
 
     Exception(const Exception& other) noexcept {
         _message = other._message;
@@ -96,28 +100,30 @@ class AuthorizationRequired : public Exception {
 
 public:
     AuthorizationRequired(const std::string& message, const std::shared_ptr<ServerConfig>& server_config)
-            : Exception(message, Http::Code::AuthorizationRequired, ToString(Http::Code::AuthorizationRequired), true, server_config) {}
+            : Exception(message, Http::Code::AuthorizationRequired, ToString(Http::Code::AuthorizationRequired), false,
+                        server_config) {}
 };
 
 /// 402
 class PaymentRequired : public Exception {
 public:
     PaymentRequired(const std::string& message, const std::shared_ptr<ServerConfig>& server_config)
-            : Exception(message, Http::Code::PaymentRequired, ToString(Http::Code::PaymentRequired), true, server_config) {}
+            : Exception(message, Http::Code::PaymentRequired, ToString(Http::Code::PaymentRequired), false,
+                        server_config) {}
 };
 
 /// 403
 class Forbidden : public Exception {
 public:
     Forbidden(const std::string& message, const std::shared_ptr<ServerConfig>& server_config)
-            : Exception(message, Http::Code::Forbidden, ToString(Http::Code::Forbidden), true, server_config) {}
+            : Exception(message, Http::Code::Forbidden, ToString(Http::Code::Forbidden), false, server_config) {}
 };
 
 /// 404
 class NotFound : public Exception {
 public:
     NotFound(const std::string& message, const std::shared_ptr<ServerConfig>& server_config)
-            : Exception(message, Http::Code::NotFound, ToString(Http::Code::NotFound), true, server_config) {}
+            : Exception(message, Http::Code::NotFound, ToString(Http::Code::NotFound), false, server_config) {}
 };
 
 
@@ -125,21 +131,24 @@ public:
 class MethodNotAllowed : public Exception {
 public:
     MethodNotAllowed(const std::string& message, const std::shared_ptr<ServerConfig>& server_config)
-            : Exception(message, Http::Code::MethodNotAllowed, ToString(Http::Code::MethodNotAllowed), true, server_config) {}
+            : Exception(message, Http::Code::MethodNotAllowed, ToString(Http::Code::MethodNotAllowed), false,
+                        server_config) {}
 };
 
 /// 406
 class NotAcceptable : public Exception {
 public:
     NotAcceptable(const std::string& message, const std::shared_ptr<ServerConfig>& server_config)
-            : Exception(message, Http::Code::NotAcceptable, ToString(Http::Code::NotAcceptable), false, server_config) {}
+            : Exception(message, Http::Code::NotAcceptable, ToString(Http::Code::NotAcceptable), false,
+                        server_config) {}
 };
 
 /// 408
 class RequestTimeout : public Exception {
 public:
     RequestTimeout(const std::string& message, const std::shared_ptr<ServerConfig>& server_config)
-            : Exception(message, Http::Code::RequestTimeout, ToString(Http::Code::RequestTimeout), false, server_config) {}
+            : Exception(message, Http::Code::RequestTimeout, ToString(Http::Code::RequestTimeout), false,
+                        server_config) {}
 };
 
 /// 409
@@ -160,14 +169,16 @@ public:
 class LengthRequired : public Exception {
 public:
     LengthRequired(const std::string& message, const std::shared_ptr<ServerConfig>& server_config)
-            : Exception(message, Http::Code::LengthRequired, ToString(Http::Code::LengthRequired), false, server_config) {}
+            : Exception(message, Http::Code::LengthRequired, ToString(Http::Code::LengthRequired), false,
+                        server_config) {}
 };
 
 /// 412
 class PreconditionFailed : public Exception {
 public:
     PreconditionFailed(const std::string& message, const std::shared_ptr<ServerConfig>& server_config)
-            : Exception(message, Http::Code::PreconditionFailed, ToString(Http::Code::PreconditionFailed), false, server_config) {}
+            : Exception(message, Http::Code::PreconditionFailed, ToString(Http::Code::PreconditionFailed), false,
+                        server_config) {}
 };
 
 /// 413
@@ -175,7 +186,8 @@ class PayloadTooLarge : public Exception {
 public:
     PayloadTooLarge(const std::string& message,
                     const std::shared_ptr<ServerConfig>& server_config)
-            : Exception(message, Http::Code::PayloadTooLarge, ToString(Http::Code::PayloadTooLarge), false, server_config) {}
+            : Exception(message, Http::Code::PayloadTooLarge, ToString(Http::Code::PayloadTooLarge), false,
+                        server_config) {}
 };
 
 /// 414
@@ -191,7 +203,8 @@ class UnsupportedMedia : public Exception {
 public:
     UnsupportedMedia(const std::string& message,
                      const std::shared_ptr<ServerConfig>& server_config)
-            : Exception(message, Http::Code::UnsupportedMedia, ToString(Http::Code::UnsupportedMedia), false, server_config) {}
+            : Exception(message, Http::Code::UnsupportedMedia, ToString(Http::Code::UnsupportedMedia), false,
+                        server_config) {}
 };
 
 /// 416
@@ -199,7 +212,8 @@ class RequestedRangeNotSatisfiable : public Exception {
 public:
     RequestedRangeNotSatisfiable(const std::string& message,
                                  const std::shared_ptr<ServerConfig>& server_config)
-            : Exception(message, Http::Code::RequestedRangeNotSatisfiable, ToString(Http::Code::RequestedRangeNotSatisfiable), false,
+            : Exception(message, Http::Code::RequestedRangeNotSatisfiable,
+                        ToString(Http::Code::RequestedRangeNotSatisfiable), false,
                         server_config) {}
 };
 
@@ -208,7 +222,8 @@ class MisdirectedRequest : public Exception {
 public:
     MisdirectedRequest(const std::string& message,
                        const std::shared_ptr<ServerConfig>& server_config)
-            : Exception(message, Http::Code::MisdirectedRequest, ToString(Http::Code::MisdirectedRequest), false, server_config) {}
+            : Exception(message, Http::Code::MisdirectedRequest, ToString(Http::Code::MisdirectedRequest), false,
+                        server_config) {}
 };
 
 /// 429
@@ -216,7 +231,8 @@ class TooManyRequests : public Exception {
 public:
     TooManyRequests(const std::string& message,
                     const std::shared_ptr<ServerConfig>& server_config)
-            : Exception(message, Http::Code::TooManyRequests, ToString(Http::Code::TooManyRequests), false, server_config) {}
+            : Exception(message, Http::Code::TooManyRequests, ToString(Http::Code::TooManyRequests), false,
+                        server_config) {}
 };
 
 /// 494
@@ -224,7 +240,8 @@ class HeaderOrCookieTooLarge : public Exception {
 public:
     HeaderOrCookieTooLarge(const std::string& message,
                            const std::shared_ptr<ServerConfig>& server_config)
-            : Exception(message, Http::Code::HeaderOrCookieTooLarge, ToString(Http::Code::HeaderOrCookieTooLarge), false,
+            : Exception(message, Http::Code::HeaderOrCookieTooLarge, ToString(Http::Code::HeaderOrCookieTooLarge),
+                        false,
                         server_config) {}
 };
 
@@ -241,7 +258,8 @@ public:
 class NotImplemented : public Exception {
 public:
     NotImplemented(const std::string& message, const std::shared_ptr<ServerConfig>& server_config)
-            : Exception(message, Http::Code::NotImplemented, ToString(Http::Code::NotImplemented), true, server_config) {}
+            : Exception(message, Http::Code::NotImplemented, ToString(Http::Code::NotImplemented), false,
+                        server_config) {}
 };
 
 class UnsupportedTransferEncoding : public Exception {
@@ -266,7 +284,8 @@ class TemporarilyUnavailable : public Exception {
 public:
     TemporarilyUnavailable(const std::string& message,
                            const std::shared_ptr<ServerConfig>& server_config)
-            : Exception(message, Http::Code::TemporarilyUnavailable, ToString(Http::Code::TemporarilyUnavailable), false, server_config) {}
+            : Exception(message, Http::Code::TemporarilyUnavailable, ToString(Http::Code::TemporarilyUnavailable),
+                        false, server_config) {}
 };
 
 /// 504
@@ -274,7 +293,8 @@ class GatewayTimeout : public Exception {
 public:
     GatewayTimeout(const std::string& message,
                    const std::shared_ptr<ServerConfig>& server_config)
-            : Exception(message, Http::Code::GatewayTimeout, ToString(Http::Code::GatewayTimeout), false, server_config) {}
+            : Exception(message, Http::Code::GatewayTimeout, ToString(Http::Code::GatewayTimeout), false,
+                        server_config) {}
 };
 
 /// 505
@@ -282,7 +302,8 @@ class VersionNotSupported : public Exception {
 public:
     VersionNotSupported(const std::string& message,
                         const std::shared_ptr<ServerConfig>& server_config)
-            : Exception(message, Http::Code::HttpVersionNotSupported, ToString(Http::Code::HttpVersionNotSupported), false,
+            : Exception(message, Http::Code::HttpVersionNotSupported, ToString(Http::Code::HttpVersionNotSupported),
+                        false,
                         server_config) {}
 };
 
