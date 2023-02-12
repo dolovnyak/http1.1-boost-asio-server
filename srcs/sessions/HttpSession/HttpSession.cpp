@@ -29,14 +29,15 @@ HttpSession::HttpSession(const std::shared_ptr<Config>& config,
         : _config(config),
           _endpoint_config(endpoint_config),
           _server_config(std::nullopt),
+          _keep_alive(false),
+          _keep_alive_timeout(endpoint_config->GetDefaultServer()->default_keep_alive_timeout_s),
           _io_context(io_context),
           _session_manager(session_manager),
           _socket(io_context),
+          _killer_timer(io_context, boost::posix_time::seconds(_keep_alive_timeout)),
           _request_parser(endpoint_config),
-          _keep_alive(false),
-          _keep_alive_timeout(endpoint_config->GetDefaultServer()->default_keep_alive_timeout_s),
           _state(HttpSessionState::ReadRequest) {
-    LOG_INFO("HttpSession Created");
+    AsyncWaitKillByTimeout();
 }
 
 void HttpSession::HandleReadRequest(const boost::system::error_code& error,
@@ -71,7 +72,7 @@ void HttpSession::HandleReadRequest(const boost::system::error_code& error,
                     Http::HandleResult handle_result = handler.Handle();
 
                     _keep_alive = handle_result.keep_alive;
-                    /// TODO set keep alive timer
+                    _keep_alive_timeout = handle_result.keep_alive_timeout;
 
                     AsyncWriteResponse(handle_result.response);
                 }
@@ -101,15 +102,23 @@ void HttpSession::HandleReadRequest(const boost::system::error_code& error,
     }
 }
 
+void HttpSession::HandleKillByTimeout(const boost::system::error_code& error) {
+    if (error != boost::asio::error::operation_aborted) {
+        LOG_WARNING("Error on HandleKillByTimeout");
+    }
+    Close();
+}
+
 void HttpSession::HandleWriteResponse(const boost::system::error_code& error, size_t bytes_transferred) {
     std::ignore = bytes_transferred;
     LOG_INFO("HandleWriteResponse");
     if (!error) {
         if (!_keep_alive) {
-            boost::system::error_code ignored_ec;
-            _socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
             Close();
             return;
+        }
+        else {
+            AsyncWaitKillByTimeout();
         }
         _state = HttpSessionState::ReadRequest;
         AsyncReadRequest();
@@ -120,11 +129,28 @@ void HttpSession::HandleWriteResponse(const boost::system::error_code& error, si
     }
 }
 
+void HttpSession::AsyncWaitKillByTimeout() {
+    _killer_timer.cancel();
+
+    auto kill_lambda = [this_weak_ptr = weak_from_this()](const boost::system::error_code& error_code) {
+        auto this_ptr = this_weak_ptr.lock();
+        if (this_ptr) {
+            this_ptr->HandleKillByTimeout(error_code);
+        }
+    };
+
+    _killer_timer.expires_from_now(boost::posix_time::seconds(_keep_alive_timeout));
+    _killer_timer.async_wait(kill_lambda);
+}
+
 void HttpSession::AsyncWriteResponse(const std::shared_ptr<Http::Response>& response) {
     LOG_INFO("AsyncWriteResponse");
-    auto write_lambda = [this_ptr = shared_from_this()](const boost::system::error_code& error_code,
+    auto write_lambda = [this_weak_ptr = weak_from_this()](const boost::system::error_code& error_code,
                                                         size_t bytes_transferred) {
-        this_ptr->HandleWriteResponse(error_code, bytes_transferred);
+        auto this_ptr = this_weak_ptr.lock();
+        if (this_ptr) {
+            this_ptr->HandleWriteResponse(error_code, bytes_transferred);
+        }
     };
 
     boost::asio::async_write(_socket, boost::asio::buffer(response->Extract()), write_lambda);
@@ -149,4 +175,5 @@ boost::asio::ip::tcp::socket& HttpSession::GetSocketAsReference() {
 void HttpSession::Close() {
     _session_manager.CloseSession(shared_from_this());
     _socket.close();
+    _killer_timer.cancel();
 }

@@ -1,6 +1,4 @@
 {
-  "MaxSessionsNumber": 2048,
-  "SessionsKillerDelay_s": 2,
   "Servers": [
     {
       "Name": "kabun1",

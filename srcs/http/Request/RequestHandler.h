@@ -9,6 +9,7 @@ struct HandleResult {
     std::shared_ptr<Request> handled_request;
     std::shared_ptr<Response> response;
     bool keep_alive;
+    unsigned int keep_alive_timeout;
 };
 
 class RequestHandler {
@@ -24,6 +25,8 @@ private:
     std::string _path_after_matching;
 
     bool _keep_alive;
+
+    unsigned int _keep_alive_timeout;
 
 public:
     RequestHandler(const std::shared_ptr<Request>& request);

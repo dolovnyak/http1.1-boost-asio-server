@@ -219,10 +219,8 @@ tag_invoke(const boost::json::value_to_tag<std::shared_ptr<ServerConfig>>&, cons
 Config tag_invoke(const boost::json::value_to_tag<Config>&, const boost::json::value& json) {
     const boost::json::object& obj = json.as_object();
 
-    return {
-            exceptions_wrapper(extract_soft<unsigned int>, "MaxSessionsNumber", obj, DEFAULT_MAX_SESSIONS_NUMBER),
-            PackToEndpoints(exceptions_wrapper(
-                    sequence_container_extract<std::vector<std::shared_ptr<ServerConfig>>>, "Servers", obj))
+    return {PackToEndpoints(exceptions_wrapper(sequence_container_extract<std::vector<std::shared_ptr<ServerConfig>>>,
+                                               "Servers", obj))
     };
 }
 

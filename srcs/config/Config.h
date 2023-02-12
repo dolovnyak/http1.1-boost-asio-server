@@ -113,10 +113,7 @@ public:
 
 class Config {
 public:
-    Config(unsigned int max_sessions_number,
-           const std::vector<std::shared_ptr<EndpointConfig>>& endpoint_configs);
-
-    const unsigned int max_sessions_number;
+    Config(const std::vector<std::shared_ptr<EndpointConfig>>& endpoint_configs);
 
     const std::vector<std::shared_ptr<EndpointConfig>> endpoint_configs;
 };

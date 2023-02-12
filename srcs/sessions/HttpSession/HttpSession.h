@@ -29,17 +29,19 @@ private:
 
     std::optional<std::shared_ptr<ServerConfig>> _server_config;
 
+    bool _keep_alive;
+
+    unsigned int _keep_alive_timeout;
+
     boost::asio::io_context& _io_context;
 
     SessionManager& _session_manager;
 
     boost::asio::ip::tcp::socket _socket;
 
+    boost::asio::deadline_timer _killer_timer;
+
     Http::RequestParser _request_parser;
-
-    bool _keep_alive;
-
-    unsigned int _keep_alive_timeout;
 
     std::array<char, READ_BUFFER_SIZE> _buffer;
 
@@ -52,21 +54,19 @@ public:
             boost::asio::io_context& io_context,
             SessionManager& session_manager);
 
-    ~HttpSession() {
-        LOG_INFO("Http session destroyed");
-    }
-
     [[nodiscard]] boost::asio::ip::tcp::socket& GetSocketAsReference();
 
     void AsyncReadRequest();
 
     void AsyncWriteResponse(const std::shared_ptr<Http::Response>& response);
 
+    void AsyncWaitKillByTimeout();
+
     void HandleReadRequest(const boost::system::error_code& error, std::size_t bytes_transferred);
 
     void HandleWriteResponse(const boost::system::error_code& error, size_t bytes_transferred);
 
-    void HandleReadFile(const boost::system::error_code& error, std::size_t bytes_transferred);
+    void HandleKillByTimeout(const boost::system::error_code& error);
 
     void Close();
 
