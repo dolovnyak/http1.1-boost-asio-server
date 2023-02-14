@@ -6,7 +6,8 @@
 #include "Http.h"
 
 std::shared_ptr<EndpointConfig> endpoint_config = std::make_shared<EndpointConfig>(EndpointConfig(
-        "127.0.0.1", 8080, {std::make_shared<ServerConfig>(ServerConfig("Kabun", "127.0.0.1", 8080, {}, 1000, 1000, 3, 4, {}))}));
+        "127.0.0.1", 8080, {std::make_shared<ServerConfig>(ServerConfig("Kabun", "127.0.0.1", 8080, "", "", {}, 1000, 1000, 3, 4, {}, {}))}));
+
 
 TEST(RequestParser, Check_Init) {
     Http::RequestParser parser(endpoint_config);
@@ -36,8 +37,6 @@ TEST(Request, Handle_FSM_First_Line) {
         ASSERT_EQ(parser._raw_request, full_raw_request);
         ASSERT_EQ(parser._http_method, Http::Method::Get);
         ASSERT_EQ(parser._target.path, "/");
-        ASSERT_EQ(parser._target.directory_path, "/");
-        ASSERT_EQ(parser._target.file_name, "");
         ASSERT_EQ(parser._target.extension, "");
         ASSERT_EQ(parser._target.query_string, "");
         ASSERT_EQ(parser._http_version, Http::Version::Http1_1);
@@ -69,9 +68,7 @@ TEST(Request, Handle_FSM_First_Line) {
     ASSERT_EQ(parser._raw_request, full_raw_request);
     ASSERT_EQ(parser._http_method, Http::Method::Get);
     ASSERT_EQ(parser._target.path, "/cgi-bin/a/a/a/a.lua");
-    ASSERT_EQ(parser._target.directory_path, "/cgi-bin/a/a/a/");
-    ASSERT_EQ(parser._target.file_name, "a.lua");
-    ASSERT_EQ(parser._target.extension, "lua");
+    ASSERT_EQ(parser._target.extension, ".lua");
     ASSERT_EQ(parser._target.query_string, "?\?\?////a=asd//\?\?/??");
     ASSERT_EQ(parser._http_version, Http::Version::Http1_1);
     ASSERT_EQ(parser._http_headers.size(), 0);

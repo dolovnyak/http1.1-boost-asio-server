@@ -3,8 +3,7 @@ project(web-server)
 
 set(CMAKE_CXX_STANDARD 17)
 
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra -fsanitize=address")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 
 ################################################################################
@@ -16,6 +15,7 @@ add_library(${WS_LIB}
         srcs/config/ConfigParser.cpp
         srcs/sessions/HttpSession/HttpSession.cpp
         srcs/sessions/EndpointSession/EndpointSession.cpp
+        srcs/http/Request/AutoindexHandler.cpp
         srcs/http/Request/RequestParser.cpp
         srcs/http/Request/RequestHandler.cpp
         srcs/http/Request/CgiHandler.cpp
@@ -52,7 +52,7 @@ target_link_libraries(${WS_LIB} LINK_PUBLIC ${Boost_LIBRARIES})
 ################################################################################
 add_executable(${PROJECT_NAME}
         srcs/main.cpp
-        )
+        srcs/http/Request/AutoindexHandler.h)
 target_link_libraries(${PROJECT_NAME} PUBLIC ${WS_LIB})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES

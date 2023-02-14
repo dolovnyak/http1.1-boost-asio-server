@@ -1,6 +1,7 @@
 #include "RequestHandler.h"
 #include "Exception.h"
 #include "CgiHandler.h"
+#include "AutoindexHandler.h"
 
 namespace Http {
 
@@ -36,7 +37,7 @@ std::string ProcessHeadGet(const std::shared_ptr<Location>& matched_location, co
             if (!should_read) {
                 return {};
             }
-            /// Process autoindex
+            return AutoindexHandler::Handle(path, path_after_matching, request);
         }
     }
 
