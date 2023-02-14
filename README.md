@@ -1,9 +1,4 @@
-# Webserver-42
-
-### Nginx style webserver working with poll (TODO epoll), which can manage static content, upload files, run cgi-scripts. Supported autoindex, nginx style locations. Partial support of http/1.1 and http/1.0
-
-* TODO build status
-* TODO tests coverage
+# http1.1-boost-asio-server
 
 ## Config:
 - ### Config common fields:
