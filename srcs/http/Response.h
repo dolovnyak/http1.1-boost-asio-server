@@ -1,9 +1,7 @@
 #pragma once
 
 #include "Http.h"
-#include "HttpErrorPages.h"
-#include "SharedPtr.h"
-#include "Optional.h"
+#include "ErrorPages.h"
 
 /// У респонса должен быть набор базовых хедеров:
 /// Date
@@ -12,21 +10,72 @@
 /// Content-Length
 /// Connection: (keep-alive или close)
 
-/// При error response все есть внутри кроме имени сервера, его надо пробрасывать.
+namespace Http {
 
-/// у респонса будет конструктор, который будет принимать статус ответа, тайтл, вектор хедеров и тело.
+
+/// default response with body
+/// default response without body
 
 class Response {
 public:
-    static Response MakeErrorResponse(Http::Version http_version, Http::Code code, const std::string& error_title,
-                                      SharedPtr<ServerConfig> server_config);
+    static std::vector<Http::Header> GetDefaultHeaders(const std::shared_ptr<ServerConfig>& server_config) {
+        return {Header("Server", server_config->name),
+                Header("Date", GetCurrentDateTimeString()),
+                Header("Content-Type", "text/html, charset=utf-8")};
+    }
 
-    static Response MakeOkResponse(Http::Version http_version, const std::string& body,
-                                   SharedPtr<ServerConfig> server_config, bool keep_alive);
+    static std::shared_ptr<Response> MakeDefaultWithBody(const std::shared_ptr<ServerConfig>& server_config,
+                                                         Code code, std::string title, std::string body,
+                                                         bool keep_alive) {
+        std::vector<Header> headers = GetDefaultHeaders(server_config);
+        headers.emplace_back("Content-Length", std::to_string(body.size()));
+        if (keep_alive) {
+            headers.emplace_back("Connection", "keep-alive");
+        }
 
-    Response(Http::Version http_version, Http::Code code, const std::string& title,
-             const std::vector<Http::Header>& custom_headers,
-             const std::string& body);
+        return std::make_shared<Response>(code, std::move(title), std::move(headers), std::move(body));
+    }
 
-    std::string response;
+    static std::shared_ptr<Response> MakeDefaultWithoutBody(const std::shared_ptr<ServerConfig>& server_config,
+                                                            Code code, std::string title, bool keep_alive) {
+        std::vector<Header> headers = GetDefaultHeaders(server_config);
+        if (keep_alive) {
+            headers.emplace_back("Connection", "keep-alive");
+        }
+        return std::make_shared<Response>(code, std::move(title), std::move(headers), std::nullopt);
+    }
+
+    Response(Http::Code code,
+             std::string title,
+             std::vector<Http::Header> headers,
+             std::optional<std::string> body)
+            : _version(Http1_1), _code(code),
+              _title(std::move(title)), _headers(std::move(headers)), _body(std::move(body)) {}
+
+    std::string Extract() {
+        std::string res =
+                Http::ToString(_version) + " " + std::to_string(static_cast<int>(_code)) + " " + _title + "\r\n";
+        for (const auto& header: _headers) {
+            res += header.key + ": " + header.value + "\r\n";
+        }
+        res += "\r\n";
+
+        if (_body.has_value() && !_body.value().empty()) {
+            res += _body.value();
+        }
+        return res;
+    }
+
+    void AddHeader(Header new_header) {
+        _headers.emplace_back(std::move(new_header));
+    }
+
+private:
+    Version _version;
+    Code _code;
+    std::string _title;
+    std::vector<Header> _headers;
+    std::optional<std::string> _body;
 };
+
+}

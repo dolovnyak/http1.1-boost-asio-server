@@ -3,23 +3,6 @@
 #include <string>
 #include <vector>
 
-#ifdef _STANDARD98
-#define OVERRIDE
-#else
-#define OVERRIDE override
-#endif
-
-#define READ_BUFFER_SIZE 4096
-
-struct EnumClassHash
-{
-    template <typename T>
-    std::size_t operator()(T t) const
-    {
-        return static_cast<std::size_t>(t);
-    }
-};
-
 std::string StripString(const std::string& str);
 
 std::vector<std::string> SplitString(const std::string& str, const std::string& delimiters);
@@ -28,7 +11,11 @@ size_t FindInRange(const std::string& str, const std::string& substr, size_t sta
 
 std::string ToLower(const std::string& str);
 
+std::string ToUpper(const std::string& str);
+
 std::string GetCurrentDateTimeString();
+
+std::string UnitePaths(const std::string& path1, const std::string& path2);
 
 int ParseInt(const std::string& value, int base = 10);
 
@@ -65,3 +52,9 @@ bool IsIpv4(const std::string& str);
 bool SetSocketNonBlocking(int socket);
 
 bool ReadFile(const std::string& path, std::string& result);
+
+bool IsFile(const std::string& path);
+
+bool IsExecutableFile(const std::string& path);
+
+bool IsDirectory(const std::string& path);

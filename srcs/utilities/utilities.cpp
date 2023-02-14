@@ -1,8 +1,11 @@
 #include "utilities.h"
 
 #include <sys/ioctl.h>
+#include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+
+#define READ_BUFFER_SIZE 4096
 
 std::string StripString(const std::string& str) {
     std::string::const_iterator start_it = str.cbegin();
@@ -19,7 +22,7 @@ std::string StripString(const std::string& str) {
     if (start_it == str.cbegin() && end_it == str.crbegin())
         return str;
 
-    return std::string(start_it, end_it.base());
+    return {start_it, end_it.base()};
 }
 
 std::vector<std::string> SplitString(const std::string& str, const std::string& delimiters) {
@@ -61,13 +64,29 @@ std::string ToLower(const std::string& str) {
     return result;
 }
 
+std::string ToUpper(const std::string& str) {
+    std::string result;
+    std::transform(str.begin(), str.end(), std::back_inserter(result), std::toupper);
+    return result;
+}
+
 std::string GetCurrentDateTimeString() {
     time_t rawtime;
     time(&rawtime);
     struct tm* timeinfo = localtime(&rawtime);
     char buffer[80];
     strftime(buffer, sizeof(buffer), "%a, %d %b %Y %H:%M:%S %Z", timeinfo);
-    return std::string(buffer);
+    return {buffer};
+}
+
+std::string UnitePaths(const std::string& path1, const std::string& path2) {
+    if (path1.back() == '/' && path2.front() == '/') {
+        return path1.substr(0, path1.size() - 1) + path2;
+    }
+    else if (path1.back() != '/' && path2.front() != '/') {
+        return path1 + "/" + path2;
+    }
+    return path1 + path2;
 }
 
 int ParseInt(const std::string& value, int base) {
@@ -95,8 +114,8 @@ bool IsTchar(char c) {
 }
 
 bool IsTcharString(const std::string& str) {
-    for (size_t i = 0; i < str.size(); ++i) {
-        if (!IsTchar(str[i])) {
+    for (char c : str) {
+        if (!IsTchar(c)) {
             return false;
         }
     }
@@ -118,8 +137,8 @@ bool IsHexDigit(char c) {
 }
 
 bool IsHexDigitString(const std::string& str) {
-    for (size_t i = 0; i < str.size(); ++i) {
-        if (!IsHexDigit(str[i])) {
+    for (char c : str) {
+        if (!IsHexDigit(c)) {
             return false;
         }
     }
@@ -194,8 +213,8 @@ bool IsObsText(char c) {
 }
 
 bool IsFieldContent(const std::string& str) {
-    for (size_t i = 0; i < str.size(); ++i) {
-        if (!isprint(str[i]) && !IsObsText(str[i]) && str[i] != '\t') {
+    for (char c : str) {
+        if (!isprint(c) && !IsObsText(c) && c != '\t') {
             return false;
         }
     }
@@ -203,8 +222,8 @@ bool IsFieldContent(const std::string& str) {
 }
 
 bool IsPositiveNumberString(const std::string& str) {
-    for (size_t i = 0; i < str.size(); ++i) {
-        if (!isdigit(str[i])) {
+    for (char c : str) {
+        if (!isdigit(c)) {
             return false;
         }
     }
@@ -288,5 +307,30 @@ bool ReadFile(const std::string& path, std::string& result) {
         }
         result.append(buff, read_bytes);
     }
+    close(fd);
     return true;
+}
+
+bool IsFile(const std::string& path) {
+    struct stat path_stat{};
+    if (stat(path.c_str(), &path_stat) != 0) {
+        return false;
+    }
+    return S_ISREG(path_stat.st_mode);
+}
+
+bool IsExecutableFile(const std::string& path) {
+    struct stat path_stat{};
+    if (stat(path.c_str(), &path_stat) != 0) {
+        return false;
+    }
+    return (S_IXUSR & path_stat.st_mode) || (S_IEXEC & path_stat.st_mode);
+}
+
+bool IsDirectory(const std::string& path) {
+    struct stat path_stat{};
+    if (stat(path.c_str(), &path_stat) != 0) {
+        return false;
+    }
+    return S_ISDIR(path_stat.st_mode);
 }

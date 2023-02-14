@@ -23,7 +23,7 @@
   * **autoindex** `default: false` - on/off directory listing. Behave according to [intersected location fields rules](#intersected-location-fields-rules)
   * **methods** `default: no one` - array of available methods for this location. Other will forbidden.
   * **cgi_path** - `default: none (cgi off)` - path to cgi script which will be execute for this location. Behave according to [intersected location fields rules](#intersected-location-fields-rules)
-  * **upload_path** `default: none (uploading off)` - path to the directory where to upload files when a PUT request arrives. Behave according to [intersected location fields rules](#intersected-location-fields-rules)
+  * **upload_path** `default: none (uploading off)` - path to the directory where to upload files when a Put request arrives. Behave according to [intersected location fields rules](#intersected-location-fields-rules)
   * **return** `default: none` - "http_error_code" or "http_redirect_code url". if url start with "/" it's local path and we need to construct correct url. In other case we consider that url is correct global url. Behave according to [intersected location fields rules](#intersected-location-fields-rules)
  
 ## Default server rules:

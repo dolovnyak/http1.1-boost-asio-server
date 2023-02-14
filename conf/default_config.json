@@ -1,73 +1,72 @@
 {
-  "MaxSessionsNumber": 2048,
-  "ReadBufferSize": 4096,
-  "SessionsKillerDelay_s": 2,
-  "HangSessionTimeout_s": 10,
-  "CoreTimeout_s": 1,
-  "ServerInstances": [
+  "Servers": [
     {
-      "Port": 80,
       "Name": "kabun1",
-      "Root": "/Users/sbecker/Desktop/projects/webserver-42/examples/cgi_checker1",
-      "MaxBodySize" : 1000000,
-      "MaxRequestSize" : 100000000,
+      "Host": "0.0.0.0",
+      "Port": 1025,
       "KeepAliveTimeout_s" : 30,
-      "KeepAliveMaxTimeout_s" : 1800,
-      "Locations": [
+      "MaxKeepAliveTimeout_s" : 1800,
+      "CgiUploaderPath": "/Users/dolov/Desktop/Projects/webserver-42/examples/YoupiBanane/kaban/uploader.py",
+      "CgiDeleterPath": "/Users/dolov/Desktop/Projects/webserver-42/examples/YoupiBanane/kaban/deleter.py",
+      "ExtensionInterceptors" : [
         {
-          "Location": "/",
-          "Root": "/",
-          "Autoindex": 0,
-          "Index": "index.html",
-          "AvailableMethods": [
-            "GET",
+          "Extension": ".bla",
+          "Cgi-path": "/Users/dolov/Desktop/Projects/webserver-42/examples/cgi_checker/cgi_tester",
+          "OnMethods": [
             "POST"
           ]
         }
-      ]
-    },
-    {
-      "Port": 80,
-      "Name": "kabun2",
-      "Root": "/Users/sbecker/Desktop/projects/webserver-42/examples/cgi_checker2",
-      "MaxBodySize": 8096,
-      "MaxRequestSize": 16384,
-      "ErrorPages": {
-        "404": "/error_pages/404.html",
-        "405": "/error_pages/405.html",
-        "500": "/error_pages/500.html"
-      },
+      ],
       "Locations": [
         {
+          "Location": "/kaban",
+          "Root": "/Users/dolov/Desktop/Projects/webserver-42/examples/YoupiBanane/kaban",
+          "AvailableMethods": [
+            "POST"
+          ]
+        },
+        {
+          "Location": "/kaben",
+          "Root": "/Users/dolov/Desktop/Projects/webserver-42/examples/",
+          "Autoindex": true,
+          "AvailableMethods": [
+            "GET"
+          ]
+        },
+        {
           "Location": "/",
-          "Root": "/",
-          "Autoindex": 1,
-          "Index": "index.html",
+          "Root": "/Users/dolov/Desktop/Projects/webserver-42/examples/YoupiBanane",
+          "Index": "youpi.bad_extension",
           "AvailableMethods": [
-            "GET",
+            "GET"
+          ]
+        },
+        {
+          "Location": "/put_test",
+          "Root": "/Users/dolov/Desktop/Projects/webserver-42/examples/YoupiBanane",
+          "AvailableMethods": [
+            "PUT"
+          ]
+        },
+        {
+          "Location": "/post_body",
+          "Return": {
+            "Code": 200
+          },
+          "Root": "/Users/dolov/Desktop/Projects/webserver-42/examples/YoupiBanane",
+          "MaxBodySize": 100,
+          "AvailableMethods": [
             "POST"
           ]
         },
         {
-          "Location": ".php|.py|.rb|.pl|.cgi",
-          "Cgi-pass": "/Users/sbecker/Desktop/projects/webserver-42/examples/cgi_checker/cgi.php",
+          "Location": "/directory",
+          "Root": "/Users/dolov/Desktop/Projects/webserver-42/examples/YoupiBanane",
+          "Index": "youpi.bad_extension",
+          "MaxBodySize": 100,
           "AvailableMethods": [
-            "GET",
-            "POST"
+            "GET"
           ]
-        },
-        {
-          "Location": "/upload",
-          "Root": "/cgi-bin/upload.py",
-          "AvailableMethods": [
-            "GET",
-            "POST",
-            "DELETE"
-          ]
-        },
-        {
-          "Location": "/images/kitty.jpg",
-          "Redirect": "/images/kitty2.jpg"
         }
       ]
     }

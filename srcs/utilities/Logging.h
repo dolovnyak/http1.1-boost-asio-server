@@ -1,7 +1,5 @@
 #pragma once
 
-#ifndef _STANDARD98
-
 #include <string>
 #include <iostream>
 
@@ -277,26 +275,4 @@ private:
 #define LOG_PERROR_BG(...)      Log::PerrorBg(__VA_ARGS__)
 #define LOG_START_TIMER()
 #define LOG_TIME()
-#endif
-
-
-#else  /// _STANDARD98
-
-#define LOG_SUCCESS(...)
-#define LOG_SUCCESS_BG(...)
-#define LOG_IMPORTANT(...)
-#define LOG_IMPORTANT_BG(...)
-#define LOG_INFO(...)
-#define LOG_INFO_BG(...)
-#define LOG_DEBUG(...)
-#define LOG_DEBUG_BG(...)
-#define LOG_WARNING(...)
-#define LOG_WARNING_BG(...)
-#define LOG_ERROR(...)
-#define LOG_ERROR_BG(...)
-#define LOG_PERROR(...)
-#define LOG_PERROR_BG(...)
-#define LOG_START_TIMER()
-#define LOG_TIME()
-
 #endif

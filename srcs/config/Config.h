@@ -1,129 +1,125 @@
 #pragma once
 
-#include "SharedPtr.h"
 #include "Http.h"
 #include "utilities.h"
-
 
 #include <string>
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>
 
-#define WEBSERVER_NAME "Webserver-42"
+#define READ_BUFFER_SIZE 8192
 
-#define DEFAULT_MAX_SOCKETS 1024
-#define DEFAULT_READ_BUFFER_SIZE 4096
+#define DEFAULT_MAX_SESSIONS_NUMBER 1024
 
 #define DEFAULT_SESSION_KILLER_DELAY 2 // 2 seconds
 #define DEFAULT_CORE_TIMEOUT 1 // 1 seconds
 
-#define DEFAULT_MAX_BODY_SIZE 100000000 // 100 MB
-#define DEFAULT_MAX_REQUEST_SIZE 200000000 // 200 MB
+#define DEFAULT_MAX_BODY_SIZE 10000000000
+#define DEFAULT_MAX_REQUEST_SIZE 20000000000
 
 #define DEFAULT_KEEP_ALIVE_TIMEOUT 60 // 60 seconds
 #define DEFAULT_MAX_KEEP_ALIVE_TIMEOUT 1800 // 30 minutes
 #define DEFAULT_HANG_SESSION_TIMEOUT 10 // 10 seconds
 
-struct PortServersConfig;
-typedef std::unordered_map<int, SharedPtr<PortServersConfig> >::iterator PortServersIt;
+struct HttpReturn {
+    Http::Code code;
+    std::optional<std::string> redirect;
+};
 
-struct Location{
-    Location(
-        std::string location,
-        std::string root,
-        bool autoindex,
-        std::string index,
-        std::unordered_set<std::string> available_methods,
-        std::string redirect);
-    
-    Location() {};
+struct ExtensionInterceptor {
+    ExtensionInterceptor(std::string extension,
+                         std::string cgi_path,
+                         std::unordered_set<Http::Method> available_methods);
+    const std::string extension;
+    const std::string cgi_path;
+    const std::unordered_set<Http::Method> on_methods;
+};
 
-    std::string location; /// location должен всегда начинаться с / (кидать ошибку если это не так) /// обязательное поле
+struct Location {
+    Location(std::string location,
+             std::string root,
+             std::optional<std::string> index,
+             std::optional<HttpReturn> http_return,
+             bool autoindex,
+             std::unordered_set<Http::Method> available_methods,
+             unsigned int max_body_size);
 
-    std::string root; /// root должен всегда заканчиваться на / (автоматически добавлять если это не так)  /// опциональное поле, если нет - то записывать от рута сервера
+    const std::string location;
 
-    std::string full_path;  // root + location (тут будет трабла, что рут заканчивается на /, а локейшн начинается на /)
+    const std::string root;
 
-    bool autoindex;  /// по умолчанию false, если указан как true, но есть index то false
+    const std::optional<std::string> index;
 
-    std::string index;  /// если не указан и не указан autoindex то index = index.html
+    const std::optional<HttpReturn> http_return;
 
-    std::unordered_set<Http::Method, EnumClassHash> available_methods; /// если не указано, то недоступен ни один метод (на всякий, проверить)
+    const bool autoindex;
 
-    std::string redirect;  /// опциональное поле, хз как работает если задан index или autoindex (на всякий, проверить)
+    const std::unordered_set<Http::Method> available_methods;
+
+    unsigned int max_body_size;
 };
 
 struct ServerConfig {
-    ServerConfig(int port,
-                const std::string& name,
-                const std::string& root,
-                std::unordered_map <int, std::string> error_pages,
-                const std::unordered_set<std::string>& cgi_file_extensions,
-                std::vector<SharedPtr<Location> > locations  /// TODO maybe del shared ptr
-                );
+    ServerConfig(std::string name, std::string host, unsigned short port,
+                 std::string cgi_uploader_path, std::string cgi_deleter_path,
+                 std::unordered_map<Http::Code, std::string> error_pages, int max_body_size,
+                 int max_request_size,
+                 int default_keep_alive_timeout_s, int max_keep_alive_timeout_s,
+                 const std::vector<std::shared_ptr<ExtensionInterceptor>>& extensions_interceptors,
+                 const std::vector<std::shared_ptr<Location>>& locations);
 
-    ServerConfig() {} // TODO add defaut value
+    const std::string name;
 
-    int port; /// обязательное поле
+    const std::string host;
 
-    std::string name;
+    const unsigned short port;
 
-    std::string root; /// root должен всегда заканчиваться на / (автоматически добавлять если это не так)  /// обязательное поле
+    const std::string cgi_uploader_path;
 
-    std::unordered_map <int, std::string> error_pages; /// опциональное поле, они задаются в абсолютном пути (по умолчанию пустое)
+    const std::string cgi_deleter_path;
 
-    int max_body_size; /// опциональное поле, если не указано то берется из дефолта
+    const std::unordered_map<Http::Code, std::string> error_pages;
 
-    int max_request_size; /// опциональное поле, если не указано то берется из дефолта
+    unsigned int max_body_size;
 
-    int default_keep_alive_timeout_s; /// опциональное брать дефолтное значение
+    unsigned int max_request_size;
 
-    int max_keep_alive_timeout_s; /// опциональное брать дефолтное значение
+    unsigned int default_keep_alive_timeout_s;
 
-    std::vector<SharedPtr<Location> > locations; 
+    unsigned int max_keep_alive_timeout_s;
+
+    std::vector<std::shared_ptr<ExtensionInterceptor>> extensions_interceptors;
+
+    std::vector<std::shared_ptr<Location>> locations;
 };
 
-struct PortServersConfig {
-    
-    SharedPtr<ServerConfig> GetByNameOrDefault(const std::string& name) const;
+/// servers with the same host:port
+class EndpointConfig {
+public:
+    EndpointConfig(std::string host, unsigned short port, std::vector<std::shared_ptr<ServerConfig>> servers);
 
-    SharedPtr<ServerConfig> GetDefault() const;
+    [[nodiscard]] std::shared_ptr<ServerConfig> GetServerByNameOrDefault(const std::string& name) const;
 
-    std::vector<SharedPtr <ServerConfig > > server_configs; /// first server is default
+    [[nodiscard]] std::shared_ptr<ServerConfig> GetDefaultServer() const;
 
-    int port;
+    const std::string host;
+
+    const unsigned short port;
+
+    const std::vector<std::shared_ptr<ServerConfig>> servers; /// the first one is default
+
 };
 
-struct Config {
-    bool Load(const char* path);
+class Config {
+public:
+    Config(const std::vector<std::shared_ptr<EndpointConfig>>& endpoint_configs);
 
-    int max_sessions_number; /// опциональное поле, по умолчанию 1024
-
-    int read_buffer_size; /// опциональное поле, по умолчанию 2048
-
-    int sessions_killer_delay_s; /// опциональное поле, по умолчанию 2
-
-    int core_timeout_ms;  /// this value conflict with sessions_killer_delay_s, so this value should be <= sessions_killer_delay_s (set exception on ths when load config)
-
-    int hang_session_timeout_s; /// опциональное брать дефолтное значение
-
-    std::unordered_map<int, SharedPtr<PortServersConfig> > port_servers_configs;
+    const std::vector<std::shared_ptr<EndpointConfig>> endpoint_configs;
 };
 
 /// TODO check if order stays during reading json
-/// TODO check availiable methods defaults
 /// TODO check redirect behaviare
 /// error not Allow если к недопустимому методу 
-/// name для location обязательный?  
+/// name для location обязательный?
 /// проверить root and location in subject
-
-//  NOTICES:
-//
-//все интовые значения должны быть > 0
-//
-//парсер читает все строчки, и при повторяющихся ключей берет первое значение  
-//
-//problem by jtocs. Doen't see comments and empty line, exempl: 
-//     "Name": ""
-//    //"root": "ssss/"
