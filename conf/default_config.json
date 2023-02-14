@@ -26,6 +26,14 @@
           ]
         },
         {
+          "Location": "/kaben",
+          "Root": "/Users/dolov/Desktop/Projects/webserver-42/examples/",
+          "Autoindex": true,
+          "AvailableMethods": [
+            "GET"
+          ]
+        },
+        {
           "Location": "/",
           "Root": "/Users/dolov/Desktop/Projects/webserver-42/examples/YoupiBanane",
           "Index": "youpi.bad_extension",

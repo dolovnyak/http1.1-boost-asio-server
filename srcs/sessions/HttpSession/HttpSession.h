@@ -33,8 +33,6 @@ private:
 
     unsigned int _keep_alive_timeout;
 
-    boost::asio::io_context& _io_context;
-
     SessionManager& _session_manager;
 
     boost::asio::ip::tcp::socket _socket;
