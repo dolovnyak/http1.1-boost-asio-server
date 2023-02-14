@@ -37,21 +37,4 @@ If several servers listen on the same host:port, then the first one in the confi
 * If the priority is different, then locations with a higher priority will always be selected first, for example, if you set the location /images/cat.jpg with priority 1 and /images with priority 2, then location for /images/cat.jpg will never selected.
 
 ## Intersected location fields rules:
-There are 4 location fields that cause different behavior and conflict with each other. It's `Cgi-pass`, `Index`, `Return` and `Autoindex`. For now we will never allow more than one of them to be enabled at the same location.
-
-------------------------------------------------
-------------------------------------------------
-------------------------------------------------
-
-Краткое описание хедеров:
-* Host - хост и порт сервера, к которому обращается клиент
-* Content-Type - тип контента, который отправляется клиенту (например text/html)
-* Content-Length - длина тела запроса
-* Transfer-Encoding - способ передачи тела запроса (chunked, compress, deflate, gzip, identity) - только chunked поддерживается
-* Connection - управление соединением (keep-alive, close)
-* Keep-Alive - параметры keep-alive соединения (timeout, max) - только timeout поддерживается
-* Authorization - авторизация пользователя (Basic, Digest, Bearer, HOBA, Mutual, AWS4-HMAC-SHA256) - только Basic поддерживается
-* Cookie - куки пользователя, которые передаются в запросе
-* Set-Cookie - куки, которые передаются в ответе сервера и хранятся у клиента и передаются в следующие запросы через Cookie
-* Server - имя сервера
-* Date - дата и время запроса
+There are 3 location fields that cause different behavior and conflict with each other. It's `Index`, `Return` and `Autoindex`. For now we will never allow more than one of them to be enabled at the same location.
