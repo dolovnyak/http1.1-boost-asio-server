@@ -2,8 +2,6 @@
 #include "Exception.h"
 #include "SessionManager.h"
 
-#include <boost/bind.hpp>
-
 const std::string& ToString(HttpSessionState state) {
     static std::unordered_map<HttpSessionState, std::string> kStateToString = {
             {HttpSessionState::ReadRequest,   "ReadRequest"},
