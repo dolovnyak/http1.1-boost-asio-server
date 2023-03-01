@@ -6,7 +6,7 @@
 
 #include <memory>
 
-class EndpointSession : public Session, public std::enable_shared_from_this<EndpointSession> {
+class EndpointSession : public std::enable_shared_from_this<EndpointSession> {
 private:
     std::shared_ptr<Config> _config;
 
@@ -31,7 +31,7 @@ public:
 
     void HandleAccept(const std::shared_ptr<HttpSession>& http_session, const boost::system::error_code& error);
 
-    [[nodiscard]] const std::string& GetName() const override {
+    [[nodiscard]] const std::string& GetName() const {
         static std::string kName = "EndpointSession";
         return kName;
     }

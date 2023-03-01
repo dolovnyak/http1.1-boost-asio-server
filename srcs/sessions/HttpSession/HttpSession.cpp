@@ -42,11 +42,6 @@ HttpSession::HttpSession(const std::shared_ptr<Config>& config,
 void HttpSession::HandleReadRequest(const boost::system::error_code& error,
                                     std::size_t bytes_transferred) {
     if (!error) {
-        if (!available) {
-            LOG_INFO("Read on closed connection");
-            return;
-        }
-
         if (_state != HttpSessionState::ReadRequest) {
             LOG_WARNING("Read on wrong session state: \"", ToString(_state), "\"");
             return;

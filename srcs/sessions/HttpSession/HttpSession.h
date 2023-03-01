@@ -4,11 +4,12 @@
 #include "RequestParser.h"
 #include "RequestHandler.h"
 #include "Response.h"
-#include "Session.h"
 #include "utilities.h"
+#include "Logging.h"
 
 #include <utility>
 #include <optional>
+#include <boost/asio.hpp>
 
 enum class HttpSessionState {
     ReadRequest = 0,
@@ -21,7 +22,7 @@ const std::string& ToString(HttpSessionState state);
 
 class SessionManager;
 
-class HttpSession : public Session, public std::enable_shared_from_this<HttpSession> {
+class HttpSession : public std::enable_shared_from_this<HttpSession> {
 private:
     std::shared_ptr<Config> _config;
 
@@ -68,7 +69,7 @@ public:
 
     void Close();
 
-    [[nodiscard]] const std::string& GetName() const override {
+    [[nodiscard]] const std::string& GetName() const {
         static std::string kName = "HttpSession";
         return kName;
     }
