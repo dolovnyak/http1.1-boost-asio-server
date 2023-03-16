@@ -241,6 +241,7 @@ std::shared_ptr<Response> RequestHandler::HandleHttpMethod() {
             throw NotImplemented("Method " + ToString(*it) + " not implemented",
                                  _request->server_config);
     }
+    throw std::logic_error("case missing");
 }
 
 HandleResult RequestHandler::Handle() {

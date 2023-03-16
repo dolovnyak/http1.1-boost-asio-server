@@ -6,6 +6,7 @@
 
 #include <exception>
 #include <utility>
+#include <stdexcept>
 
 namespace Http {
 

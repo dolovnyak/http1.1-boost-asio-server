@@ -2,6 +2,9 @@
 
 #include <string>
 #include <iostream>
+#include <chrono>
+#include <cstring>
+#include <cerrno>
 
 #define TEXT_GREEN std::string("\e[32m")
 #define TEXT_BRIGHT_GREEN std::string("\e[92m")
@@ -36,7 +39,7 @@ namespace {
     template<typename T>
     void PrintWithErrno(const std::string& text_color, const std::string& bg_color, const T& val) {
         std::cout << text_color + bg_color;
-        std::cout << val << " (errno: " << strerror(errno) << ")" << std::endl;
+        std::cout << val << " (errno: " << std::strerror(errno) << ")" << std::endl;
         std::cout << TEXT_DEFAULT + BG_DEFAULT;
     }
 }

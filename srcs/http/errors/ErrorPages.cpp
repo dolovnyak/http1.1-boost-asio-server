@@ -1,6 +1,7 @@
 #include "ErrorPages.h"
 
 #include <unordered_map>
+#include <stdexcept>
 
 namespace {
     const std::string k301 =

@@ -4,6 +4,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <algorithm>
+#include <ctime>
+#include <cctype>
 
 #define READ_BUFFER_SIZE 4096
 
@@ -60,13 +63,13 @@ size_t FindInRange(const std::string& str, const std::string& substr, size_t sta
 
 std::string ToLower(const std::string& str) {
     std::string result;
-    std::transform(str.begin(), str.end(), std::back_inserter(result), std::tolower);
+    std::transform(str.begin(), str.end(), std::back_inserter(result), [](unsigned char c){ return std::tolower(c); });
     return result;
 }
 
 std::string ToUpper(const std::string& str) {
     std::string result;
-    std::transform(str.begin(), str.end(), std::back_inserter(result), std::toupper);
+    std::transform(str.begin(), str.end(), std::back_inserter(result), [](unsigned char c){ return std::toupper(c); });
     return result;
 }
 
@@ -209,7 +212,7 @@ bool IsQueryString(const std::string& str) {
 }
 
 bool IsObsText(char c) {
-    return static_cast<unsigned char>(c) >= 0x80 && static_cast<unsigned char>(c) <= 0xFF;
+    return static_cast<unsigned char>(c) >= 0x80;
 }
 
 bool IsFieldContent(const std::string& str) {

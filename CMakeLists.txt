@@ -42,10 +42,8 @@ target_include_directories(${WS_LIB} PUBLIC
 target_compile_definitions(${WS_LIB} PUBLIC -D_DEBUG)
 
 # Boost asio
-find_package(Boost REQUIRED COMPONENTS system thread regex REQUIRED)
+set(Boost_INCLUDE_DIR boost_1_81_0)
 target_include_directories(${WS_LIB} PUBLIC ${Boost_INCLUDE_DIR})
-target_link_libraries(${WS_LIB} LINK_PUBLIC ${Boost_LIBRARIES})
-
 
 ################################################################################
 # web-server target

@@ -38,3 +38,33 @@ If several servers listen on the same host:port, then the first one in the confi
 
 ## Intersected location fields rules:
 There are 3 location fields that cause different behavior and conflict with each other. It's `Index`, `Return` and `Autoindex`. For now we will never allow more than one of them to be enabled at the same location.
+
+## Developers sections:
+Only asio and json boost libraries are used, if you need to add the boost library, do this:
+```
+wget https://boostorg.jfrog.io/artifactory/main/release/1.81.0/source/boost_1_81_0.tar.bz2
+tar --bzip2 -xf boost_1_81_0.tar.bz2
+bcp --boost=/path/to/boost_1_81_0 needed_lib_name /path_to_webserver/boost_1_81_0
+```
+
+### Setup linux environment:
+```
+apt-get update
+apt-get install build-essential
+apt-get install gcc
+apt-get install g++
+apt-get install gdb
+apt-get install clang
+apt-get install make
+apt-get install ninja-build
+apt-get install cmake
+apt-get install autoconf
+apt-get install automake
+apt-get install locales-all
+apt-get install dos2unix
+apt-get install rsync
+apt-get install tar
+apt-get install python
+apt-get install apache2-utils
+```
+

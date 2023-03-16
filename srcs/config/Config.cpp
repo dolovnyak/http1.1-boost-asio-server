@@ -1,5 +1,7 @@
 #include "Config.h"
 
+#include <stdexcept>
+
 ExtensionInterceptor::ExtensionInterceptor(std::string extension, std::string cgi_path,
                                            std::unordered_set<Http::Method> available_methods)
         : extension(std::move(extension)), cgi_path(std::move(cgi_path)),

@@ -7,6 +7,8 @@
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>
+#include <optional>
+#include <memory>
 
 #define READ_BUFFER_SIZE 8192
 

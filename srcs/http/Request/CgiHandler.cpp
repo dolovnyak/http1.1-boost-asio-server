@@ -2,23 +2,24 @@
 #include "Exception.h"
 
 #include <unistd.h>
-#include <array>
+#include <sys/wait.h>
+#include <cstring>
 
 namespace Http {
 
 namespace {
-    std::string ToCgiKey(const std::string& key) {
-        std::string res = "HTTP_";
-        for (char c: key) {
-            if (c == '-') {
-                res.push_back('_');
-            }
-            else {
-                res.push_back(toupper(c));
-            }
+std::string ToCgiKey(const std::string& key) {
+    std::string res = "HTTP_";
+    for (char c: key) {
+        if (c == '-') {
+            res.push_back('_');
         }
-        return res;
+        else {
+            res.push_back(toupper(c));
+        }
     }
+    return res;
+}
 }
 
 std::vector<EnvironmentVariable> CgiHandler::CreateCgiEnvironment() {
@@ -39,8 +40,8 @@ std::vector<EnvironmentVariable> CgiHandler::CreateCgiEnvironment() {
              {"SERVER_PROTOCOL",   ToString(_request->http_version)},
              {"SERVER_SOFTWARE", WEBSERVER_NAME}};
 
-    for (const auto& header : _request->http_headers) {
-        for (const auto& header_var : header.second) {
+    for (const auto& header: _request->http_headers) {
+        for (const auto& header_var: header.second) {
             env.emplace_back(ToCgiKey(header.first), header_var);
         }
     }
@@ -66,7 +67,8 @@ std::shared_ptr<Response> CgiHandler::Handle() {
         env[i] = env_variables[i].c_str();
     }
     env[environment.size()] = nullptr;
-    char** env_to_script = (char**) (&env[0]);  /// it's scary but it's necessary
+    char** env_to_script = (char**) (&env[0]);
+    char* const* null_ptr = nullptr;
 
     int save_stdin = dup(STDIN_FILENO);
     int save_stdout = dup(STDOUT_FILENO);
@@ -84,7 +86,7 @@ std::shared_ptr<Response> CgiHandler::Handle() {
     else if (pid == 0) {
         dup2(fd_in, STDIN_FILENO);
         dup2(fd_out, STDOUT_FILENO);
-        execve(_script_path.c_str(), nullptr, env_to_script);
+        execve(_script_path.c_str(), null_ptr, env_to_script);
         std::string error = std::string(EXECVE_ERROR) + " errno is " + std::to_string(errno) + "\r\n\r\n";
         write(STDOUT_FILENO, error.c_str(), error.size());
         exit(-1);
