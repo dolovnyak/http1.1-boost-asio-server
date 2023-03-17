@@ -3,7 +3,7 @@
     {
       "Name": "kabun1",
       "Host": "0.0.0.0",
-      "Port": 1025,
+      "Port": 8080,
       "KeepAliveTimeout_s" : 30,
       "MaxKeepAliveTimeout_s" : 1800,
       "CgiUploaderPath": "/Users/dolov/Desktop/Projects/webserver-42/examples/YoupiBanane/kaban/uploader.py",
@@ -64,6 +64,14 @@
           "Root": "/Users/dolov/Desktop/Projects/webserver-42/examples/YoupiBanane",
           "Index": "youpi.bad_extension",
           "MaxBodySize": 100,
+          "AvailableMethods": [
+            "GET"
+          ]
+        },
+        {
+          "Location": "/me",
+          "Root": "/",
+          "Autoindex": true,
           "AvailableMethods": [
             "GET"
           ]

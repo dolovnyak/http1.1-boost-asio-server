@@ -59,3 +59,5 @@ bool IsFile(const std::string& path);
 bool IsExecutableFile(const std::string& path);
 
 bool IsDirectory(const std::string& path);
+
+std::string ToReadableSize(size_t size_in_bytes);

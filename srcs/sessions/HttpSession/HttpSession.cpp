@@ -96,6 +96,7 @@ void HttpSession::HandleReadRequest(const boost::system::error_code& error,
 
 void HttpSession::HandleKillByTimeout(const boost::system::error_code& error) {
     if (error != boost::asio::error::operation_aborted) {
+
         LOG_WARNING("Error on HandleKillByTimeout");
     }
     Close();
@@ -145,7 +146,8 @@ void HttpSession::AsyncWriteResponse(const std::shared_ptr<Http::Response>& resp
         }
     };
 
-    boost::asio::async_write(_socket, boost::asio::buffer(response->Extract()), write_lambda);
+    _raw_response = response->Extract();
+    boost::asio::async_write(_socket, boost::asio::buffer(_raw_response), write_lambda);
 }
 
 void HttpSession::AsyncReadRequest() {

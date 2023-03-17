@@ -37,7 +37,7 @@ std::string ProcessHeadGet(const std::shared_ptr<Location>& matched_location, co
             if (!should_read) {
                 return {};
             }
-            return AutoindexHandler::Handle(path, path_after_matching, request);
+            return AutoindexHandler::Handle(matched_location, path, path_after_matching, request);
         }
     }
 

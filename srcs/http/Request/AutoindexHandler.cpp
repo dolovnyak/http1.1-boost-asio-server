@@ -8,11 +8,12 @@
 namespace Http {
 
 namespace {
-typedef struct {
+struct FileData {
     std::string short_name;
     std::string full_name;
     std::string time_string;
-} FileData;
+    std::string size;
+};
 
 
 std::vector<std::string> SplitString(const std::string& str, const std::string& delimiters) {
@@ -72,20 +73,21 @@ std::string GetDateTimeString(time_t rawtime) {
     return {buffer};
 }
 
-std::vector<FileData> GetFilesData(const std::string& path) {
+std::vector<FileData> GetFilesData(const std::string& path, int& max_len) {
     std::vector<FileData> collection;
 
+    max_len = 0;
     glob_t glob_result = get_glob_result(path);
     for (unsigned int i = 0; i < glob_result.gl_pathc; ++i) {
-        //std::cout << glob_result.gl_pathv[i];
         FileData data;
         data.short_name = GetEndOfPath(glob_result.gl_pathv[i]);
         data.full_name = glob_result.gl_pathv[i];
-        //collection.push_back(data);
+        max_len = std::max(static_cast<int>(data.short_name.size()), max_len);
         struct stat stat_result = {};
         if (stat(data.full_name.c_str(), &stat_result) == 0) {
             time_t mod_time = stat_result.st_mtime;
             data.time_string = GetDateTimeString(mod_time);
+            data.size = ToReadableSize(stat_result.st_size);
         }
         collection.push_back(data);
     }
@@ -93,13 +95,17 @@ std::vector<FileData> GetFilesData(const std::string& path) {
     return collection;
 }
 
-std::string CreatePrefix(const std::string& path, const std::string& host) {
+std::string CreatePrefix(const std::shared_ptr<Location>& location, const std::string& path_after_matching) {
     std::string result = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=windows-1252\"><title>Index of ";
-    result += path;
+    result += UnitePaths(location->location, path_after_matching);
     result += "</title></head>";
     result += "<body>";
-    result += "<h1>Index of " + path + "</h1><hr><pre><a href=\"" + host + "/" + GetFirstPartOfPath(path) +
-              "\">../</a>\n";
+    result += "<h1>Index of " + UnitePaths(location->location, path_after_matching) + "</h1>";
+    result += "<hr><pre>";
+    if (!path_after_matching.empty() && path_after_matching != "/") {
+        result +=
+                "<a href=\"" + UnitePaths(location->location, GetFirstPartOfPath(path_after_matching)) + "\">../</a>\n";
+    }
     return result;
 }
 
@@ -108,8 +114,8 @@ std::string CreatePostfix() {
     return result;
 }
 
-std::string CreateSpaces(int lenth, int max) {
-    int iterations = max - lenth;
+std::string CreateSpaces(int length, int max) {
+    int iterations = max - length;
     if (iterations < 0) {
         return "";
     }
@@ -122,22 +128,26 @@ std::string CreateSpaces(int lenth, int max) {
     return result;
 }
 
-std::string ListDir(const std::string& path, const std::string& trim_path, const std::string& host) {
-    std::string result = CreatePrefix(path, host);
+std::string
+ListDir(const std::shared_ptr<Location>& location, const std::string& path, const std::string& path_after_matching) {
+    std::string result = CreatePrefix(location, path_after_matching);
 
-    std::vector<FileData> files = GetFilesData(path);
+    int max_len = 0;
+    std::vector<FileData> files = GetFilesData(path, max_len);
 
-    for (const auto& file_data : files) {
-        std::string substring;
+    for (const auto& file_data: files) {
         if (std::filesystem::is_directory(file_data.full_name)) {
-            substring = "<a href=\"" + trim_path + file_data.short_name + "\">" + "/</a>" +
-                    CreateSpaces(file_data.short_name.length(), 67) + file_data.time_string + "\n";
+            result += "<a href=\"" +
+                      UnitePaths(UnitePaths(location->location, path_after_matching), file_data.short_name) + "\">" +
+                      file_data.short_name + "</a>";
         }
         else {
-            substring = "<a href=\"" + trim_path + "\">" + file_data.short_name + "</a>" +
-                    CreateSpaces(file_data.short_name.length(), 68) + file_data.time_string + "\n";
+            result += "<a href=\"" +
+                      UnitePaths(UnitePaths(location->location, path_after_matching), file_data.short_name) + "\">" +
+                      file_data.short_name + "</a>";
         }
-        result += substring;
+        result += CreateSpaces(static_cast<int>(file_data.short_name.size()), max_len + 20) +
+                  file_data.time_string + CreateSpaces(max_len + 20, max_len + 30) + file_data.size + "\n";
     }
 
     result += CreatePostfix();
@@ -146,13 +156,13 @@ std::string ListDir(const std::string& path, const std::string& trim_path, const
 
 }
 
-std::string AutoindexHandler::Handle(const std::string& path, const std::string& trim_path, const std::shared_ptr<Request>& request) {
-    if (!IsDirectory(path)) {
+std::string AutoindexHandler::Handle(const std::shared_ptr<Location>& location, const std::string& full_path,
+                                     const std::string& path_after_matching, const std::shared_ptr<Request>& request) {
+    if (!IsDirectory(full_path)) {
         throw NotFound("File not found", request->server_config);
     }
 
-    std::string host = request->server_config->host + ":" + std::to_string(request->server_config->port);
-    return ListDir(path, trim_path, host);
+    return ListDir(location, full_path, path_after_matching);
 }
 
 }

@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <ctime>
 #include <cctype>
+#include <sstream>
+#include <iomanip>
 
 #define READ_BUFFER_SIZE 4096
 
@@ -63,13 +65,13 @@ size_t FindInRange(const std::string& str, const std::string& substr, size_t sta
 
 std::string ToLower(const std::string& str) {
     std::string result;
-    std::transform(str.begin(), str.end(), std::back_inserter(result), [](unsigned char c){ return std::tolower(c); });
+    std::transform(str.begin(), str.end(), std::back_inserter(result), [](unsigned char c) { return std::tolower(c); });
     return result;
 }
 
 std::string ToUpper(const std::string& str) {
     std::string result;
-    std::transform(str.begin(), str.end(), std::back_inserter(result), [](unsigned char c){ return std::toupper(c); });
+    std::transform(str.begin(), str.end(), std::back_inserter(result), [](unsigned char c) { return std::toupper(c); });
     return result;
 }
 
@@ -117,7 +119,7 @@ bool IsTchar(char c) {
 }
 
 bool IsTcharString(const std::string& str) {
-    for (char c : str) {
+    for (char c: str) {
         if (!IsTchar(c)) {
             return false;
         }
@@ -140,7 +142,7 @@ bool IsHexDigit(char c) {
 }
 
 bool IsHexDigitString(const std::string& str) {
-    for (char c : str) {
+    for (char c: str) {
         if (!IsHexDigit(c)) {
             return false;
         }
@@ -216,7 +218,7 @@ bool IsObsText(char c) {
 }
 
 bool IsFieldContent(const std::string& str) {
-    for (char c : str) {
+    for (char c: str) {
         if (!isprint(c) && !IsObsText(c) && c != '\t') {
             return false;
         }
@@ -225,7 +227,7 @@ bool IsFieldContent(const std::string& str) {
 }
 
 bool IsPositiveNumberString(const std::string& str) {
-    for (char c : str) {
+    for (char c: str) {
         if (!isdigit(c)) {
             return false;
         }
@@ -286,7 +288,7 @@ bool IsIpv4(const std::string& str) {
 
 bool SetSocketNonBlocking(int fd) {
     int option_value = 1;
-    if (ioctl(fd, FIONBIO, (char*)&option_value) < 0) {
+    if (ioctl(fd, FIONBIO, (char*) &option_value) < 0) {
         return false;
     }
     return true;
@@ -336,4 +338,34 @@ bool IsDirectory(const std::string& path) {
         return false;
     }
     return S_ISDIR(path_stat.st_mode);
+}
+
+std::string ToReadableSize(size_t size_in_bytes) {
+    size_t tb = 1099511627776;
+    size_t gb = 1073741824;
+    size_t mb = 1048576;
+    size_t kb = 1024;
+
+    std::stringstream ss;
+    if (size_in_bytes >= tb) {
+        ss << std::fixed << std::setprecision(2) << static_cast<double>(size_in_bytes) / static_cast<double>(tb);
+        ss << " TB";
+    }
+    else if (size_in_bytes >= gb) {
+        ss << std::fixed << std::setprecision(2) << static_cast<double>(size_in_bytes) / static_cast<double>(gb);
+        ss << " GB";
+    }
+    else if (size_in_bytes >= mb) {
+        ss << std::fixed << std::setprecision(2) << static_cast<double>(size_in_bytes) / static_cast<double>(mb);
+        ss << " MB";
+    }
+    else if (size_in_bytes >= kb) {
+        ss << std::fixed << std::setprecision(2) << static_cast<double>(size_in_bytes) / static_cast<double>(kb);
+        ss << " KB";
+    }
+    else {
+        ss << std::fixed << std::setprecision(2) << static_cast<double>(size_in_bytes);
+        ss << " B";
+    }
+    return ss.str();
 }

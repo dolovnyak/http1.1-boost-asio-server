@@ -42,6 +42,8 @@ private:
 
     Http::RequestParser _request_parser;
 
+    std::string _raw_response;
+
     std::array<char, READ_BUFFER_SIZE> _buffer;
 
     HttpSessionState _state;
