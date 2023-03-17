@@ -46,6 +46,17 @@ std::string ProcessHeadGet(const std::shared_ptr<Location>& matched_location, co
 
 }
 
+bool RequestHandler::FindLocation(const std::string& path, size_t path_compare_len) {
+    for (const auto& current_location: _request->server_config->locations) {
+        if (path.compare(0, path_compare_len, current_location->location) == 0) {
+            _matched_location = current_location;
+            _path_after_matching = path.substr(path_compare_len, path.size() - path_compare_len);
+            return true;
+        }
+    }
+    return false;
+}
+
 void RequestHandler::HandleRouteLocation() {
     std::string path = _request->target.path;
     size_t path_len = path.size();
@@ -59,15 +70,15 @@ void RequestHandler::HandleRouteLocation() {
     }
 
     while (true) {
-        for (const auto& current_location: _request->server_config->locations) {
-            if (path.compare(0, path_len, current_location->location) == 0) {
-                _matched_location = current_location;
-                _path_after_matching = path.substr(path_len, path.size() - path_len);
+        if (FindLocation(path, path_len)) {
+            return;
+        }
+        path_len = path.rfind('/', path_len - 1);
+        if (path_len == 0) {
+            if (FindLocation(path, 1)) {
                 return;
             }
         }
-
-        path_len = path.rfind('/', path_len - 1);
         if (path_len == std::string::npos || path_len == 0) {
             throw NotFound("Location not found", _request->server_config);
         }
@@ -118,7 +129,7 @@ void RequestHandler::HandleKeepAliveHeader() {
         if (parameter_tokens.size() == 2) {
             if (ToLower(parameter_tokens[0]) == TIMEOUT && IsPositiveNumberString(parameter_tokens[1])) {
                 _keep_alive_timeout = std::min(_request->server_config->max_keep_alive_timeout_s,
-                                              static_cast<unsigned int>(ParsePositiveInt(parameter_tokens[1])));
+                                               static_cast<unsigned int>(ParsePositiveInt(parameter_tokens[1])));
             }
         }
         /// MAX parameter is outdated and not supported

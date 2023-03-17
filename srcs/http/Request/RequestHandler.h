@@ -50,6 +50,8 @@ private:
 
     void HandleRouteLocation();
 
+    bool FindLocation(const std::string& path, size_t path_compare_len);
+
     std::shared_ptr<Response> HandleHttpMethod();
 
     void HandleAuthorizationHeader();
