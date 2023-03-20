@@ -1,3 +1,6 @@
 [submodule "googletest"]
 	path = libs/googletest
 	url = git@github.com:google/googletest.git
+[submodule "libs/CppLog"]
+	path = libs/CppLog
+	url = git@github.com:dolovnyak/CppLog.git

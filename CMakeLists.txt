@@ -3,8 +3,10 @@ project(web-server)
 
 set(CMAKE_CXX_STANDARD 17)
 
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra -fsanitize=address")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D STDOUT_LOG_LEVEL=6 -D FILE_LOG_LEVEL=6")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 
 ################################################################################
@@ -23,7 +25,6 @@ add_library(${WS_LIB}
         srcs/http/errors/ErrorPages.cpp
         srcs/http/Http.cpp
         srcs/utilities/utilities.cpp
-        srcs/utilities/Logging.cpp
         )
 
 target_include_directories(${WS_LIB} PUBLIC
@@ -43,7 +44,7 @@ target_include_directories(${WS_LIB} PUBLIC
 target_compile_definitions(${WS_LIB} PUBLIC -D_DEBUG)
 
 # Boost asio
-set(Boost_INCLUDE_DIR boost_1_81_0)
+set(Boost_INCLUDE_DIR libs/boost_1_81_0)
 target_include_directories(${WS_LIB} PUBLIC ${Boost_INCLUDE_DIR})
 
 # Openssl library
@@ -55,6 +56,10 @@ target_include_directories(${WS_LIB} PUBLIC ${OPENSSL_INCLUDE_DIR})
 target_link_libraries(${WS_LIB} LINK_PUBLIC
         ${OPENSSL_SSL_LIBRARY}
         ${OPENSSL_CRYPTO_LIBRARY})
+
+# Logging library
+set(CppLog_INCLUDE_DIR ./libs/CppLog/include)
+target_include_directories(${WS_LIB} PUBLIC ${CppLog_INCLUDE_DIR})
 
 ################################################################################
 # web-server target
@@ -68,12 +73,11 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}
         )
 
-
 ################################################################################
 # tests
 ################################################################################
 set(WS_TESTS ${PROJECT_NAME}-tests)
-add_subdirectory(googletest)
+add_subdirectory(libs/googletest)
 
 add_executable(${WS_TESTS}
         tests/test_utilities.cpp

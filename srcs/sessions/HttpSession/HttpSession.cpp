@@ -65,6 +65,8 @@ void HttpSession::HandleReadRequest(const boost::system::error_code& error,
                 }
 
                 case Http::RequestParseStatus::Finish: {
+                    LOG_IMPORTANT("Raw request on id: ", id, "\n", parse_result.request.value()->raw_request);
+
                     _state = HttpSessionState::HandleRequest;
                     _server_config = parse_result.request.value()->server_config;
 
@@ -165,7 +167,6 @@ void HttpSession::AsyncWaitKillByTimeout() {
         this_shared_ptr->HandleKillByTimeout(error_code);
     };
 
-    LOG_IMPORTANT("keep alive timeout: ", _keep_alive_timeout);
     _killer_timer.expires_from_now(boost::posix_time::seconds(_keep_alive_timeout));
     _killer_timer.async_wait(kill_lambda);
 }

@@ -5,7 +5,7 @@
 #include "RequestHandler.h"
 #include "Response.h"
 #include "utilities.h"
-#include "Logging.h"
+#include "Logger.h"
 
 #include <utility>
 #include <optional>

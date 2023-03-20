@@ -2,6 +2,15 @@
 #include "ConfigParser.h"
 
 int main(int argc, char** argv) {
+    auto stdout_sink = std::make_shared<StdoutSink>();
+    Logger::AddSink(stdout_sink);
+
+    auto file_sink = std::make_shared<FileSink>("logs.txt");
+    Logger::AddSink(file_sink);
+
+    stdout_sink->SetLevel(static_cast<LogLevel>(STDOUT_LOG_LEVEL));
+    file_sink->SetLevel(static_cast<LogLevel>(FILE_LOG_LEVEL));
+
     if (argc != 2) {
         LOG_ERROR("Usage: ./webserver <config_file_path>");
         exit(EXIT_FAILURE);

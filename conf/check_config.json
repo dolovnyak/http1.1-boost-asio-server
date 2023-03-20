@@ -4,7 +4,7 @@
       "Name": "Check",
       "Host": "0.0.0.0",
       "Port": 443,
-      "KeepAliveTimeout_s": 120,
+      "KeepAliveTimeout_s": 360,
       "MaxKeepAliveTimeout_s": 1800,
       "CgiUploaderPath": "",
       "CgiDeleterPath": "",

@@ -2,7 +2,7 @@
 #include "Exception.h"
 #include "ErrorPages.h"
 #include "utilities.h"
-#include "Logging.h"
+#include "Logger.h"
 
 namespace {
     Http::Method ParseHttpMethod(const std::string& raw_method, const std::shared_ptr<ServerConfig>& server_config) {
