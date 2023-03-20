@@ -10,6 +10,7 @@
 #include <utility>
 #include <optional>
 #include <boost/asio.hpp>
+#include <boost/asio/ssl.hpp>
 
 enum class HttpSessionState {
     ReadRequest = 0,
@@ -36,7 +37,7 @@ private:
 
     SessionManager& _session_manager;
 
-    boost::asio::ip::tcp::socket _socket;
+    boost::asio::ssl::stream<boost::asio::ip::tcp::socket> _ssl_socket;
 
     boost::asio::deadline_timer _killer_timer;
 
@@ -48,22 +49,34 @@ private:
 
     HttpSessionState _state;
 
+
+    static int GenId() {
+        static int id = 0;
+        return ++id;
+    }
+
 public:
+    int id;
+
     static std::shared_ptr<HttpSession> CreateAsPtr(
             const std::shared_ptr<Config>& config,
             const std::shared_ptr<EndpointConfig>& endpoint_config,
             boost::asio::io_context& io_context,
+            boost::asio::ssl::context& ssl_context,
+            boost::asio::ip::tcp::socket& tcp_socket,
             SessionManager& session_manager);
 
-    [[nodiscard]] boost::asio::ip::tcp::socket& GetSocketAsReference();
-
     void AsyncReadRequest();
+
+    void AsyncHandshake();
 
     void AsyncWriteResponse(const std::shared_ptr<Http::Response>& response);
 
     void AsyncWaitKillByTimeout();
 
     void HandleReadRequest(const boost::system::error_code& error, std::size_t bytes_transferred);
+
+    void HandleHandshake(const boost::system::error_code& error);
 
     void HandleWriteResponse(const boost::system::error_code& error, size_t bytes_transferred);
 
@@ -80,5 +93,7 @@ private:
     HttpSession(const std::shared_ptr<Config>& config,
                 const std::shared_ptr<EndpointConfig>& endpoint_config,
                 boost::asio::io_context& io_context,
+                boost::asio::ssl::context& ssl_context,
+                boost::asio::ip::tcp::socket& tcp_socket,
                 SessionManager& session_manager);
 };

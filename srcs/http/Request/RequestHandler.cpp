@@ -207,20 +207,18 @@ std::shared_ptr<Response> RequestHandler::HandleHttpMethod() {
         }
         return Response::MakeDefaultWithBody(_request->server_config,
                                              _matched_location->http_return->code,
-                                             ToString(_matched_location->http_return->code),
-                                             "", _keep_alive);
+                                             ToString(_matched_location->http_return->code), "");
     }
 
     switch (*it) {
         case Http::Method::Get: {
             std::string body = ProcessHeadGet(_matched_location, _request, _path_after_matching, true);
-            return Response::MakeDefaultWithBody(_request->server_config, Code::Ok, ToString(Code::Ok), std::move(body),
-                                                 _keep_alive);
+            return Response::MakeDefaultWithBody(_request->server_config, Code::Ok, ToString(Code::Ok), std::move(body));
         }
 
         case Http::Method::Head: {
             ProcessHeadGet(_matched_location, _request, _path_after_matching, false);
-            return Response::MakeDefaultWithoutBody(_request->server_config, Code::Ok, ToString(Code::Ok), _keep_alive);
+            return Response::MakeDefaultWithoutBody(_request->server_config, Code::Ok, ToString(Code::Ok));
         }
 
         case Http::Method::Post: {

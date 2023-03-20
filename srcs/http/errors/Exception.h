@@ -23,7 +23,7 @@ public:
                       Http::Response::MakeDefaultWithBody(server_config,
                                                           error_code,
                                                           error_title,
-                                                          GetErrorPageByCode(error_code, server_config), _keep_alive)) {}
+                                                          GetErrorPageByCode(error_code, server_config))) {}
 
     Exception(const Exception& other) noexcept {
         _message = other._message;

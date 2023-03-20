@@ -25,23 +25,16 @@ public:
     }
 
     static std::shared_ptr<Response> MakeDefaultWithBody(const std::shared_ptr<ServerConfig>& server_config,
-                                                         Code code, std::string title, std::string body,
-                                                         bool keep_alive) {
+                                                         Code code, std::string title, std::string body) {
         std::vector<Header> headers = GetDefaultHeaders(server_config);
         headers.emplace_back("Content-Length", std::to_string(body.size()));
-        if (keep_alive) {
-            headers.emplace_back("Connection", "keep-alive");
-        }
 
         return std::make_shared<Response>(code, std::move(title), std::move(headers), std::move(body));
     }
 
     static std::shared_ptr<Response> MakeDefaultWithoutBody(const std::shared_ptr<ServerConfig>& server_config,
-                                                            Code code, std::string title, bool keep_alive) {
+                                                            Code code, std::string title) {
         std::vector<Header> headers = GetDefaultHeaders(server_config);
-        if (keep_alive) {
-            headers.emplace_back("Connection", "keep-alive");
-        }
         return std::make_shared<Response>(code, std::move(title), std::move(headers), std::nullopt);
     }
 

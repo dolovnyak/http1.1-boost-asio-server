@@ -5,6 +5,7 @@
 #include "SessionManager.h"
 
 #include <memory>
+#include <boost/asio/ssl.hpp>
 
 class EndpointSession : public std::enable_shared_from_this<EndpointSession> {
 private:
@@ -13,6 +14,8 @@ private:
     std::shared_ptr<EndpointConfig> _endpoint_config;
 
     boost::asio::io_context& _io_context;
+
+    boost::asio::ssl::context& _ssl_context;
 
     boost::asio::ip::tcp::acceptor _acceptor;
 
@@ -25,11 +28,12 @@ public:
     [[nodiscard]] static std::shared_ptr<EndpointSession> CreateAsPtr(
             const std::shared_ptr<Config>& config,
             const std::shared_ptr<EndpointConfig>& endpoint_config,
-            boost::asio::io_context& io_context);
+            boost::asio::io_context& io_context,
+            boost::asio::ssl::context& ssl_context);
 
-    void AsyncAccept(const std::shared_ptr<HttpSession>& http_session);
+    void AsyncAccept();
 
-    void HandleAccept(const std::shared_ptr<HttpSession>& http_session, const boost::system::error_code& error);
+    void HandleAccept(boost::asio::ip::tcp::socket& socket, const boost::system::error_code& error);
 
     [[nodiscard]] const std::string& GetName() const {
         static std::string kName = "EndpointSession";
@@ -39,5 +43,6 @@ public:
 private:
     EndpointSession(const std::shared_ptr<Config>& config,
                     const std::shared_ptr<EndpointConfig>& endpoint_config,
-                    boost::asio::io_context& io_context);
+                    boost::asio::io_context& io_context,
+                    boost::asio::ssl::context& ssl_context);
 };
